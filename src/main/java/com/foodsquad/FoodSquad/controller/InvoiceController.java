@@ -24,6 +24,7 @@ import java.util.Locale;
 @Validated
 @RestController
 @RequestMapping("/api/invoice")
+
 @Tag(name = "9. Invoice Management", description = "Invoice Management API")
 public class InvoiceController {
     private final InvoiceService invoiceService;
