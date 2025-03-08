@@ -1,0 +1,17 @@
+jasper:
+  invoice:
+    title:
+      label: "Invoice"
+    address:
+      label: "Shipping Address"
+    entry:
+      product:
+        label: "Product Name"
+      price:
+        label: "Unit Price"
+      quantity:
+        label: "Quantity"
+      total:
+        label: "Total"
+    total:
+      label: "Order Total"

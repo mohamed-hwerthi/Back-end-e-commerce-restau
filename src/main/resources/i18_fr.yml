@@ -1,0 +1,17 @@
+jasper:
+  invoice:
+    title:
+      label: "Facture"
+    address:
+      label: "Adresse de facturation"
+    entry:
+      product:
+        label: "Nom de produit"
+      price:
+        label: "Prix unitaire"
+      quantity:
+        label: "Quantité"
+      total:
+        label: "Total"
+    total:
+      label: "Total de la facture"
