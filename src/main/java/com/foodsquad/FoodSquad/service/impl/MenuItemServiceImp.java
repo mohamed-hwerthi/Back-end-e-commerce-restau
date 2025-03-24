@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.CategoryMapper;
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
@@ -15,9 +15,12 @@ import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +37,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class MenuItemService {
+public class MenuItemServiceImp implements MenuItemService {
+
+    private final Logger logger = LoggerFactory.getLogger(MenuItemService.class);
 
     private final MenuItemRepository menuItemRepository;
 
@@ -52,7 +57,7 @@ public class MenuItemService {
 
     private final MenuItemMapper menuItemMapper;
 
-    public MenuItemService(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper) {
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -64,22 +69,10 @@ public class MenuItemService {
         this.menuItemMapper = menuItemMapper;
     }
 
-    private User getCurrentUser() {
-
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-    }
-
-    private void checkOwnership(MenuItem menuItem) {
-
-        User currentUser = getCurrentUser();
-        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
-            throw new IllegalArgumentException("Access denied");
-        }
-    }
 
     public ResponseEntity<MenuItemDTO> createMenuItem(MenuItemDTO menuItemDTO) {
+
+        logger.debug("Creating menu item: {}", menuItemDTO);
 
         MenuItem menuItem = modelMapper.map(menuItemDTO, MenuItem.class);
         User currentUser = getCurrentUser();
@@ -101,7 +94,23 @@ public class MenuItemService {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
+    @Override
+    public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable) {
+
+        logger.debug("Searching menu items by query: {}", query);
+        Page<MenuItem> menuItemPage = menuItemRepository.filterByQuery(query, pageable);
+        List<MenuItem> menuItems = menuItemPage.getContent();
+        List<MenuItemDTO> menuItemDTOs = menuItems.stream()
+                .map(menuItemMapper::toDto)
+                .toList();
+        return new PaginatedResponseDTO<>(menuItemDTOs, menuItemPage.getTotalElements());
+
+
+    }
+
     public ResponseEntity<MenuItemDTO> getMenuItemById(Long id) {
+
+        logger.debug("Getting menu item by ID: {}", id);
 
         MenuItem menuItem = menuItemRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
@@ -120,6 +129,8 @@ public class MenuItemService {
     }
 
     public PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, String categoryFilter, String isDefault, String priceSortDirection) {
+
+        logger.debug("Getting all menu items  with some filters");
 
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdOn"));
         Page<MenuItem> menuItemPage;
@@ -178,6 +189,8 @@ public class MenuItemService {
     @Transactional
     public ResponseEntity<MenuItemDTO> updateMenuItem(Long id, MenuItemDTO menuItemDTO) {
 
+        logger.debug("Updating menu item with ID: {}", id);
+
         MenuItem existingMenuItem = menuItemRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
 
@@ -213,9 +226,26 @@ public class MenuItemService {
         return ResponseEntity.ok(Map.of("message", "Menu Item successfully deleted"));
     }
 
+    // Method to delete multiple menu items by their IDs
+    @Transactional
+    public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(List<Long> ids) {
+
+        List<MenuItem> menuItems = menuItemRepository.findAllById(ids);
+        if (menuItems.isEmpty()) {
+            throw new EntityNotFoundException("No MenuItems found for the given IDs");
+        }
+        menuItems.forEach(menuItem -> {
+            checkOwnership(menuItem);
+            orderRepository.removeMenuItemReferences(menuItem.getId()); // Remove references in order_menu_item table
+            menuItemRepository.delete(menuItem);
+        });
+        return ResponseEntity.ok(Map.of("message", "Menu Items successfully deleted"));
+    }
+
 
     //  method to fetch multiple menu items by their IDs
     public ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(List<Long> ids) {
+        logger.debug("Getting menu items by IDs: {}", ids);
 
         List<MenuItem> menuItems = menuItemRepository.findAllById(ids);
         if (menuItems.isEmpty()) {
@@ -239,21 +269,28 @@ public class MenuItemService {
         return ResponseEntity.ok(menuItemDTOs);
     }
 
+    @Override
+    public MenuItemDTO findByBarCode(String qrCode) {
 
-    // Method to delete multiple menu items by their IDs
-    @Transactional
-    public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(List<Long> ids) {
-
-        List<MenuItem> menuItems = menuItemRepository.findAllById(ids);
-        if (menuItems.isEmpty()) {
-            throw new EntityNotFoundException("No MenuItems found for the given IDs");
-        }
-        menuItems.forEach(menuItem -> {
-            checkOwnership(menuItem);
-            orderRepository.removeMenuItemReferences(menuItem.getId()); // Remove references in order_menu_item table
-            menuItemRepository.delete(menuItem);
-        });
-        return ResponseEntity.ok(Map.of("message", "Menu Items successfully deleted"));
+     return    menuItemRepository.findByBarCode(qrCode)
+             .map(menuItemMapper::toDto)
+             .orElseThrow( () -> new EntityNotFoundException("MenuItem not found for qrCode"));
     }
+
+    private User getCurrentUser() {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    private void checkOwnership(MenuItem menuItem) {
+
+        User currentUser = getCurrentUser();
+        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
+            throw new IllegalArgumentException("Access denied");
+        }
+    }
+
 
 }

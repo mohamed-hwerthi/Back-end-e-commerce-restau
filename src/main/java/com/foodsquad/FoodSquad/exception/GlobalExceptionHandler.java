@@ -24,14 +24,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleEntityNotFoundException(EntityNotFoundException ex) {
+
         Map<String, String> response = new HashMap<>();
         response.put("error", ex.getMessage());
+        response.put("status", "404");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -41,9 +44,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    @ExceptionHandler(FileUploadingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public  ResponseEntity<Map<String, String>> handleFileUploadingException(FileUploadingException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        errors.put("status"  , "500");
+        return ResponseEntity.badRequest().body(errors);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-            Map<String, String> errors = new HashMap<>();
+
+        Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -57,6 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Map<String, String>> handleAllUncaughtException(Exception ex) {
+
         if (ex instanceof MissingRequestCookieException) {
             return handleMissingRequestCookieException((MissingRequestCookieException) ex);
         }
@@ -67,6 +81,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<Map<String, String>> handleMissingRequestCookieException(MissingRequestCookieException ex) {
+
         Map<String, String> errors = new HashMap<>();
         errors.put("error", "Refresh token is missing. Please log in again.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
@@ -75,6 +90,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+
         Map<String, String> errors = new HashMap<>();
         Throwable mostSpecificCause = ex.getMostSpecificCause();
         String errorMessage = "Invalid JSON input";
@@ -100,6 +116,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<Map<String, String>> handleJwtException(JwtException ex) {
+
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Invalid or expired token");
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
@@ -108,6 +125,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<Map<String, String>> handleExpiredJwtException(ExpiredJwtException ex) {
+
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", "Token has expired");
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);

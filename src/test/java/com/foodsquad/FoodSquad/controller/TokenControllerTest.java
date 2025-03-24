@@ -1,25 +1,22 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foodsquad.FoodSquad.service.AuthService;
-import com.foodsquad.FoodSquad.service.TokenService;
+import com.foodsquad.FoodSquad.service.impl.AuthService;
+import com.foodsquad.FoodSquad.service.impl.TokenService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

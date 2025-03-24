@@ -11,7 +11,6 @@ public class PaginatedResponseDTO<T> {
         this.totalCount = totalCount;
     }
 
-    // Getters and setters
     public List<T> getItems() {
         return items;
     }

@@ -5,7 +5,7 @@ import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.MenuItemRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.foodsquad.FoodSquad.service.impl.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 

@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.service.AuthService;
-import com.foodsquad.FoodSquad.service.TokenService;
+import com.foodsquad.FoodSquad.service.impl.AuthService;
+import com.foodsquad.FoodSquad.service.impl.TokenService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;

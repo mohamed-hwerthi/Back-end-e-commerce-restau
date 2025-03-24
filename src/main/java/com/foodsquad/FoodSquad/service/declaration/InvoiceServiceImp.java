@@ -1,7 +1,9 @@
 package com.foodsquad.FoodSquad.service.declaration;
 
+import com.foodsquad.FoodSquad.model.dto.MenuItemEntry;
+import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Order;
-import com.foodsquad.FoodSquad.service.OrderService;
+import com.foodsquad.FoodSquad.service.impl.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -21,8 +23,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -95,8 +100,37 @@ public class InvoiceServiceImp implements  InvoiceService {
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put("order",  order);
         parameters.put("REPORT_LOCALE", localeKey);
-
+        parameters.put("ClientName", "Jean Dupont");
+        parameters.put("InvoiceNumber", "F12345");
+        parameters.put("InvoiceDate", new Date()); // Utilisez la date actuelle
+        parameters.put("TotalAmount", 125.00);
         return parameters;
+    }
+
+    /**
+     * Flattens a map of menu items and their associated quantities into a list of {@link MenuItemEntry} objects.
+     * Each {@link MenuItemEntry} contains the title, description, price, quantity, and image URL of a menu item.
+     *
+     * @param menuItemsWithQuantity a map where the key is a {@link MenuItem} and the value is the quantity of that menu item.
+     * @return a list of {@link MenuItemEntry} objects, each representing a menu item with its corresponding quantity.
+     */
+    public List<MenuItemEntry> flattenMenuItems(Map<MenuItem, Integer> menuItemsWithQuantity) {
+        List<MenuItemEntry> entries = new ArrayList<>();
+        for (Map.Entry<MenuItem, Integer> entry : menuItemsWithQuantity.entrySet()) {
+            MenuItem menuItem = entry.getKey();
+            Integer quantity = entry.getValue();
+            // Create a MenuItemEntry for each MenuItem and its quantity
+            MenuItemEntry menuItemEntry = new MenuItemEntry(
+                    menuItem.getTitle(),
+                    menuItem.getDescription(),
+                    menuItem.getPrice(),
+                    quantity,
+                    menuItem.getImageUrl()
+            );
+
+            entries.add(menuItemEntry);
+        }
+        return entries;
     }
 
 

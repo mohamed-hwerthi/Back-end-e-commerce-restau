@@ -21,6 +21,8 @@ public class MenuItemDTO {
 
     @NotBlank(message = "Description cannot be blank")
     private String description;
+    @NotBlank(message = "code bar can not be null ")
+    private String barCode;
 
     @URL
     @NotBlank(message = "ImageUrl cannot be blank")
@@ -53,6 +55,7 @@ public class MenuItemDTO {
     private List<Long> categoriesIds= new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<CategoryDTO>categoryDTOS = new ArrayList<>() ;
+    private List<MediaDTO>mediaDTOS = new ArrayList<>() ;
 
     public MenuItemDTO() {
 
@@ -139,6 +142,7 @@ public class MenuItemDTO {
         this.category = category;
     }
 
+
     public MenuItemCategory getCategory() {
 
         return category;
@@ -201,6 +205,26 @@ public class MenuItemDTO {
     public void setCategoryDTOS(List<CategoryDTO> categoryDTOS) {
 
         this.categoryDTOS = categoryDTOS;
+    }
+
+    public String getBarCode() {
+
+        return barCode;
+    }
+
+    public void setBarCode(String barCode) {
+
+        this.barCode = barCode;
+    }
+
+    public List<MediaDTO> getMediaDTOS() {
+
+        return mediaDTOS;
+    }
+
+    public void setMediaDTOS(List<MediaDTO> mediaDTOS) {
+
+        this.mediaDTOS = mediaDTOS;
     }
 
 }

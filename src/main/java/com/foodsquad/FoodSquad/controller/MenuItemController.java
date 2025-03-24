@@ -2,15 +2,24 @@ package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
-import com.foodsquad.FoodSquad.service.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +30,7 @@ import java.util.Map;
 @Tag(name = "5. Menu Item Management", description = "Menu Item Management API")
 public class MenuItemController {
 
-    private   final  MenuItemService menuItemService;
+    private final MenuItemService menuItemService;
 
     public MenuItemController(MenuItemService menuItemService) {
 
@@ -31,6 +40,7 @@ public class MenuItemController {
     @Operation(summary = "Create a new menu item", description = "Create a new menu item with the provided details.")
     @PostMapping
     public ResponseEntity<MenuItemDTO> createMenuItem(@Valid @RequestBody MenuItemDTO menuItemDTO) {
+
         return menuItemService.createMenuItem(menuItemDTO);
     }
 
@@ -39,6 +49,7 @@ public class MenuItemController {
     public ResponseEntity<MenuItemDTO> getMenuItemById(
             @Parameter(description = "ID of the menu item to retrieve", example = "1")
             @PathVariable Long id) {
+
         return menuItemService.getMenuItemById(id);
     }
 
@@ -65,7 +76,6 @@ public class MenuItemController {
 
             @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
             @RequestParam(required = false) String priceSortDirection) {
-
 //        return menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
         PaginatedResponseDTO<MenuItemDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
         return ResponseEntity.ok(response);
@@ -77,6 +87,7 @@ public class MenuItemController {
             @Parameter(description = "ID of the menu item to update", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody MenuItemDTO menuItemDTO) {
+
         return menuItemService.updateMenuItem(id, menuItemDTO);
     }
 
@@ -85,6 +96,7 @@ public class MenuItemController {
     public ResponseEntity<Map<String, String>> deleteMenuItem(
             @Parameter(description = "ID of the menu item to delete", example = "1")
             @PathVariable Long id) {
+
         return menuItemService.deleteMenuItem(id);
     }
 
@@ -93,6 +105,7 @@ public class MenuItemController {
     public ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(
             @Parameter(description = "List of IDs of the menu items to retrieve", example = "[1, 2, 3]")
             @RequestParam List<Long> ids) {
+
         return menuItemService.getMenuItemsByIds(ids);
     }
 
@@ -101,6 +114,23 @@ public class MenuItemController {
     public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(
             @Parameter(description = "List of IDs of the menu items to delete", example = "[1, 2, 3]")
             @RequestParam List<Long> ids) {
+
         return menuItemService.deleteMenuItemsByIds(ids);
     }
+
+    @Operation(summary = "Search menu items by query", description = "Retrieve a list of menu items that their title  match the provided query.")
+    @GetMapping("/search/{query}")
+    public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@Parameter(description = "Query to search menu items by title", example = "pizza") @PathVariable("query") String query, Pageable pageable) {
+
+        PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(query, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(paginatedResponseDTOS);
+    }
+
+    @Operation(summary = "find Menu item by its qr code ", description = "find Menu item by its qr code ")
+    @GetMapping("/bar-code/{barCode}")
+    public ResponseEntity<MenuItemDTO> findByQrCode(@Parameter(description = "Search by bar code  ", example = "0001236") @PathVariable("barCode") String barCode) {
+
+        return ResponseEntity.ok(menuItemService.findByBarCode(barCode));
+    }
+
 }

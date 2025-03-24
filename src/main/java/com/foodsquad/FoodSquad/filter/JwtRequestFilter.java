@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.filter;
 
-import com.foodsquad.FoodSquad.service.AuthService;
+import com.foodsquad.FoodSquad.service.impl.AuthService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
 import com.foodsquad.FoodSquad.repository.TokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;

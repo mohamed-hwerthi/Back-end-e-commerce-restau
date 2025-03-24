@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.entity.Token;
 import com.foodsquad.FoodSquad.model.entity.User;
