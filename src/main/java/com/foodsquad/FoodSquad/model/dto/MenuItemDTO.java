@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MenuItemDTO {
+public class    MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
@@ -51,8 +51,7 @@ public class MenuItemDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "a menu item must have at least one category")
     private List<Long> categoriesIds= new ArrayList<>();
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<CategoryDTO>categoryDTOS = new ArrayList<>() ;
+
 
     public MenuItemDTO() {
 
@@ -193,14 +192,6 @@ public class MenuItemDTO {
         this.categoriesIds = categoriesIds;
     }
 
-    public List<CategoryDTO> getCategoryDTOS() {
 
-        return categoryDTOS;
-    }
-
-    public void setCategoryDTOS(List<CategoryDTO> categoryDTOS) {
-
-        this.categoryDTOS = categoryDTOS;
-    }
 
 }

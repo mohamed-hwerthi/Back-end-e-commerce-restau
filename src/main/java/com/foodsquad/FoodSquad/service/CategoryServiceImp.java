@@ -2,10 +2,15 @@ package com.foodsquad.FoodSquad.service;
 
 import com.foodsquad.FoodSquad.mapper.CategoryMapper;
 import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.repository.CategoryRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +18,8 @@ import java.util.List;
 @Service
 public class  CategoryServiceImp implements CategoryService {
 
-    private  CategoryRepository categoryRepository;
-    private  CategoryMapper categoryMapper;
+    private   final   CategoryRepository categoryRepository;
+    private   final   CategoryMapper categoryMapper;
 
     public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
 
@@ -23,12 +28,16 @@ public class  CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public List<CategoryDTO> getAllCategories() {
-        return categoryMapper.toDTOList(categoryRepository.findAll());
+    public PaginatedResponseDTO<CategoryDTO> findAllCategories(int page, int limit) {
+        Pageable pageable = PageRequest.of(page, limit);
+         Page<Category>categories =  categoryRepository.findAll(pageable);
+         List<CategoryDTO>categoryDTOS  = categories.getContent().stream().map(categoryMapper::toDto).toList();
+         return  new PaginatedResponseDTO<CategoryDTO>(categoryDTOS , categories.getTotalElements()) ;
+
     }
 
     @Override
-    public CategoryDTO getCategoryById(Long id) {
+    public CategoryDTO findCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
         return categoryMapper.toDto(category);
@@ -58,5 +67,11 @@ public class  CategoryServiceImp implements CategoryService {
         }
         categoryRepository.deleteById(id);
     }
+
+    @Override
+    public List<CategoryDTO> findAllCategories() {
+        return    categoryRepository.findAll().stream().map(categoryMapper::toDto).toList() ;
+    }
+
 }
 

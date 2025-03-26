@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/med
     username: root
-    password:
+    password: med
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   flyway:

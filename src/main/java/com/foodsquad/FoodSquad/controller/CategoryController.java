@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,16 +31,30 @@ public class CategoryController {
 
         this.categoryService = categoryService;
     }
-
-    @Operation(summary = "Get all categories", description = "Retrieve all categories available in the system.")
+    @Operation(summary = "Get all categories   ", description = "Retrieve all categories available in the system.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully retrieved all categories",
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CategoryDTO.class))))
     })
-    @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-        List<CategoryDTO> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+    @GetMapping()
+    public   ResponseEntity < List<CategoryDTO> > findAllCategories() {
+        return  ResponseEntity.ok().body( categoryService.findAllCategories());
+    }
+
+    @Operation(summary = "Get all categories  with pagination ", description = "Retrieve all categories  with pagination.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved all categories",
+                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CategoryDTO.class))))
+    })
+    @GetMapping("/pageable")
+    public ResponseEntity<PaginatedResponseDTO<CategoryDTO>> findAllCategories(@Parameter(description = "Page number, starting from 0", example = "0")
+                                                               @RequestParam(defaultValue = "0") int page,
+
+                                                  @Parameter(description = "Number of items per page", example = "10")
+                                                               @RequestParam(defaultValue = "10") int limit
+                                                  ) {
+
+        return ResponseEntity.ok(categoryService.findAllCategories(page , limit));
     }
 
     @Operation(summary = "Get category by ID", description = "Retrieve a specific category by its unique ID.")
@@ -48,9 +63,9 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(
+    public ResponseEntity<CategoryDTO> findCategoryById(
             @Parameter(description = "ID of the category to be retrieved", required = true) @PathVariable Long id) {
-        CategoryDTO category = categoryService.getCategoryById(id);
+        CategoryDTO category = categoryService.findCategoryById(id);
         return ResponseEntity.ok(category);
     }
 
@@ -91,4 +106,6 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

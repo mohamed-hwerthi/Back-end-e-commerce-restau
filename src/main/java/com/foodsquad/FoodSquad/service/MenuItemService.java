@@ -72,7 +72,6 @@ public class MenuItemService {
     }
 
     private void checkOwnership(MenuItem menuItem) {
-
         User currentUser = getCurrentUser();
         if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
             throw new IllegalArgumentException("Access denied");
@@ -90,7 +89,7 @@ public class MenuItemService {
         if (!ObjectUtils.isEmpty(menuItemDTO.getCategoriesIds())) {
             List<Category> categories = menuItemDTO.getCategoriesIds().stream().map(
                     categoryId -> {
-                        CategoryDTO categoryDto = categoryService.getCategoryById(categoryId);
+                        CategoryDTO categoryDto = categoryService.findCategoryById(categoryId);
                         return categoryMapper.toEntity(categoryDto);
                     }
             ).toList();
@@ -112,9 +111,9 @@ public class MenuItemService {
         long reviewCount = reviewRepository.countByMenuItemId(menuItem.getId());
         Double averageRating = reviewRepository.findAverageRatingByMenuItemId(menuItem.getId());
         if (averageRating == null) {
-            averageRating = 0.0; // Default to 0.0 if there are no reviews
+            averageRating = 0.0;
         }
-        averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
+        averageRating = Math.round(averageRating * 10.0) / 10.0;
         MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating);
         return ResponseEntity.ok(menuItemDTO);
     }
@@ -130,7 +129,6 @@ public class MenuItemService {
         } else {
             menuItemPage = menuItemRepository.findAll(pageable);
         }
-
         List<MenuItemDTO> menuItems = menuItemPage.stream()
                 .map(menuItem -> {
                     Integer salesCount = orderRepository.sumQuantityByMenuItemId(menuItem.getId());
