@@ -14,7 +14,7 @@ public interface MenuItemService {
 
     ResponseEntity<MenuItemDTO> getMenuItemById(Long id);
 
-    PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, String categoryFilter, String isDefault, String priceSortDirection);
+    PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, Long catgoryId, String isDefault, String priceSortDirection);
 
     ResponseEntity<MenuItemDTO> updateMenuItem(Long id, MenuItemDTO menuItemDTO);
 

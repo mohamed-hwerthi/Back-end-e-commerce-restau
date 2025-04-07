@@ -41,7 +41,7 @@ public class MenuItemController {
     @PostMapping
     public ResponseEntity<MenuItemDTO> createMenuItem(@Valid @RequestBody MenuItemDTO menuItemDTO) {
 
-        return menuItemService.createMenuItem(menuItemDTO);
+         return menuItemService.createMenuItem(menuItemDTO);
     }
 
     @Operation(summary = "Get a menu item by ID", description = "Retrieve a menu item by its unique ID.")
@@ -68,8 +68,8 @@ public class MenuItemController {
             @Parameter(description = "Sort direction: true for descending, false for ascending")
             @RequestParam(required = false) boolean desc,
 
-            @Parameter(description = "Filter by category, e.g., 'PIZZA', 'BURGER'", required = false)
-            @RequestParam(required = false) String categoryFilter,
+            @Parameter(description = "Filter by categoryId , params is named categoryFilter but it contains the category Id '", required = false)
+            @RequestParam(required = false) Long categoryFilter,
 
             @Parameter(description = "Filter by default status: 'true' for default items, 'false' for non-default items", required = false)
             @RequestParam(required = false) String isDefault,

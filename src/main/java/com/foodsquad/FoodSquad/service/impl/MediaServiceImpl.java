@@ -115,7 +115,11 @@ public class MediaServiceImpl implements MediaService {
 
         try {
             String filePath = saveFile(file);
-            Media media = Media.builder().name(file.getOriginalFilename()).path(filePath).url(filePath).type(file.getContentType()).build();
+            Media media = new Media();
+            media.setName(file.getOriginalFilename());
+            media.setPath(filePath);
+            media.setUrl(filePath);
+            media.setType(file.getContentType());
             Media savedMedia = this.mediaRepository.save(media);
             return this.mediaMapper.toDto(savedMedia);
         } catch (IOException e) {
@@ -131,7 +135,6 @@ public class MediaServiceImpl implements MediaService {
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
-
         String fileName = file.getOriginalFilename();
         Path filePath = Optional.ofNullable(fileName).map(f -> uploadPath.resolve(fileName)).orElseThrow(()->new FileUploadingException("file name cannot be null"));
 

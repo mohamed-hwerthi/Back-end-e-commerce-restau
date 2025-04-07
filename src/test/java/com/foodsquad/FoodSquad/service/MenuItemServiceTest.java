@@ -61,7 +61,6 @@ class MenuItemServiceTest {
         menuItemDTO.setTitle("Burger");
         menuItemDTO.setDescription("Delicious burger");
         menuItemDTO.setPrice(10.0);
-        menuItemDTO.setCategory("BURGER");
         menuItemDTO.setImageUrl("http://example.com/burger.jpg");
 
         User user = new User();
@@ -121,7 +120,6 @@ class MenuItemServiceTest {
         menuItemDTO.setTitle("Updated Burger");
         menuItemDTO.setDescription("Updated description");
         menuItemDTO.setPrice(12.0);
-        menuItemDTO.setCategory("BURGER");
         menuItemDTO.setImageUrl("http://example.com/updated_burger.jpg");
 
         User user = new User();

@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
@@ -24,6 +26,14 @@ public class Category {
     private String description  ;
     @ManyToMany(mappedBy = "categories")
     private List<MenuItem> menuItems = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "categories_medias",
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "media_id")
+    )
+    private List<Media> medias = new ArrayList<>();
 
     public Long getId() {
 
@@ -63,6 +73,16 @@ public class Category {
     public void setMenuItems(List<MenuItem> menuItems) {
 
         this.menuItems = menuItems;
+    }
+
+    public List<Media> getMedias() {
+
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+
+        this.medias = medias;
     }
 
 }

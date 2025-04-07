@@ -1,8 +1,10 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.CategoryMapper;
+import com.foodsquad.FoodSquad.mapper.MediaMapper;
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
+import com.foodsquad.FoodSquad.model.dto.MediaDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
@@ -56,8 +58,9 @@ public class MenuItemServiceImp implements MenuItemService {
     private final CategoryMapper categoryMapper;
 
     private final MenuItemMapper menuItemMapper;
+    private final MediaMapper mediaMapper ;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper) {
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, MediaMapper mediaMapper) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -67,27 +70,32 @@ public class MenuItemServiceImp implements MenuItemService {
         this.categoryService = categoryService;
         this.categoryMapper = categoryMapper;
         this.menuItemMapper = menuItemMapper;
+        this.mediaMapper = mediaMapper;
     }
 
+    private User getCurrentUser() {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    private void checkOwnership(MenuItem menuItem) {
+
+        User currentUser = getCurrentUser();
+        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
+            throw new IllegalArgumentException("Access denied");
+        }
+    }
 
     public ResponseEntity<MenuItemDTO> createMenuItem(MenuItemDTO menuItemDTO) {
 
         logger.debug("Creating menu item: {}", menuItemDTO);
-
-        MenuItem menuItem = modelMapper.map(menuItemDTO, MenuItem.class);
+        MenuItem menuItem = menuItemMapper.toEntity(menuItemDTO);
         User currentUser = getCurrentUser();
-        menuItem.setUser(currentUser); // owner
+        menuItem.setUser(currentUser);
         if (menuItem.getDefaultItem() == null) {
-            menuItem.setDefaultItem(false); // Ensure default is set to false (modelMapper causing mismatch)
-        }
-        if (!ObjectUtils.isEmpty(menuItemDTO.getCategoriesIds())) {
-            List<Category> categories = menuItemDTO.getCategoriesIds().stream().map(
-                    categoryId -> {
-                        CategoryDTO categoryDto = categoryService.getCategoryById(categoryId);
-                        return categoryMapper.toEntity(categoryDto);
-                    }
-            ).toList();
-            menuItem.setCategories(categories);
+            menuItem.setDefaultItem(false);
         }
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         MenuItemDTO responseDTO = menuItemMapper.toDto(savedMenuItem);
@@ -121,27 +129,27 @@ public class MenuItemServiceImp implements MenuItemService {
         long reviewCount = reviewRepository.countByMenuItemId(menuItem.getId());
         Double averageRating = reviewRepository.findAverageRatingByMenuItemId(menuItem.getId());
         if (averageRating == null) {
-            averageRating = 0.0; // Default to 0.0 if there are no reviews
+            averageRating = 0.0;
         }
-        averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
-        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating);
+        averageRating = Math.round(averageRating * 10.0) / 10.0;
+        List<CategoryDTO>menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
+            List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia);
         return ResponseEntity.ok(menuItemDTO);
     }
 
-    public PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, String categoryFilter, String isDefault, String priceSortDirection) {
+    public PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, Long categoryId, String isDefault, String priceSortDirection) {
 
         logger.debug("Getting all menu items  with some filters");
 
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdOn"));
-        Page<MenuItem> menuItemPage;
+        Page<MenuItem> menuItemPage ;
 
-        if (categoryFilter != null && !categoryFilter.isEmpty()) {
-            MenuItemCategory category = MenuItemCategory.valueOf(categoryFilter.toUpperCase());
-            menuItemPage = menuItemRepository.findByCategory(category, pageable);
+        if (categoryId != null ) {
+            menuItemPage = menuItemRepository.findByCategoryId(categoryId, pageable);
         } else {
             menuItemPage = menuItemRepository.findAll(pageable);
         }
-
         List<MenuItemDTO> menuItems = menuItemPage.stream()
                 .map(menuItem -> {
                     Integer salesCount = orderRepository.sumQuantityByMenuItemId(menuItem.getId());
@@ -154,7 +162,10 @@ public class MenuItemServiceImp implements MenuItemService {
                         averageRating = 0.0; // Default to 0.0 if there are no reviews
                     }
                     averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating);
+                    List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
+                    List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia);
                 })
                 .collect(Collectors.toList());
 
@@ -188,7 +199,6 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Transactional
     public ResponseEntity<MenuItemDTO> updateMenuItem(Long id, MenuItemDTO menuItemDTO) {
-
         logger.debug("Updating menu item with ID: {}", id);
 
         MenuItem existingMenuItem = menuItemRepository.findById(id)
@@ -196,20 +206,18 @@ public class MenuItemServiceImp implements MenuItemService {
 
         checkOwnership(existingMenuItem);
 
-        // Map the DTO to the existing entity, ensuring id field is skipped
-        modelMapper.typeMap(MenuItemDTO.class, MenuItem.class)
-                .addMappings(mapper -> mapper.skip(MenuItem::setId));
-        modelMapper.map(menuItemDTO, existingMenuItem);
+        MenuItem menuItemToUpdate = menuItemMapper.toEntity(menuItemDTO);
+        menuItemToUpdate.setId(existingMenuItem.getId());
+        menuItemToUpdate.setUser(existingMenuItem.getUser());
 
-        // defaultItem field SHOULD NOT be null
-        if (existingMenuItem.getDefaultItem() == null) {
-            existingMenuItem.setDefaultItem(false);
+        if (menuItemToUpdate.getDefaultItem() == null) {
+            menuItemToUpdate.setDefaultItem(false);
         }
 
-        MenuItem updatedMenuItem = menuItemRepository.save(existingMenuItem);
-        MenuItemDTO updatedMenuItemDTO = modelMapper.map(updatedMenuItem, MenuItemDTO.class);
+        MenuItem savedMenuItem = menuItemRepository.save(menuItemToUpdate);
+        MenuItemDTO responseDTO = modelMapper.map(savedMenuItem, MenuItemDTO.class);
 
-        return ResponseEntity.ok(updatedMenuItemDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @Transactional
@@ -219,14 +227,12 @@ public class MenuItemServiceImp implements MenuItemService {
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
         checkOwnership(menuItem);
 
-        // Remove references in order_menu_item table (w/o this foreign key error appears)
         orderRepository.removeMenuItemReferences(menuItem.getId());
 
         menuItemRepository.delete(menuItem);
         return ResponseEntity.ok(Map.of("message", "Menu Item successfully deleted"));
     }
 
-    // Method to delete multiple menu items by their IDs
     @Transactional
     public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(List<Long> ids) {
 
@@ -245,6 +251,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
     //  method to fetch multiple menu items by their IDs
     public ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(List<Long> ids) {
+
         logger.debug("Getting menu items by IDs: {}", ids);
 
         List<MenuItem> menuItems = menuItemRepository.findAllById(ids);
@@ -263,7 +270,11 @@ public class MenuItemServiceImp implements MenuItemService {
                         averageRating = 0.0; // Default to 0.0 if there are no reviews
                     }
                     averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating);
+                    List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
+                    List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+
+
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories ,menuItemMedia);
                 })
                 .toList();
         return ResponseEntity.ok(menuItemDTOs);
@@ -272,24 +283,9 @@ public class MenuItemServiceImp implements MenuItemService {
     @Override
     public MenuItemDTO findByBarCode(String qrCode) {
 
-     return    menuItemRepository.findByBarCode(qrCode)
-             .map(menuItemMapper::toDto)
-             .orElseThrow( () -> new EntityNotFoundException("MenuItem not found for qrCode"));
-    }
-
-    private User getCurrentUser() {
-
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-    }
-
-    private void checkOwnership(MenuItem menuItem) {
-
-        User currentUser = getCurrentUser();
-        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
-            throw new IllegalArgumentException("Access denied");
-        }
+        return menuItemRepository.findByBarCode(qrCode)
+                .map(menuItemMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for qrCode"));
     }
 
 

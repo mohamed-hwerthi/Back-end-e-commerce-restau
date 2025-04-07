@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/token/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/media/**").permitAll()
-                                .requestMatchers(HttpMethod.GET , "/images/**").permitAll()
+                                .requestMatchers(HttpMethod.GET , "/uploads/**").permitAll()
 
                                 .requestMatchers(HttpMethod.POST, "/api/invoice/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")

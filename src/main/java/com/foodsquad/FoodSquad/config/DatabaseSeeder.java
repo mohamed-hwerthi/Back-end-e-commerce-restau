@@ -131,7 +131,7 @@ public class DatabaseSeeder {
 
                 User creator = creatorField.equalsIgnoreCase("adminUser") ? adminUser : moderator;
 
-                MenuItem menuItem = createMenuItem(title, description, imageUrl, price, defaultItem, category, creator);
+                MenuItem menuItem = createMenuItem(title, description, imageUrl, price, defaultItem, creator);
                 menuItems.add(menuItem);
             }
 
@@ -181,13 +181,12 @@ public class DatabaseSeeder {
         return user;
     }
 
-    private MenuItem createMenuItem(String title, String description, String imageUrl, double price, boolean defaultItem, MenuItemCategory category, User user) {
+    private MenuItem createMenuItem(String title, String description, String imageUrl, double price, boolean defaultItem, User user) {
         MenuItem menuItem = new MenuItem();
         menuItem.setTitle(title);
         menuItem.setDescription(description);
         menuItem.setImageUrl(imageUrl);
         menuItem.setPrice(price);
-        menuItem.setCategory(category);
         menuItem.setUser(user);
         menuItem.setDefaultItem(defaultItem);
         return menuItem;
