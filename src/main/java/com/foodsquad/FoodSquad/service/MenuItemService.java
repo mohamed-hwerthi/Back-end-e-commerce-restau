@@ -121,7 +121,7 @@ public class MenuItemService {
     public PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, String categoryFilter, String isDefault, String priceSortDirection) {
 
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdOn"));
-        Page<MenuItem> menuItemPage;
+            Page<MenuItem> menuItemPage;
 
         if (categoryFilter != null && !categoryFilter.isEmpty()) {
             MenuItemCategory category = MenuItemCategory.valueOf(categoryFilter.toUpperCase());
