@@ -172,6 +172,8 @@ public class DatabaseSeeder {
         menuItemRepository.saveAll(allItems);
     }
 
+
+
     private MenuItem createMenuItem(String title, double price, String barCode, User user, Category category) {
 
         MenuItem item = new MenuItem();
