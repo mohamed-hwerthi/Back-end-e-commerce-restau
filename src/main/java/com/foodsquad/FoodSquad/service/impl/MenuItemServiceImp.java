@@ -94,9 +94,7 @@ public class MenuItemServiceImp implements MenuItemService {
         MenuItem menuItem = menuItemMapper.toEntity(menuItemDTO);
         User currentUser = getCurrentUser();
         menuItem.setUser(currentUser);
-        if (menuItem.getDefaultItem() == null) {
-            menuItem.setDefaultItem(false);
-        }
+
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         MenuItemDTO responseDTO = menuItemMapper.toDto(savedMenuItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -169,11 +167,7 @@ public class MenuItemServiceImp implements MenuItemService {
                 })
                 .collect(Collectors.toList());
 
-        // Filter by default item
-        if (isDefault != null && !isDefault.isEmpty()) {
-            boolean defaultFlag = isDefault.equalsIgnoreCase("true");
-            menuItems = menuItems.stream().filter(item -> item.getDefaultItem().equals(defaultFlag)).collect(Collectors.toList());
-        }
+
 
         // Sort by price
         if (priceSortDirection != null && !priceSortDirection.isEmpty()) {
@@ -205,16 +199,11 @@ public class MenuItemServiceImp implements MenuItemService {
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
 
         checkOwnership(existingMenuItem);
+        menuItemMapper.updateMenuItemFromDto(menuItemDTO , existingMenuItem);
 
-        MenuItem menuItemToUpdate = menuItemMapper.toEntity(menuItemDTO);
-        menuItemToUpdate.setId(existingMenuItem.getId());
-        menuItemToUpdate.setUser(existingMenuItem.getUser());
 
-        if (menuItemToUpdate.getDefaultItem() == null) {
-            menuItemToUpdate.setDefaultItem(false);
-        }
 
-        MenuItem savedMenuItem = menuItemRepository.save(menuItemToUpdate);
+        MenuItem savedMenuItem = menuItemRepository.save(existingMenuItem);
         MenuItemDTO responseDTO = modelMapper.map(savedMenuItem, MenuItemDTO.class);
 
         return ResponseEntity.ok(responseDTO);

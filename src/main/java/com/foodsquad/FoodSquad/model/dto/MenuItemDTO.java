@@ -27,12 +27,9 @@ public class MenuItemDTO {
     @NotBlank(message = "code bar can not be null ")
     private String barCode;
 
-    @URL
-    @Schema(defaultValue = "https://www.tastingtable.com/img/gallery/what-makes-restaurant-burgers-taste-different-from-homemade-burgers-upgrade/l-intro-1662064407.jpg")
-    private String imageUrl;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Boolean defaultItem;
+
+
 
     @NotNull(message = "Price cannot be null")
     @Positive(message = "Price must be positive")
@@ -63,8 +60,6 @@ public class MenuItemDTO {
         this.medias = mediaDTOS  ;
         this.barCode = menuItem.getBarCode();
         this.description = menuItem.getDescription();
-        this.imageUrl = menuItem.getImageUrl();
-        this.defaultItem = menuItem.getDefaultItem();
         this.categories = categories ;
         this.price = menuItem.getPrice();
         this.salesCount = salesCount;

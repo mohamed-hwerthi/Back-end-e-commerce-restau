@@ -8,13 +8,12 @@ public class MenuItemEntry {
     private String imageUrl;
 
 
-    public MenuItemEntry(String title, String description, Double price, Integer quantity, String imageUrl) {
+    public MenuItemEntry(String title, String description, Double price, Integer quantity) {
 
         this.title = title;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
-        this.imageUrl = imageUrl;
     }
 
     public String getTitle() {

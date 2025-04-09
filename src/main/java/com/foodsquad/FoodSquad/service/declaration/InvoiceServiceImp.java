@@ -124,8 +124,7 @@ public class InvoiceServiceImp implements  InvoiceService {
                     menuItem.getTitle(),
                     menuItem.getDescription(),
                     menuItem.getPrice(),
-                    quantity,
-                    menuItem.getImageUrl()
+                    quantity
             );
 
             entries.add(menuItemEntry);

@@ -24,11 +24,8 @@ public class MenuItem {
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "image_url", nullable = false, length = 512)
-    private String imageUrl = "https://w0.peakpx.com/wallpaper/97/150/HD-wallpaper-mcdonalds-double-cheese-burger-double-mcdonalds-cheese-burger-thumbnail.jpg";
 
-    @Column(nullable = false)
-    private Boolean defaultItem = false;
+
 
     @Column(nullable = false)
     private Double price = 1.0;

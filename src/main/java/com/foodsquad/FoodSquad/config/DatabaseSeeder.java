@@ -305,11 +305,9 @@ public class DatabaseSeeder {
         MenuItem menuItem = new MenuItem();
         menuItem.setTitle(title);
         menuItem.setDescription(description);
-        menuItem.setImageUrl(imageUrl);
         menuItem.setPrice(price);
         menuItem.setUser(user);
-        menuItem.setDefaultItem(defaultItem);
-        return menuItem;
+            return menuItem;
     }
 
     /*
