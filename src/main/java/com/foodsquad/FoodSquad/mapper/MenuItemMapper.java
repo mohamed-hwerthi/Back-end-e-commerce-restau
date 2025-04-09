@@ -6,6 +6,7 @@ import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
+
 import java.util.List;
 
 @Mapper( componentModel = MappingConstants.ComponentModel.SPRING , uses = {CategoryMapper.class, MediaMapper.class})
