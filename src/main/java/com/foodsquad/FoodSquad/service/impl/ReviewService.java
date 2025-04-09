@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;

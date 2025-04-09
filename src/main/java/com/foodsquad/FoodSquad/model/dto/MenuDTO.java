@@ -12,6 +12,7 @@ public class MenuDTO {
     @NotBlank(message = "  menu  name  cannot be blank")
     private String  name  ;
     private String description  ;
+    private String qrCode ;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Long>menuItemsIds = new ArrayList<>() ;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -45,6 +46,16 @@ public class MenuDTO {
     public void setDescription(String description) {
 
         this.description = description;
+    }
+
+    public String getQrCode() {
+
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+
+        this.qrCode = qrCode;
     }
 
     public List<Long> getMenuItemsIds() {

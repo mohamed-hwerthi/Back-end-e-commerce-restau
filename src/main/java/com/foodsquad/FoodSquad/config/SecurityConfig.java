@@ -21,13 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private   final  JwtRequestFilter jwtRequestFilter;
+    private final JwtRequestFilter jwtRequestFilter;
 
 
-    private   final  CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 
-    private   final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 
     public SecurityConfig(JwtRequestFilter jwtRequestFilter, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
@@ -36,37 +36,36 @@ public class SecurityConfig {
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                // Auth controller endpoints
                                 .requestMatchers("/api/auth/**").permitAll()
-                                // Token controller endpoints
                                 .requestMatchers("/api/token/**").permitAll()
-                                // Swagger
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                //invoice :
+                                .requestMatchers(HttpMethod.POST, "/api/media/**").permitAll()
+                                .requestMatchers(HttpMethod.GET , "/uploads/**").permitAll()
+
                                 .requestMatchers(HttpMethod.POST, "/api/invoice/**").permitAll()
-                                // User controller endpoints
                                 .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR") // user creation through admin panel
+                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")
                                 .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
                                 .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
-                                // Order controller endpoints
+
                                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
                                 .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
                                 .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("ADMIN", "MODERATOR")
                                 .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasAnyRole("ADMIN")
-                                // MenuItem controller endpoints
+
                                 .requestMatchers(HttpMethod.GET, "/api/menu-items/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/menu-items/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/menu-items/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/menu-items/**").permitAll()
-                                // Reviews controller endpoints
                                 .requestMatchers(HttpMethod.GET, "/api/reviews/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
                                 .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
                                 .requestMatchers(HttpMethod.PUT, "/api/reviews/**").hasAnyRole("ADMIN", "MODERATOR")
@@ -89,6 +88,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 }

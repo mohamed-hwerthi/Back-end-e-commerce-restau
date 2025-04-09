@@ -4,6 +4,7 @@ import com.foodsquad.FoodSquad.model.entity.Token;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.TokenRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.service.impl.TokenService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

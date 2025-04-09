@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.CategoryMapper;
 import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
@@ -45,7 +45,8 @@ public class  CategoryServiceImp implements CategoryService {
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        Category category = categoryMapper.toEntity(categoryDTO);
+
+            Category category = categoryMapper.toEntity(categoryDTO);
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 

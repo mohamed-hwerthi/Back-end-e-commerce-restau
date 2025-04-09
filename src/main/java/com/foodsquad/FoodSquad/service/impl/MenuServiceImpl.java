@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.mapper.MenuMapper;
@@ -7,6 +7,7 @@ import com.foodsquad.FoodSquad.model.dto.MenuDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.repository.MenuRepository;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.MenuService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;

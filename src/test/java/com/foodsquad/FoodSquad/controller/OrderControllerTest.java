@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.OrderDTO;
-import com.foodsquad.FoodSquad.service.OrderService;
+import com.foodsquad.FoodSquad.service.impl.OrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.Map;

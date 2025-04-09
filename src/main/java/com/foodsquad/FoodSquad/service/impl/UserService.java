@@ -1,9 +1,7 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.model.dto.OrderDTO;
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.UserUpdateDTO;
-import com.foodsquad.FoodSquad.model.entity.Order;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
@@ -16,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

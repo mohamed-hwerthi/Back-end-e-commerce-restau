@@ -9,6 +9,7 @@ import com.foodsquad.FoodSquad.repository.MenuItemRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,6 @@ class MenuItemServiceTest {
         menuItemDTO.setTitle("Burger");
         menuItemDTO.setDescription("Delicious burger");
         menuItemDTO.setPrice(10.0);
-        menuItemDTO.setCategory("BURGER");
         menuItemDTO.setImageUrl("http://example.com/burger.jpg");
 
         User user = new User();
@@ -120,7 +120,6 @@ class MenuItemServiceTest {
         menuItemDTO.setTitle("Updated Burger");
         menuItemDTO.setDescription("Updated description");
         menuItemDTO.setPrice(12.0);
-        menuItemDTO.setCategory("BURGER");
         menuItemDTO.setImageUrl("http://example.com/updated_burger.jpg");
 
         User user = new User();

@@ -15,3 +15,6 @@ jasper:
         label: "Total"
     total:
       label: "Total de la facture"
+    welcome:
+      message: "Bien Venu Chez Moahmed hwerthi Restaurant "
+

@@ -8,7 +8,7 @@ import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper( componentModel = MappingConstants.ComponentModel.SPRING , uses = {CategoryMapper.class,})
+@Mapper( componentModel = MappingConstants.ComponentModel.SPRING , uses = {CategoryMapper.class, MediaMapper.class})
 
 public interface MenuItemMapper {
    MenuItem toEntity(MenuItemDTO menuItemDTO);

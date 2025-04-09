@@ -15,3 +15,5 @@ jasper:
         label: "Total"
     total:
       label: "Order Total"
+    welcome:
+      message: "Welcome to  med Restaurant "

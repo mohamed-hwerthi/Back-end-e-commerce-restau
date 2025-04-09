@@ -1,38 +1,31 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.dto.UserLoginDTO;
 import com.foodsquad.FoodSquad.model.dto.UserRegistrationDTO;
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
-import com.foodsquad.FoodSquad.model.entity.Token;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.TokenRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private TokenRepository tokenRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private  final UserRepository userRepository;
+    private final  TokenRepository tokenRepository;
+    private   final PasswordEncoder passwordEncoder;
+    private  final ModelMapper modelMapper;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

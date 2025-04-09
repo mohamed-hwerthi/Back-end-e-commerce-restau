@@ -2,7 +2,6 @@ package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
-import com.foodsquad.FoodSquad.service.MenuItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.when;
 class MenuItemControllerTest {
 
     @Mock
-    private MenuItemService menuItemService;
+    private com.foodsquad.FoodSquad.service.declaration.MenuItemService menuItemService;
 
     @InjectMocks
     private MenuItemController menuItemController;
