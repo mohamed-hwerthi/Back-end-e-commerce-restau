@@ -84,9 +84,9 @@ public class DatabaseSeeder {
     private void seedCategories() {
 
         List<Category> categories = List.of(
-                createCategory("ORYX FRAGRANCE", "ORYX FRAGRANCE"),
-                createCategory("ORYX BIO", "ORYX BIO"),
-                createCategory("ORYX PHYTO", "ORYX PHYTO")
+                createCategory("Oryx Fragrance", "ORYX FRAGRANCE"),
+                createCategory("Oryx Bio", "ORYX BIO"),
+                createCategory("Oryx Phyto", "ORYX PHYTO")
 
         );
 

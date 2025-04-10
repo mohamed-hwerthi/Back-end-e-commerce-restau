@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class  CategoryServiceImp implements CategoryService {
+public class CategoryServiceImp implements CategoryService {
 
-    private   final   CategoryRepository categoryRepository;
-    private   final   CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
 
@@ -30,9 +30,9 @@ public class  CategoryServiceImp implements CategoryService {
     @Override
     public PaginatedResponseDTO<CategoryDTO> findAllCategories(int page, int limit) {
         Pageable pageable = PageRequest.of(page, limit);
-         Page<Category>categories =  categoryRepository.findAll(pageable);
-         List<CategoryDTO>categoryDTOS  = categories.getContent().stream().map(categoryMapper::toDto).toList();
-         return  new PaginatedResponseDTO<CategoryDTO>(categoryDTOS , categories.getTotalElements()) ;
+        Page<Category> categories = categoryRepository.findAll(pageable);
+        List<CategoryDTO> categoryDTOS = categories.getContent().stream().map(categoryMapper::toDto).toList();
+        return new PaginatedResponseDTO<CategoryDTO>(categoryDTOS, categories.getTotalElements());
 
     }
 
@@ -46,7 +46,7 @@ public class  CategoryServiceImp implements CategoryService {
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
 
-            Category category = categoryMapper.toEntity(categoryDTO);
+        Category category = categoryMapper.toEntity(categoryDTO);
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
@@ -55,8 +55,7 @@ public class  CategoryServiceImp implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
 
-        category.setName(categoryDTO.getName());
-        category.setDescription(categoryDTO.getDescription());
+        categoryMapper.updateExistedCatgoryFromDTO(categoryDTO, category);
 
         return categoryMapper.toDto(categoryRepository.save(category));
     }
@@ -71,7 +70,7 @@ public class  CategoryServiceImp implements CategoryService {
 
     @Override
     public List<CategoryDTO> findAllCategories() {
-        return    categoryRepository.findAll().stream().map(categoryMapper::toDto).toList() ;
+        return categoryRepository.findAll().stream().map(categoryMapper::toDto).toList();
     }
 
 }

@@ -19,6 +19,6 @@ public interface MenuItemMapper {
    List<MenuItemDTO> toDtoList(List<MenuItem> menuItems);
    @Mapping(target = "id", ignore = true)
    @Mapping(target = "user", ignore = true)
-   public abstract void updateMenuItemFromDto(MenuItemDTO dto, @MappingTarget MenuItem entity);
+    void updateMenuItemFromDto(MenuItemDTO dto, @MappingTarget MenuItem entity);
 
 }
