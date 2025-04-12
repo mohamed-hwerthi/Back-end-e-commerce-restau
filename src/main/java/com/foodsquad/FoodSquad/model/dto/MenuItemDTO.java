@@ -27,15 +27,10 @@ public class MenuItemDTO {
     @NotBlank(message = "code bar can not be null ")
     private String barCode;
 
-
-
-
-
     @NotNull(message = "Price cannot be null")
     @Positive(message = "Price must be positive")
     @Schema(defaultValue = "1", required = true)
     private Double price;
-
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer salesCount;
@@ -49,9 +44,7 @@ public class MenuItemDTO {
     private List<CategoryDTO>categories = new ArrayList<>() ;
     private List<MediaDTO>medias = new ArrayList<>() ;
 
-    public MenuItemDTO() {
-
-    }
+    public MenuItemDTO() {}
 
     public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating , List<CategoryDTO> categories ,  List < MediaDTO> mediaDTOS) {
 
