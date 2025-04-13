@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/currency")
 
-@Tag(name = "11. Currency Management", description = "Currency Management API")
+    @Tag(name = "11. Currency Management", description = "Currency Management API")
 public class CurrencyController {
 
 

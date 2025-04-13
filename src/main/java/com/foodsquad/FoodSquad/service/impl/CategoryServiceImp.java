@@ -6,7 +6,9 @@ import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.repository.CategoryRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +22,13 @@ public class CategoryServiceImp implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final MenuItemService menuItemService;
 
-    public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper, @Lazy() MenuItemService menuItemService) {
 
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
+        this.menuItemService = menuItemService;
     }
 
     @Override
@@ -62,6 +66,11 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+        category.getMenuItems().forEach(
+                menuItem -> menuItemService.deleteMenuItem(menuItem.getId())
+        );
         if (!categoryRepository.existsById(id)) {
             throw new EntityNotFoundException("Category not found with id: " + id);
         }
