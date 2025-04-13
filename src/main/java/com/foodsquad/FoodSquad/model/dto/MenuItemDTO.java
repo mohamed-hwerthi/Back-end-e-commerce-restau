@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import org.hibernate.validator.constraints.URL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +25,12 @@ public class MenuItemDTO {
     private String description;
     @NotBlank(message = "code bar can not be null ")
     private String barCode;
-
-
     @NotNull(message = "Price cannot be null")
     @Positive(message = "Price must be positive")
     @Schema(defaultValue = "1", required = true)
     private Double price;
-
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer salesCount;
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long reviewCount;
 
@@ -46,23 +40,56 @@ public class MenuItemDTO {
     private List<CategoryDTO>categories = new ArrayList<>() ;
     private List<MediaDTO>medias = new ArrayList<>() ;
 
+
+
+    private CurrencyDTO currency;
+
+    private TaxDTO tax;
+
+
     public MenuItemDTO() {
 
     }
 
-    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating, List<CategoryDTO> categories, List<MediaDTO> mediaDTOS) {
+    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating , List<CategoryDTO> categories ,  List < MediaDTO> mediaDTOS , CurrencyDTO currency) {
 
         this.id = menuItem.getId();
         this.title = menuItem.getTitle();
-        this.medias = mediaDTOS;
+        this.medias = mediaDTOS  ;
         this.barCode = menuItem.getBarCode();
         this.description = menuItem.getDescription();
-        this.categories = categories;
+        this.categories = categories ;
+        this.price = menuItem.getPrice();
+        this.salesCount = salesCount;
+        this.reviewCount = reviewCount;
+        this.averageRating = averageRating;
+        this.currency=currency;
+    }
+    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating , List<CategoryDTO> categories ,  List < MediaDTO> mediaDTOS ) {
+
+        this.id = menuItem.getId();
+        this.title = menuItem.getTitle();
+        this.medias = mediaDTOS  ;
+        this.barCode = menuItem.getBarCode();
+        this.description = menuItem.getDescription();
+        this.categories = categories ;
         this.price = menuItem.getPrice();
         this.salesCount = salesCount;
         this.reviewCount = reviewCount;
         this.averageRating = averageRating;
     }
+    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating , List<CategoryDTO> categories ,  List < MediaDTO> mediaDTOS,TaxDTO taxDTO ) {
 
-
+        this.id = menuItem.getId();
+        this.title = menuItem.getTitle();
+        this.medias = mediaDTOS  ;
+        this.barCode = menuItem.getBarCode();
+        this.description = menuItem.getDescription();
+        this.categories = categories ;
+        this.price = menuItem.getPrice();
+        this.salesCount = salesCount;
+        this.reviewCount = reviewCount;
+        this.averageRating = averageRating;
+        this.tax=taxDTO;
+    }
 }

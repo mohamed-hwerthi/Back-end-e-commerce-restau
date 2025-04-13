@@ -1,14 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_template" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="jasper.localization.i18n" uuid="cd759d20-cfa9-48d7-9532-01dc8f55f04e">
-    <style name="Table_TH" mode="Opaque" backcolor="#FFFFFF">
-        <box>
-            <pen lineWidth="0.5" lineColor="#FFFFFF"/>
-            <topPen lineWidth="0.5" lineColor="#000000"/>
-            <leftPen lineWidth="0.5" lineColor="#000000"/>
-            <bottomPen lineWidth="0.5" lineColor="#000000"/>
-            <rightPen lineWidth="0.5" lineColor="#000000"/>
-        </box>
-    </style>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ThermalInvoice" pageWidth="280" columnWidth="260" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="a44d022c-0d15-40f9-96a7-549335b62aeb">
+    <!-- Parameters -->
+    <parameter name="orderId" class="java.lang.String"/>
+    <parameter name="totalCost" class="java.lang.Double"/>
+    <parameter name="createdOn" class="java.time.LocalDateTime"/>
 
+    <!-- Fields -->
+    <field name="menuItemName" class="java.lang.String"/>
+    <field name="quantity" class="java.lang.Integer"/>
+    <field name="price" class="java.lang.Double"/>
+
+    <!-- Title Band -->
+    <title>
+        <band height="100">
+            <staticText>
+                <reportElement x="10" y="0" width="240" height="40" forecolor="#333333" uuid="a047d010-4ee9-4eba-bddc-d541c5b7465a"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Welcome to our shop]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="10" y="50" width="240" height="20" forecolor="#555555" uuid="6d76d755-d2ef-4c40-837d-7666a2cf177c"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Date:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="100" y="50" width="140" height="20" forecolor="#555555" uuid="3e0efb74-c9a1-48f9-9742-fea100a3c698"/>
+                <textFieldExpression><![CDATA[$P{createdOn}.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="10" y="80" width="240" height="1" forecolor="#CCCCCC" uuid="f1f1f1f1-1f1f-1f1f-1f1f-f1f1f1f1f1f1"/>
+            </line>
+        </band>
+    </title>
+
+    <!-- Column Header Band -->
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="10" y="0" width="90" height="30" forecolor="#FFFFFF" backcolor="#333333" uuid="7a645340-b033-4fb0-a6dc-a108041ff308"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Item]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="0" width="30" height="30" forecolor="#FFFFFF" backcolor="#333333" uuid="27fcedec-9704-49b3-9485-17e7fc20c00c"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Qty]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="190" y="0" width="60" height="30" forecolor="#FFFFFF" backcolor="#333333" uuid="0bea4d31-a069-487f-bf9d-d17f2a12ab5e"/>
+                <textElement verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Price]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detail Band (Fully Dynamic) -->
+    <detail>
+        <band height="20">
+            <textField isStretchWithOverflow="true">
+                <reportElement x="10" y="0" width="130" height="20" uuid="a88c349d-1718-40b8-a460-8baa196e3794"/>
+                <textFieldExpression><![CDATA[$F{menuItemName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="150" y="0" width="30" height="20" uuid="27fcedec-9704-49b3-9485-17e7fc20c00c"/>
+                <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="190" y="0" width="60" height="20" uuid="0bea4d31-a069-487f-bf9d-d17f2a12ab5e"/>
+                <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- Summary Band -->
+    <summary>
+        <band height="80">
+            <line>
+                <reportElement x="10" y="0" width="240" height="1" forecolor="#CCCCCC" uuid="f1f1f1f1-1f1f-1f1f-1f1f-f1f1f1f1f1f1"/>
+            </line>
+            <staticText>
+                <reportElement x="130" y="10" width="50" height="20" forecolor="#333333" uuid="e839855c-961a-4b68-8a2f-60c1bf6aa5cb"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="180" y="10" width="60" height="20" forecolor="#333333" uuid="cc58bdb9-73db-4a7a-baba-12042e204e35"/>
+                <textFieldExpression><![CDATA[$P{totalCost}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="10" y="40" width="240" height="20" forecolor="#555555" uuid="f2f2f2f2-2f2f-2f2f-2f2f-f2f2f2f2f2f2"/>
+                <textElement textAlignment="Center">
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[If you need our support, please contact us.]]></text>
+            </staticText>
+        </band>
+    </summary>
 </jasperReport>

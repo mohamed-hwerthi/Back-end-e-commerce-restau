@@ -41,8 +41,10 @@ public class MenuItemController {
     @Operation(summary = "Create a new menu item", description = "Create a new menu item with the provided details.")
     @PostMapping
     public ResponseEntity<MenuItemDTO> createMenuItem(@Valid @RequestBody MenuItemDTO menuItemDTO) {
-
-        return menuItemService.createMenuItem(menuItemDTO);
+        if (menuItemDTO.getCurrency() == null || menuItemDTO.getCurrency().getId() == null) {
+            throw new IllegalArgumentException("Currency ID is required");
+        }
+         return menuItemService.createMenuItem(menuItemDTO);
     }
 
     @Operation(summary = "Get a menu item by ID", description = "Retrieve a menu item by its unique ID.")

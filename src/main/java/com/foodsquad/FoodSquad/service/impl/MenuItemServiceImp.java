@@ -1,8 +1,11 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.CategoryMapper;
+import com.foodsquad.FoodSquad.mapper.CurrencyMapper;
 import com.foodsquad.FoodSquad.mapper.MediaMapper;
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
+import com.foodsquad.FoodSquad.model.dto.*;
+import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
@@ -15,6 +18,7 @@ import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.TaxService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -57,8 +61,11 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final MediaMapper mediaMapper;
 
+    private final TaxService taxService;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, MediaMapper mediaMapper) {
+    private final CurrencyMapper currencyMapper;
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, MediaMapper mediaMapper, TaxService taxService, CurrencyMapper currencyMapper) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -68,6 +75,8 @@ public class MenuItemServiceImp implements MenuItemService {
         this.categoryMapper = categoryMapper;
         this.menuItemMapper = menuItemMapper;
         this.mediaMapper = mediaMapper;
+        this.taxService = taxService;
+        this.currencyMapper = currencyMapper;
     }
 
     private User getCurrentUser() {
@@ -91,8 +100,11 @@ public class MenuItemServiceImp implements MenuItemService {
         MenuItem menuItem = menuItemMapper.toEntity(menuItemDTO);
         User currentUser = getCurrentUser();
         menuItem.setUser(currentUser);
-
-        MenuItem savedMenuItem = menuItemRepository.save(menuItem);
+        if (menuItemDTO.getTax() != null) {
+           Tax tax= this.taxService.createTax(menuItemDTO);
+           menuItem.setTax(tax);
+        }
+            MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         MenuItemDTO responseDTO = menuItemMapper.toDto(savedMenuItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
@@ -149,9 +161,11 @@ public class MenuItemServiceImp implements MenuItemService {
             averageRating = 0.0;
         }
         averageRating = Math.round(averageRating * 10.0) / 10.0;
-        List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-        List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
-        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia);
+        List<CategoryDTO>menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
+            List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+        CurrencyDTO menuItemCurrency =currencyMapper.toDto(menuItem.getCurrency());
+
+        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia,menuItemCurrency);
         return ResponseEntity.ok(menuItemDTO);
     }
 
@@ -180,9 +194,10 @@ public class MenuItemServiceImp implements MenuItemService {
                     }
                     averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
                     List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-                    List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+                    CurrencyDTO menuItemCurrency =currencyMapper.toDto(menuItem.getCurrency());
+                    List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia);
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia,menuItemCurrency);
                 })
                 .collect(Collectors.toList());
 
@@ -277,10 +292,11 @@ public class MenuItemServiceImp implements MenuItemService {
                     }
                     averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
                     List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-                    List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+                    CurrencyDTO menuItemCurrency =currencyMapper.toDto(menuItem.getCurrency());
+                    List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
 
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia);
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories ,menuItemMedia,menuItemCurrency);
                 })
                 .toList();
         return ResponseEntity.ok(menuItemDTOs);
