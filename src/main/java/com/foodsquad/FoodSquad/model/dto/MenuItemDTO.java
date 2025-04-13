@@ -92,4 +92,20 @@ public class MenuItemDTO {
         this.averageRating = averageRating;
         this.tax=taxDTO;
     }
+    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating , List<CategoryDTO> categories ,  List < MediaDTO> mediaDTOS,CurrencyDTO currency,TaxDTO taxDTO ) {
+
+        this.id = menuItem.getId();
+        this.title = menuItem.getTitle();
+        this.medias = mediaDTOS  ;
+        this.barCode = menuItem.getBarCode();
+        this.description = menuItem.getDescription();
+        this.categories = categories ;
+        this.price = menuItem.getPrice();
+        this.salesCount = salesCount;
+        this.reviewCount = reviewCount;
+        this.averageRating = averageRating;
+        this.currency=currency;
+        this.tax=taxDTO;
+
+    }
 }

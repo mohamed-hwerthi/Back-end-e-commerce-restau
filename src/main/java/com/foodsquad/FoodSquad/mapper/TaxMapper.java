@@ -17,4 +17,6 @@ public interface TaxMapper {
     //@Mapping(target = "menuItem", ignore = true)
     Tax toEntity(TaxDTO taxDTO);
 
+    TaxDTO toDto(Tax tax);
+
 }

@@ -1,9 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.mapper.CategoryMapper;
-import com.foodsquad.FoodSquad.mapper.CurrencyMapper;
-import com.foodsquad.FoodSquad.mapper.MediaMapper;
-import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
+import com.foodsquad.FoodSquad.mapper.*;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.model.dto.*;
@@ -12,10 +9,7 @@ import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.MenuItemCategory;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
-import com.foodsquad.FoodSquad.repository.MenuItemRepository;
-import com.foodsquad.FoodSquad.repository.OrderRepository;
-import com.foodsquad.FoodSquad.repository.ReviewRepository;
-import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.repository.*;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.TaxService;
@@ -65,7 +59,12 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final CurrencyMapper currencyMapper;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, MediaMapper mediaMapper, TaxService taxService, CurrencyMapper currencyMapper) {
+    private final TaxMapper taxMapper;
+    private final TaxRepository taxRepository;
+
+    private final CurrencyRepository currencyRepository;
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, MediaMapper mediaMapper, TaxService taxService, CurrencyMapper currencyMapper, TaxMapper taxMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -77,6 +76,9 @@ public class MenuItemServiceImp implements MenuItemService {
         this.mediaMapper = mediaMapper;
         this.taxService = taxService;
         this.currencyMapper = currencyMapper;
+        this.taxMapper = taxMapper;
+        this.taxRepository = taxRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     private User getCurrentUser() {
@@ -166,8 +168,8 @@ public class MenuItemServiceImp implements MenuItemService {
         List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
         List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
         CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
-
-        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency);
+        TaxDTO menuItemTax = taxMapper.toDto(menuItem.getTax());
+        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency ,menuItemTax);
         return ResponseEntity.ok(menuItemDTO);
     }
 
@@ -198,8 +200,9 @@ public class MenuItemServiceImp implements MenuItemService {
                     List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
                     CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
                     List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+                    TaxDTO menuItemTax = taxMapper.toDto(menuItem.getTax());
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency);
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency ,menuItemTax);
                 })
                 .collect(Collectors.toList());
 
@@ -234,6 +237,28 @@ public class MenuItemServiceImp implements MenuItemService {
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
 
         checkOwnership(existingMenuItem);
+        // Handle tax update or creation
+        if (menuItemDTO.getTax() != null) {
+            Tax tax = existingMenuItem.getTax();
+            if (tax == null) {
+                // Create new tax if none exists
+                tax = new Tax();
+                tax.setRate(menuItemDTO.getTax().getRate());
+                tax.setName(menuItemDTO.getTax().getName());
+                tax = taxRepository.save(tax);
+            } else {
+                // Update existing tax
+                tax.setRate(menuItemDTO.getTax().getRate());
+                tax = taxRepository.save(tax);
+            }
+            existingMenuItem.setTax(tax);
+        }
+        // Handle currency update
+        if (menuItemDTO.getCurrency() != null && menuItemDTO.getCurrency().getId() != null) {
+            Currency currency = currencyRepository.findById(menuItemDTO.getCurrency().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
+            existingMenuItem.setCurrency(currency);
+        }
         menuItemMapper.updateMenuItemFromDto(menuItemDTO, existingMenuItem);
 
 
