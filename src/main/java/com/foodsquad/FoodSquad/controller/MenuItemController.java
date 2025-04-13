@@ -119,7 +119,7 @@ public class MenuItemController {
     }
 
     @Operation(summary = "Search menu items by query  and category ", description = "Retrieve a list of menu items that their title  match the provided query  and matchs a categories.")
-    @PostMapping("/api/menu-items/search/by-query-categories")
+    @PostMapping("/search/by-query-categories")
     public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@RequestBody()MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
 
         PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(menuItemFilterByCategoryAndQueryRequestDTO  , pageable);
