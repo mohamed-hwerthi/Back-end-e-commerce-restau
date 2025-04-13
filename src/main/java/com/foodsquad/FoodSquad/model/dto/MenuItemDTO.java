@@ -43,8 +43,8 @@ public class MenuItemDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double averageRating;
     @NotEmpty(message = "product must has a category ")
-    private List<CategoryDTO> categories = new ArrayList<>();
-    private List<MediaDTO> medias = new ArrayList<>();
+    private List<CategoryDTO>categories = new ArrayList<>() ;
+    private List<MediaDTO>medias = new ArrayList<>() ;
 
     public MenuItemDTO() {
 
