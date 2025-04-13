@@ -59,10 +59,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
                                 .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
 
-                                .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
-                                .requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
-                                .requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/orders/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/orders/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/orders/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/menu-items/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/menu-items/**").permitAll()

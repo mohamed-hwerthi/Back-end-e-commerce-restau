@@ -101,10 +101,10 @@ public class MenuItemServiceImp implements MenuItemService {
         User currentUser = getCurrentUser();
         menuItem.setUser(currentUser);
         if (menuItemDTO.getTax() != null) {
-           Tax tax= this.taxService.createTax(menuItemDTO);
-           menuItem.setTax(tax);
+            Tax tax = this.taxService.createTax(menuItemDTO);
+            menuItem.setTax(tax);
         }
-            MenuItem savedMenuItem = menuItemRepository.save(menuItem);
+        MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         MenuItemDTO responseDTO = menuItemMapper.toDto(savedMenuItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
@@ -135,6 +135,8 @@ public class MenuItemServiceImp implements MenuItemService {
     public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable) {
 
         logger.debug("Searching menu items by query: {}", query);
+
+
         Page<MenuItem> menuItemPage = menuItemRepository.findByQuery(query, pageable);
         List<MenuItem> menuItems = menuItemPage.getContent();
         List<MenuItemDTO> menuItemDTOs = menuItems.stream()
@@ -161,11 +163,11 @@ public class MenuItemServiceImp implements MenuItemService {
             averageRating = 0.0;
         }
         averageRating = Math.round(averageRating * 10.0) / 10.0;
-        List<CategoryDTO>menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-            List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
-        CurrencyDTO menuItemCurrency =currencyMapper.toDto(menuItem.getCurrency());
+        List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
+        List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+        CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
 
-        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia,menuItemCurrency);
+        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency);
         return ResponseEntity.ok(menuItemDTO);
     }
 
@@ -194,10 +196,10 @@ public class MenuItemServiceImp implements MenuItemService {
                     }
                     averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
                     List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-                    CurrencyDTO menuItemCurrency =currencyMapper.toDto(menuItem.getCurrency());
-                    List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+                    CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
+                    List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia,menuItemCurrency);
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency);
                 })
                 .collect(Collectors.toList());
 
@@ -292,11 +294,11 @@ public class MenuItemServiceImp implements MenuItemService {
                     }
                     averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
                     List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-                    CurrencyDTO menuItemCurrency =currencyMapper.toDto(menuItem.getCurrency());
-                    List<MediaDTO>menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+                    CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
+                    List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
 
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories ,menuItemMedia,menuItemCurrency);
+                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency);
                 })
                 .toList();
         return ResponseEntity.ok(menuItemDTOs);

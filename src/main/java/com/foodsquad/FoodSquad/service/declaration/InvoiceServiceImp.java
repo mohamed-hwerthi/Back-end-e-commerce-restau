@@ -12,30 +12,22 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service
 
-public class InvoiceServiceImp implements  InvoiceService {
+public class InvoiceServiceImp implements InvoiceService {
 
-    private  final OrderService orderService ;
+    private final OrderService orderService;
 
     private final OrderRepository orderRepository;
     private final String invoice_template_path = "/jasper/invoice.jrxml";
-
 
 
     Logger log = LoggerFactory.getLogger(InvoiceService.class);
@@ -50,10 +42,10 @@ public class InvoiceServiceImp implements  InvoiceService {
     @Override
     public File generateOrderInvoice(String orderId, Locale localeKey) {
         try {
-             Order order = fetchOrder(orderId);
+            Order order = fetchOrder(orderId);
             if (order == null) {
                 log.error("Order not found: {}", orderId);
-                 throw  new EntityNotFoundException("Order not found for ID: " + orderId);
+                throw new EntityNotFoundException("Order not found for ID: " + orderId);
             }
 
             File pdfFile = createTempPdfFile();
@@ -67,8 +59,9 @@ public class InvoiceServiceImp implements  InvoiceService {
         }
         return null;
     }
+
     private Order fetchOrder(String orderId) {
-      return  orderService.getSimpleOrderById(orderId);
+        return orderService.getSimpleOrderById(orderId);
     }
 
     private File createTempPdfFile() throws IOException {
@@ -94,11 +87,11 @@ public class InvoiceServiceImp implements  InvoiceService {
 
     private Map<String, Object> createParameters(Order order, Locale localeKey) {
         final Map<String, Object> parameters = new HashMap<>();
-        parameters.put("order",  order);
+        parameters.put("order", order);
         parameters.put("REPORT_LOCALE", localeKey);
         parameters.put("ClientName", "Jean Dupont");
         parameters.put("InvoiceNumber", "F12345");
-        parameters.put("InvoiceDate", new Date()); // Utilisez la date actuelle
+        parameters.put("InvoiceDate", new Date());
         parameters.put("TotalAmount", 125.00);
         return parameters;
     }
@@ -115,7 +108,6 @@ public class InvoiceServiceImp implements  InvoiceService {
         for (Map.Entry<MenuItem, Integer> entry : menuItemsWithQuantity.entrySet()) {
             MenuItem menuItem = entry.getKey();
             Integer quantity = entry.getValue();
-            // Create a MenuItemEntry for each MenuItem and its quantity
             MenuItemEntry menuItemEntry = new MenuItemEntry(
                     menuItem.getTitle(),
                     menuItem.getDescription(),
@@ -127,24 +119,20 @@ public class InvoiceServiceImp implements  InvoiceService {
         }
         return entries;
     }
+
     public byte[] generateInvoice(String orderId) throws Exception {
-        // Charger le fichier JRXML
         InputStream reportStream = getClass().getResourceAsStream(invoice_template_path);
 
-        // Compiler le rapport
         JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
-        // Récupérer les données de la commande
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // Préparer les données pour le rapport
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("orderId", order.getId());
         parameters.put("totalCost", order.getTotalCost());
         parameters.put("createdOn", order.getCreatedOn());
 
-        // Convertir les éléments de la commande en une liste de Map
         List<Map<String, Object>> items = new ArrayList<>();
 
         for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
@@ -155,13 +143,9 @@ public class InvoiceServiceImp implements  InvoiceService {
             items.add(item);
         }
 
-        // Créer une source de données pour le rapport
         JRDataSource dataSource = new JRBeanCollectionDataSource(items);
-
-        // Remplir le rapport avec les données
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
-        // Exporter le rapport en PDF
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
