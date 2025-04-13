@@ -25,8 +25,6 @@ public class MenuItem {
     private String description;
 
 
-
-
     @Column(nullable = false)
     private Double price = 1.0;
 

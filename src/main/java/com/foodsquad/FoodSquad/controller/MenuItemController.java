@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,7 +77,6 @@ public class MenuItemController {
 
             @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
             @RequestParam(required = false) String priceSortDirection) {
-//        return menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
         PaginatedResponseDTO<MenuItemDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
         return ResponseEntity.ok(response);
     }
@@ -118,11 +118,11 @@ public class MenuItemController {
         return menuItemService.deleteMenuItemsByIds(ids);
     }
 
-    @Operation(summary = "Search menu items by query", description = "Retrieve a list of menu items that their title  match the provided query.")
-    @GetMapping("/search/{query}")
-    public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@Parameter(description = "Query to search menu items by title", example = "pizza") @PathVariable("query") String query, Pageable pageable) {
+    @Operation(summary = "Search menu items by query  and category ", description = "Retrieve a list of menu items that their title  match the provided query  and matchs a categories.")
+    @PostMapping("/search-query-category")
+    public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@RequestBody()MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
 
-        PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(query, pageable);
+        PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(menuItemFilterByCategoryAndQueryRequestDTO  , pageable);
         return ResponseEntity.status(HttpStatus.OK).body(paginatedResponseDTOS);
     }
 

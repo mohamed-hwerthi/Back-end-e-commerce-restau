@@ -28,9 +28,6 @@ public class MenuItemDTO {
     private String barCode;
 
 
-
-
-
     @NotNull(message = "Price cannot be null")
     @Positive(message = "Price must be positive")
     @Schema(defaultValue = "1", required = true)
@@ -46,21 +43,21 @@ public class MenuItemDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double averageRating;
     @NotEmpty(message = "product must has a category ")
-    private List<CategoryDTO>categories = new ArrayList<>() ;
-    private List<MediaDTO>medias = new ArrayList<>() ;
+    private List<CategoryDTO> categories = new ArrayList<>();
+    private List<MediaDTO> medias = new ArrayList<>();
 
     public MenuItemDTO() {
 
     }
 
-    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating , List<CategoryDTO> categories ,  List < MediaDTO> mediaDTOS) {
+    public MenuItemDTO(MenuItem menuItem, int salesCount, long reviewCount, double averageRating, List<CategoryDTO> categories, List<MediaDTO> mediaDTOS) {
 
         this.id = menuItem.getId();
         this.title = menuItem.getTitle();
-        this.medias = mediaDTOS  ;
+        this.medias = mediaDTOS;
         this.barCode = menuItem.getBarCode();
         this.description = menuItem.getDescription();
-        this.categories = categories ;
+        this.categories = categories;
         this.price = menuItem.getPrice();
         this.salesCount = salesCount;
         this.reviewCount = reviewCount;
