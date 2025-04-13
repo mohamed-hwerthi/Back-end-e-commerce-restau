@@ -1,5 +1,7 @@
 package com.foodsquad.FoodSquad.repository;
 
+import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
+import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.MenuItemCategory;
 import org.springframework.data.domain.Page;
@@ -16,10 +18,20 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     @Query("SELECT m FROM MenuItem m JOIN m.categories c WHERE c.id = :categoryId")
     Page<MenuItem> findByCategoryId(@Param("categoryId") Long categoryId , Pageable pageable);
 
-    @Query("SELECT m FROM MenuItem m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%'))")
-    Page<MenuItem> filterByQuery(@Param("query") String query, Pageable pageable);
-
+    @Query("SELECT DISTINCT m FROM MenuItem m JOIN m.categories c " +
+            "WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "AND c.id IN :categoryIds")
+    Page<MenuItem> filterByQueryAndCategories(
+            @Param("query") String query,
+            @Param("categoryIds") List<Long> categoryIds,
+            Pageable pageable
+    );
     Optional<MenuItem> findByBarCode(String qrCode);
+    @Query("SELECT m FROM MenuItem m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%'))")
+    Page<MenuItem> findByQuery(
+            @Param("query") String query,
+            Pageable pageable
+    );
 
 
 }

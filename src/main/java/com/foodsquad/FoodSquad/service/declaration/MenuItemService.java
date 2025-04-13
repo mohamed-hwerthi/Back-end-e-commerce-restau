@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.service.declaration;
 
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,11 @@ public interface MenuItemService {
 
     ResponseEntity<Map<String, String>> deleteMenuItemsByIds(List<Long> ids);
 
-    PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable);
+    PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable);
 
     MenuItemDTO findByBarCode(String qrCode);
+
+    PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable);
 
 
 }

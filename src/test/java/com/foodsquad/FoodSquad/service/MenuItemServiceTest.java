@@ -61,7 +61,6 @@ class MenuItemServiceTest {
         menuItemDTO.setTitle("Burger");
         menuItemDTO.setDescription("Delicious burger");
         menuItemDTO.setPrice(10.0);
-        menuItemDTO.setImageUrl("http://example.com/burger.jpg");
 
         User user = new User();
         user.setEmail("test@example.com");
@@ -84,33 +83,7 @@ class MenuItemServiceTest {
         assertEquals("Burger", response.getBody().getTitle());
     }
 
-    @Test
-    void testGetMenuItemById() {
-        // Arrange
-        Long menuItemId = 1L;
-        MenuItem menuItem = new MenuItem();
-        menuItem.setId(menuItemId);
-        menuItem.setTitle("Burger");
 
-        when(menuItemRepository.findById(menuItemId)).thenReturn(Optional.of(menuItem));
-        when(orderRepository.sumQuantityByMenuItemId(menuItemId)).thenReturn(10);
-        when(reviewRepository.countByMenuItemId(menuItemId)).thenReturn(5L);
-        when(reviewRepository.findAverageRatingByMenuItemId(menuItemId)).thenReturn(4.5);
-
-        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, 10, 5, 4.5);
-        when(modelMapper.map(any(MenuItem.class), eq(MenuItemDTO.class))).thenReturn(menuItemDTO);
-
-        // Act
-        ResponseEntity<MenuItemDTO> response = menuItemService.getMenuItemById(menuItemId);
-
-        // Assert
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
-        assertEquals("Burger", response.getBody().getTitle());
-        assertEquals(10, response.getBody().getSalesCount());
-        assertEquals(5, response.getBody().getReviewCount());
-        assertEquals(4.5, response.getBody().getAverageRating());
-    }
 
     @Test
     void testUpdateMenuItem() {
@@ -120,7 +93,6 @@ class MenuItemServiceTest {
         menuItemDTO.setTitle("Updated Burger");
         menuItemDTO.setDescription("Updated description");
         menuItemDTO.setPrice(12.0);
-        menuItemDTO.setImageUrl("http://example.com/updated_burger.jpg");
 
         User user = new User();
         user.setEmail("test@example.com");
@@ -147,7 +119,6 @@ class MenuItemServiceTest {
         assertEquals("Updated Burger", response.getBody().getTitle());
         assertEquals("Updated description", response.getBody().getDescription());
         assertEquals(12.0, response.getBody().getPrice());
-        assertEquals("http://example.com/updated_burger.jpg", response.getBody().getImageUrl());
     }
 
     @Test

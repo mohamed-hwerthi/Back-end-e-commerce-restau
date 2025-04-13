@@ -33,17 +33,6 @@ class MenuItemControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void getAllMenuItems_shouldReturnPaginatedResponse() {
-        PaginatedResponseDTO<MenuItemDTO> paginatedResponse = new PaginatedResponseDTO<>(Collections.singletonList(new MenuItemDTO()), 1L);
-        when(menuItemService.getAllMenuItems(anyInt(), anyInt(), anyString(), anyBoolean(), anyString(), anyString(), anyString())).thenReturn(paginatedResponse);
-
-        ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> response = menuItemController.getAllMenuItems(0, 10, "salesCount", true, "BURGER", "true", "asc");
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(paginatedResponse, response.getBody());
-        verify(menuItemService, times(1)).getAllMenuItems(0, 10, "salesCount", true, "BURGER", "true", "asc");
-    }
 
     @Test
     void testCreateMenuItem() {

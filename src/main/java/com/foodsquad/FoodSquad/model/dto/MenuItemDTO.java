@@ -25,16 +25,12 @@ public class MenuItemDTO {
     private String description;
     @NotBlank(message = "code bar can not be null ")
     private String barCode;
-
     @NotNull(message = "Price cannot be null")
     @Positive(message = "Price must be positive")
     @Schema(defaultValue = "1", required = true)
     private Double price;
-
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer salesCount;
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long reviewCount;
 

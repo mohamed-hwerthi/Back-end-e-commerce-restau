@@ -6,6 +6,12 @@ import com.foodsquad.FoodSquad.mapper.MediaMapper;
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
+import com.foodsquad.FoodSquad.model.dto.*;
+import com.foodsquad.FoodSquad.model.entity.Category;
+import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.MenuItemCategory;
+import com.foodsquad.FoodSquad.model.entity.User;
+import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.MenuItemRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
@@ -36,7 +42,7 @@ import java.util.stream.Collectors;
 @Service
 public class MenuItemServiceImp implements MenuItemService {
 
-    private final Logger logger = LoggerFactory.getLogger(MenuItemService.class);
+    private final Logger logger = LoggerFactory.getLogger(MenuItemServiceImp.class);
 
     private final MenuItemRepository menuItemRepository;
 
@@ -48,12 +54,12 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final ModelMapper modelMapper;
 
-    private final CategoryService categoryService;
 
     private final CategoryMapper categoryMapper;
 
     private final MenuItemMapper menuItemMapper;
-    private final MediaMapper mediaMapper ;
+
+    private final MediaMapper mediaMapper;
 
     private final TaxService taxService;
 
@@ -66,7 +72,6 @@ public class MenuItemServiceImp implements MenuItemService {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.categoryService = categoryService;
         this.categoryMapper = categoryMapper;
         this.menuItemMapper = menuItemMapper;
         this.mediaMapper = mediaMapper;
@@ -105,10 +110,32 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
+    public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
+
+        logger.debug("Searching menu items by query and categoriesIds ");
+        Page<MenuItem> menuItemPage;
+        if (ObjectUtils.isEmpty(menuItemFilterByCategoryAndQueryRequestDTO.getCategoriesIds())) {
+            menuItemPage = menuItemRepository.findByQuery(menuItemFilterByCategoryAndQueryRequestDTO.getQuery(), pageable);
+
+        } else {
+            menuItemPage = menuItemRepository.filterByQueryAndCategories(menuItemFilterByCategoryAndQueryRequestDTO.getQuery(), menuItemFilterByCategoryAndQueryRequestDTO.getCategoriesIds(), pageable);
+
+        }
+
+        List<MenuItem> menuItems = menuItemPage.getContent();
+        List<MenuItemDTO> menuItemDTOs = menuItems.stream()
+                .map(menuItemMapper::toDto)
+                .toList();
+        return new PaginatedResponseDTO<>(menuItemDTOs, menuItemPage.getTotalElements());
+
+
+    }
+
+    @Override
     public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable) {
 
         logger.debug("Searching menu items by query: {}", query);
-        Page<MenuItem> menuItemPage = menuItemRepository.filterByQuery(query, pageable);
+        Page<MenuItem> menuItemPage = menuItemRepository.findByQuery(query, pageable);
         List<MenuItem> menuItems = menuItemPage.getContent();
         List<MenuItemDTO> menuItemDTOs = menuItems.stream()
                 .map(menuItemMapper::toDto)
@@ -147,9 +174,9 @@ public class MenuItemServiceImp implements MenuItemService {
         logger.debug("Getting all menu items  with some filters");
 
         Pageable pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdOn"));
-        Page<MenuItem> menuItemPage ;
+        Page<MenuItem> menuItemPage;
 
-        if (categoryId != null ) {
+        if (categoryId != null) {
             menuItemPage = menuItemRepository.findByCategoryId(categoryId, pageable);
         } else {
             menuItemPage = menuItemRepository.findAll(pageable);
@@ -173,7 +200,6 @@ public class MenuItemServiceImp implements MenuItemService {
                     return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating , menuItemCategories , menuItemMedia,menuItemCurrency);
                 })
                 .collect(Collectors.toList());
-
 
 
         // Sort by price
@@ -206,8 +232,7 @@ public class MenuItemServiceImp implements MenuItemService {
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
 
         checkOwnership(existingMenuItem);
-        menuItemMapper.updateMenuItemFromDto(menuItemDTO , existingMenuItem);
-
+        menuItemMapper.updateMenuItemFromDto(menuItemDTO, existingMenuItem);
 
 
         MenuItem savedMenuItem = menuItemRepository.save(existingMenuItem);
