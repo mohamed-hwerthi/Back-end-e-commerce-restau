@@ -70,7 +70,7 @@ public class OrderService {
         for (Map.Entry<Long, Integer> entry : menuItemQuantities.entrySet()) {
             MenuItem menuItem = menuItemRepository.findById(entry.getKey())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + entry.getKey()));
-            int quantity = entry.getValue() != null ? entry.getValue() : 1; // Default to 1 if quantity is null
+            int quantity = entry.getValue() != null ? entry.getValue() : 1;
             menuItemsWithQuantity.put(menuItem, quantity);
             totalCost += menuItem.getPrice() * quantity;
         }

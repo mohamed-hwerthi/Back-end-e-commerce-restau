@@ -66,8 +66,6 @@ public class InvoiceController {
     public ResponseEntity<byte[]> downloadInvoice(@PathVariable String orderId) {
         try {
             byte[] pdfBytes = invoiceService.generateInvoice(orderId);
-
-            // Retourner le PDF en réponse
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "invoice_" + orderId + LocalDateTime.now()+".pdf");
