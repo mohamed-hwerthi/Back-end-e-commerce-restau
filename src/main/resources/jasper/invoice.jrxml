@@ -1,111 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ThermalInvoice" pageWidth="280" columnWidth="260" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="a44d022c-0d15-40f9-96a7-549335b62aeb">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="ProfessionalInvoice" pageWidth="280" columnWidth="260"
+              leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10">
+
     <!-- Parameters -->
     <parameter name="orderId" class="java.lang.String"/>
-    <parameter name="totalCost" class="java.lang.Double"/>
+    <parameter name="totalHT" class="java.lang.Double"/>
+    <parameter name="totalTTC" class="java.lang.Double"/>
     <parameter name="createdOn" class="java.time.LocalDateTime"/>
+    <parameter name="taxDetails" class="java.util.Collection"/>
 
     <!-- Fields -->
     <field name="menuItemName" class="java.lang.String"/>
     <field name="quantity" class="java.lang.Integer"/>
-    <field name="price" class="java.lang.Double"/>
+    <field name="priceHT" class="java.lang.Double"/>
+    <field name="priceTTC" class="java.lang.Double"/>
+    <field name="totalHT" class="java.lang.Double"/>
+    <field name="totalTTC" class="java.lang.Double"/>
 
     <!-- Title Band -->
     <title>
-        <band height="100">
+        <band height="80">
             <staticText>
-                <reportElement x="10" y="0" width="240" height="40" forecolor="#333333" uuid="a047d010-4ee9-4eba-bddc-d541c5b7465a"/>
+                <reportElement x="0" y="0" width="260" height="30" forecolor="#000000"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="18" isBold="true"/>
+                    <font size="16" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Welcome to our shop]]></text>
+                <text><![CDATA[INVOICE]]></text>
             </staticText>
             <staticText>
-                <reportElement x="10" y="50" width="240" height="20" forecolor="#555555" uuid="6d76d755-d2ef-4c40-837d-7666a2cf177c"/>
-                <textElement>
-                    <font isBold="true"/>
-                </textElement>
+                <reportElement x="0" y="30" width="80" height="20"/>
+                <text><![CDATA[Order ID:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="80" y="30" width="180" height="20"/>
+                <textFieldExpression><![CDATA[$P{orderId}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="50" width="80" height="20"/>
                 <text><![CDATA[Date:]]></text>
             </staticText>
             <textField>
-                <reportElement x="100" y="50" width="140" height="20" forecolor="#555555" uuid="3e0efb74-c9a1-48f9-9742-fea100a3c698"/>
-                <textFieldExpression><![CDATA[$P{createdOn}.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))]]></textFieldExpression>
+                <reportElement x="80" y="50" width="180" height="20"/>
+                <textFieldExpression><![CDATA[$P{createdOn}.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))]]></textFieldExpression>
             </textField>
-            <line>
-                <reportElement x="10" y="80" width="240" height="1" forecolor="#CCCCCC" uuid="f1f1f1f1-1f1f-1f1f-1f1f-f1f1f1f1f1f1"/>
-            </line>
         </band>
     </title>
 
-    <!-- Column Header Band -->
+    <!-- Column Header -->
     <columnHeader>
         <band height="30">
             <staticText>
-                <reportElement x="10" y="0" width="90" height="30" forecolor="#FFFFFF" backcolor="#333333" uuid="7a645340-b033-4fb0-a6dc-a108041ff308"/>
-                <textElement verticalAlignment="Middle">
-                    <font isBold="true"/>
-                </textElement>
+                <reportElement x="0" y="0" width="120" height="30" backcolor="#EEEEEE"/>
                 <text><![CDATA[Item]]></text>
             </staticText>
             <staticText>
-                <reportElement x="150" y="0" width="30" height="30" forecolor="#FFFFFF" backcolor="#333333" uuid="27fcedec-9704-49b3-9485-17e7fc20c00c"/>
-                <textElement verticalAlignment="Middle">
-                    <font isBold="true"/>
-                </textElement>
+                <reportElement x="120" y="0" width="30" height="30" backcolor="#EEEEEE"/>
                 <text><![CDATA[Qty]]></text>
             </staticText>
             <staticText>
-                <reportElement x="190" y="0" width="60" height="30" forecolor="#FFFFFF" backcolor="#333333" uuid="0bea4d31-a069-487f-bf9d-d17f2a12ab5e"/>
-                <textElement verticalAlignment="Middle">
-                    <font isBold="true"/>
-                </textElement>
-                <text><![CDATA[Price]]></text>
+                <reportElement x="150" y="0" width="50" height="30" backcolor="#EEEEEE"/>
+                <text><![CDATA[HT]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="0" width="60" height="30" backcolor="#EEEEEE"/>
+                <text><![CDATA[TTC]]></text>
             </staticText>
         </band>
     </columnHeader>
 
-    <!-- Detail Band (Fully Dynamic) -->
+    <!-- Detail Band -->
     <detail>
         <band height="20">
-            <textField isStretchWithOverflow="true">
-                <reportElement x="10" y="0" width="130" height="20" uuid="a88c349d-1718-40b8-a460-8baa196e3794"/>
+            <textField>
+                <reportElement x="0" y="0" width="120" height="20"/>
                 <textFieldExpression><![CDATA[$F{menuItemName}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="150" y="0" width="30" height="20" uuid="27fcedec-9704-49b3-9485-17e7fc20c00c"/>
+                <reportElement x="120" y="0" width="30" height="20"/>
                 <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="190" y="0" width="60" height="20" uuid="0bea4d31-a069-487f-bf9d-d17f2a12ab5e"/>
-                <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+                <reportElement x="150" y="0" width="50" height="20"/>
+                <textFieldExpression><![CDATA[$F{priceHT}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="200" y="0" width="60" height="20"/>
+                <textFieldExpression><![CDATA[$F{priceTTC}]]></textFieldExpression>
             </textField>
         </band>
     </detail>
 
-    <!-- Summary Band -->
+    <!-- Tax Details Band -->
     <summary>
-        <band height="80">
+        <band height="150">
             <line>
-                <reportElement x="10" y="0" width="240" height="1" forecolor="#CCCCCC" uuid="f1f1f1f1-1f1f-1f1f-1f1f-f1f1f1f1f1f1"/>
+                <reportElement x="0" y="0" width="260" height="1"/>
             </line>
+
+            <!-- Subtotal -->
             <staticText>
-                <reportElement x="130" y="10" width="50" height="20" forecolor="#333333" uuid="e839855c-961a-4b68-8a2f-60c1bf6aa5cb"/>
-                <textElement>
-                    <font isBold="true"/>
-                </textElement>
-                <text><![CDATA[Total:]]></text>
+                <reportElement x="150" y="10" width="60" height="20"/>
+                <text><![CDATA[Total HT:]]></text>
             </staticText>
             <textField>
-                <reportElement x="180" y="10" width="60" height="20" forecolor="#333333" uuid="cc58bdb9-73db-4a7a-baba-12042e204e35"/>
-                <textFieldExpression><![CDATA[$P{totalCost}]]></textFieldExpression>
+                <reportElement x="210" y="10" width="50" height="20"/>
+                <textFieldExpression><![CDATA[$P{totalHT}]]></textFieldExpression>
             </textField>
+
+            <!-- Tax Details Table -->
             <staticText>
-                <reportElement x="10" y="40" width="240" height="20" forecolor="#555555" uuid="f2f2f2f2-2f2f-2f2f-2f2f-f2f2f2f2f2f2"/>
-                <textElement textAlignment="Center">
-                    <font isItalic="true"/>
-                </textElement>
-                <text><![CDATA[If you need our support, please contact us.]]></text>
+                <reportElement x="0" y="40" width="260" height="20" backcolor="#EEEEEE"/>
+                <text><![CDATA[Tax Details]]></text>
+            </staticText>
+
+            <componentElement>
+                <reportElement x="0" y="60" width="260" height="20"/>
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="taxDataset">
+                        <datasetParameter name="taxDetails">
+                            <datasetParameterExpression><![CDATA[$P{taxDetails}]]></datasetParameterExpression>
+                        </datasetParameter>
+                    </datasetRun>
+                    <jr:column width="100">
+                        <jr:columnHeader height="20">
+                            <staticText>
+                                <reportElement x="0" y="0" width="100" height="20"/>
+                                <text><![CDATA[Tax Name]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement x="0" y="0" width="100" height="20"/>
+                                <textFieldExpression><![CDATA[((java.util.Map.Entry)$F{taxEntry}).getKey().getName()]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="80">
+                        <jr:columnHeader height="20">
+                            <staticText>
+                                <reportElement x="0" y="0" width="80" height="20"/>
+                                <text><![CDATA[Rate]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement x="0" y="0" width="80" height="20"/>
+                                <textFieldExpression><![CDATA[((java.util.Map.Entry)$F{taxEntry}).getKey().getRate() + "%"]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="80">
+                        <jr:columnHeader height="20">
+                            <staticText>
+                                <reportElement x="0" y="0" width="80" height="20"/>
+                                <text><![CDATA[Amount]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement x="0" y="0" width="80" height="20"/>
+                                <textFieldExpression><![CDATA[((java.util.Map.Entry)$F{taxEntry}).getValue()]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                </jr:table>
+            </componentElement>
+
+            <!-- Grand Total -->
+            <staticText>
+                <reportElement x="150" y="100" width="60" height="20" isBold="true"/>
+                <text><![CDATA[Total TTC:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="210" y="100" width="50" height="20" isBold="true"/>
+                <textFieldExpression><![CDATA[$P{totalTTC}]]></textFieldExpression>
+            </textField>
+
+            <!-- Footer -->
+            <staticText>
+                <reportElement x="0" y="130" width="260" height="20" forecolor="#888888"/>
+                <textElement textAlignment="Center"/>
+                <text><![CDATA[Thank you for your business!]]></text>
             </staticText>
         </band>
     </summary>
+
+    <!-- Tax Dataset -->
+    <subDataset name="taxDataset">
+        <field name="taxEntry" class="java.util.Map.Entry"/>
+    </subDataset>
 </jasperReport>

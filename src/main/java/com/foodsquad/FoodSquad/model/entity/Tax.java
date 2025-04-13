@@ -15,8 +15,8 @@ public class Tax {
     private String name; // e.g., Tva, Service Tax
     private Double rate; // e.g., 7.5%
 
-    @OneToOne(mappedBy = "tax")
-    private MenuItem menuItem;
+//    @OneToOne(mappedBy = "tax")
+//    private MenuItem menuItem;
 
     public Tax() {}
 
