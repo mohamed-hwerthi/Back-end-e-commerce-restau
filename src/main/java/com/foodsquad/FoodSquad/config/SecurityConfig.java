@@ -51,7 +51,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/media/**").permitAll()
                                 .requestMatchers(HttpMethod.GET , "/uploads/**").permitAll()
 
+                                .requestMatchers(HttpMethod.GET, "/api/invoice/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/invoice/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/currency/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")
                                 .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")
                                 .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")

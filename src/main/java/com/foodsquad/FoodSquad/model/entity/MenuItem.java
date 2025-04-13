@@ -47,7 +47,13 @@ public class MenuItem {
 
     @ManyToMany(mappedBy = "menuItems")
     private List<Menu> menus;
+    @ManyToOne
+    @JoinColumn(name = "currency_id", nullable = false)
+    private Currency currency;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tax_id", referencedColumnName = "id")
+    private Tax tax;
     @ManyToMany
     @JoinTable(
             name = "menu_item_categories",

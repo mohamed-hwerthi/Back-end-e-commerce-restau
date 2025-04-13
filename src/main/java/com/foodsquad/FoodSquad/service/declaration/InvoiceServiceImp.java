@@ -3,14 +3,10 @@ package com.foodsquad.FoodSquad.service.declaration;
 import com.foodsquad.FoodSquad.model.dto.MenuItemEntry;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Order;
+import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.service.impl.OrderService;
 import jakarta.persistence.EntityNotFoundException;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -36,6 +32,8 @@ import java.util.Map;
 public class InvoiceServiceImp implements  InvoiceService {
 
     private  final OrderService orderService ;
+
+    private final OrderRepository orderRepository;
     private final String invoice_template_path = "/jasper/invoice.jrxml";
 
 
@@ -43,8 +41,9 @@ public class InvoiceServiceImp implements  InvoiceService {
     Logger log = LoggerFactory.getLogger(InvoiceService.class);
 
 
-    public InvoiceServiceImp(OrderService orderService) {
+    public InvoiceServiceImp(OrderService orderService, OrderRepository orderRepository) {
         this.orderService = orderService;
+        this.orderRepository = orderRepository;
     }
 
 
@@ -128,6 +127,42 @@ public class InvoiceServiceImp implements  InvoiceService {
         }
         return entries;
     }
+    public byte[] generateInvoice(String orderId) throws Exception {
+        // Charger le fichier JRXML
+        InputStream reportStream = getClass().getResourceAsStream(invoice_template_path);
 
+        // Compiler le rapport
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+        // Récupérer les données de la commande
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Préparer les données pour le rapport
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("orderId", order.getId());
+        parameters.put("totalCost", order.getTotalCost());
+        parameters.put("createdOn", order.getCreatedOn());
+
+        // Convertir les éléments de la commande en une liste de Map
+        List<Map<String, Object>> items = new ArrayList<>();
+
+        for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("menuItemName", entry.getKey().getTitle());
+            item.put("quantity", entry.getValue());
+            item.put("price", entry.getKey().getPrice());
+            items.add(item);
+        }
+
+        // Créer une source de données pour le rapport
+        JRDataSource dataSource = new JRBeanCollectionDataSource(items);
+
+        // Remplir le rapport avec les données
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Exporter le rapport en PDF
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
 
 }
