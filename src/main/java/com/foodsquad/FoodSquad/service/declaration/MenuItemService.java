@@ -29,5 +29,7 @@ public interface MenuItemService {
 
     MenuItemDTO findByBarCode(String qrCode);
 
+    PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable);
+
 
 }

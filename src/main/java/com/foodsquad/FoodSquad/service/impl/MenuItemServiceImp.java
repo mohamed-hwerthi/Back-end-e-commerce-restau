@@ -119,6 +119,20 @@ public class MenuItemServiceImp implements MenuItemService {
 
     }
 
+    @Override
+    public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable) {
+
+        logger.debug("Searching menu items by query: {}", query);
+        Page<MenuItem> menuItemPage = menuItemRepository.findByQuery(query, pageable);
+        List<MenuItem> menuItems = menuItemPage.getContent();
+        List<MenuItemDTO> menuItemDTOs = menuItems.stream()
+                .map(menuItemMapper::toDto)
+                .toList();
+        return new PaginatedResponseDTO<>(menuItemDTOs, menuItemPage.getTotalElements());
+
+
+    }
+
     public ResponseEntity<MenuItemDTO> getMenuItemById(Long id) {
 
         logger.debug("Getting menu item by ID: {}", id);

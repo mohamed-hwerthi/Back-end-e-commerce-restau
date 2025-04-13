@@ -42,7 +42,7 @@ public class MenuItemController {
     @PostMapping
     public ResponseEntity<MenuItemDTO> createMenuItem(@Valid @RequestBody MenuItemDTO menuItemDTO) {
 
-         return menuItemService.createMenuItem(menuItemDTO);
+        return menuItemService.createMenuItem(menuItemDTO);
     }
 
     @Operation(summary = "Get a menu item by ID", description = "Retrieve a menu item by its unique ID.")
@@ -120,11 +120,20 @@ public class MenuItemController {
 
     @Operation(summary = "Search menu items by query  and category ", description = "Retrieve a list of menu items that their title  match the provided query  and matchs a categories.")
     @PostMapping("/search/by-query-categories")
-    public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@RequestBody()MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
+    public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@RequestBody() MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
 
-        PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(menuItemFilterByCategoryAndQueryRequestDTO  , pageable);
+        PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(menuItemFilterByCategoryAndQueryRequestDTO, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(paginatedResponseDTOS);
     }
+
+    @Operation(summary = "Search menu items by query", description = "Retrieve a list of menu items that their title  match the provided query.")
+    @GetMapping("/search/{query}")
+    public ResponseEntity<PaginatedResponseDTO<MenuItemDTO>> searchMenuItemsByQuery(@Parameter(description = "Query to search menu items by title", example = "pizza") @PathVariable("query") String query, Pageable pageable) {
+
+        PaginatedResponseDTO<MenuItemDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(query, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(paginatedResponseDTOS);
+    }
+
 
     @Operation(summary = "find Menu item by its qr code ", description = "find Menu item by its qr code ")
     @GetMapping("/bar-code/{barCode}")
