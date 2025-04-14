@@ -4,7 +4,9 @@ import com.foodsquad.FoodSquad.model.dto.MenuItemEntry;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Order;
 import com.foodsquad.FoodSquad.model.entity.Tax;
+import com.foodsquad.FoodSquad.model.entity.Timbre;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
+import com.foodsquad.FoodSquad.repository.TimbreRepository;
 import com.foodsquad.FoodSquad.service.impl.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import net.sf.jasperreports.engine.*;
@@ -30,15 +32,18 @@ public class InvoiceServiceImp implements InvoiceService {
     private final OrderService orderService;
 
     private final OrderRepository orderRepository;
+
+    private final TimbreRepository timbreRepository;
     private final String invoice_template_path = "/jasper/invoice.jrxml";
 
 
     Logger log = LoggerFactory.getLogger(InvoiceService.class);
 
 
-    public InvoiceServiceImp(OrderService orderService, OrderRepository orderRepository) {
+    public InvoiceServiceImp(OrderService orderService, OrderRepository orderRepository, TimbreRepository timbreRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
+        this.timbreRepository = timbreRepository;
     }
 
 
@@ -138,7 +143,6 @@ public class InvoiceServiceImp implements InvoiceService {
         // Prepare items with HT and TTC prices
         List<Map<String, Object>> items = new ArrayList<>();
 
-
         for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
             MenuItem item = entry.getKey();
             int quantity = entry.getValue();
@@ -175,20 +179,33 @@ public class InvoiceServiceImp implements InvoiceService {
             items.add(itemData);
         }
 
+        // Get the timbre fiscal amount from database
+        Timbre timbre = timbreRepository.findAll().stream().findFirst().orElse(null);
+        double timbreAmount = (timbre != null) ? timbre.getAmount() : 0.0;
+
+        // Check if we need to add timbre fiscal (when TTC >= 1 DT)
+        boolean addTimbre = (round(totalTTC) >= 1.0); // Changed from == 0.1 to >= 1.0
+        if (addTimbre) {
+            totalTTC += timbreAmount;
+            totalTTC = round(totalTTC); // Round after adding timbre
+        }
+
         // Prepare parameters
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("orderId", order.getId());
-        parameters.put("totalHT", totalHT);
-        parameters.put("totalTTC", totalTTC);
+        parameters.put("totalHT", round(totalHT));
+        parameters.put("totalTTC", round(totalTTC));
         parameters.put("createdOn", order.getCreatedOn());
         parameters.put("taxDetails", new ArrayList<>(taxDetails.entrySet()));
-
+        parameters.put("addTimbre", addTimbre);
+        parameters.put("timbreAmount", timbreAmount);
+        parameters.put("net.sf.jasperreports.resource.path", "images");
         JRDataSource dataSource = new JRBeanCollectionDataSource(items);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
+
     private double round(double value) {
         return new BigDecimal(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
-
 }
