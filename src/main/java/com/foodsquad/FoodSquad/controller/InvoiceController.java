@@ -5,6 +5,7 @@ import com.foodsquad.FoodSquad.service.declaration.InvoiceServiceImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +26,7 @@ import java.util.Locale;
 @Validated
 @RestController
 @RequestMapping("/api/invoice")
-
+@Slf4j
 @Tag(name = "9. Invoice Management", description = "Invoice Management API")
 public class InvoiceController {
     private final InvoiceServiceImp invoiceService;
@@ -65,6 +66,8 @@ public class InvoiceController {
     @GetMapping("/{orderId}")
     public ResponseEntity<byte[]> downloadInvoice(@PathVariable String orderId) {
         try {
+            log.info("order id {}", orderId);
+
             byte[] pdfBytes = invoiceService.generateInvoice(orderId);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);

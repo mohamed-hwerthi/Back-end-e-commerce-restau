@@ -105,6 +105,17 @@ public class MenuItemServiceImp implements MenuItemService {
         if (menuItemDTO.getTax() != null) {
             Tax tax = this.taxService.createTax(menuItemDTO);
             menuItem.setTax(tax);
+
+            double price = menuItem.getPrice();
+            double taxRate = (menuItemDTO.getTax().getRate())/100; // Assuming rate is 0.20 for 20%
+            double priceWithTax = price * (1 + taxRate);
+
+            // Get currency scale (default to 2 if not specified)
+            int scale = menuItem.getCurrency() != null ? menuItem.getCurrency().getScale() : 2;
+
+            // Round to the correct number of decimal places
+            double roundedPrice = roundToScale(priceWithTax, scale);
+            menuItem.setPrice(roundedPrice);
         }
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         MenuItemDTO responseDTO = menuItemMapper.toDto(savedMenuItem);
@@ -237,30 +248,44 @@ public class MenuItemServiceImp implements MenuItemService {
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
 
         checkOwnership(existingMenuItem);
-        // Handle tax update or creation
-        if (menuItemDTO.getTax() != null) {
-            Tax tax = existingMenuItem.getTax();
-            if (tax == null) {
-                // Create new tax if none exists
-                tax = new Tax();
-                tax.setRate(menuItemDTO.getTax().getRate());
-                tax.setName(menuItemDTO.getTax().getName());
-                tax = taxRepository.save(tax);
-            } else {
-                // Update existing tax
-                tax.setRate(menuItemDTO.getTax().getRate());
-                tax = taxRepository.save(tax);
-            }
-            existingMenuItem.setTax(tax);
-        }
-        // Handle currency update
         if (menuItemDTO.getCurrency() != null && menuItemDTO.getCurrency().getId() != null) {
             Currency currency = currencyRepository.findById(menuItemDTO.getCurrency().getId())
                     .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
             existingMenuItem.setCurrency(currency);
         }
-        menuItemMapper.updateMenuItemFromDto(menuItemDTO, existingMenuItem);
 
+        // Handle tax update/creation and price calculation
+        if (menuItemDTO.getTax() != null) {
+            // Update or create tax
+            Tax tax = existingMenuItem.getTax();
+            if (tax == null) {
+                tax = new Tax();
+                tax.setRate(menuItemDTO.getTax().getRate());
+                tax.setName(menuItemDTO.getTax().getName());
+                tax = taxRepository.save(tax);
+            } else {
+                tax.setRate(menuItemDTO.getTax().getRate());
+                tax = taxRepository.save(tax);
+            }
+            existingMenuItem.setTax(tax);
+
+            // Calculate price with tax (using the price from DTO, not existing price)
+            double basePrice = menuItemDTO.getPrice(); // Use the price from DTO
+            double taxRate = tax.getRate() / 100;      // Convert percentage to decimal
+            double priceWithTax = basePrice * (1 + taxRate);
+
+            // Get currency scale (use updated currency if changed)
+            int scale = existingMenuItem.getCurrency() != null ?
+                    existingMenuItem.getCurrency().getScale() : 2;
+
+            // Round and set the final price
+            existingMenuItem.setPrice(roundToScale(priceWithTax, scale));
+
+        }
+        menuItemDTO.setPrice(existingMenuItem.getPrice());
+
+
+        menuItemMapper.updateMenuItemFromDto(menuItemDTO, existingMenuItem);
 
         MenuItem savedMenuItem = menuItemRepository.save(existingMenuItem);
         MenuItemDTO responseDTO = modelMapper.map(savedMenuItem, MenuItemDTO.class);
@@ -336,6 +361,11 @@ public class MenuItemServiceImp implements MenuItemService {
                 .map(menuItemMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for qrCode"));
     }
+    private double roundToScale(double value, int scale) {
+        if (scale < 0) throw new IllegalArgumentException("Scale must be a positive integer");
 
+        double factor = Math.pow(10, scale);
+        return Math.round(value * factor) / factor;
+    }
 
 }
