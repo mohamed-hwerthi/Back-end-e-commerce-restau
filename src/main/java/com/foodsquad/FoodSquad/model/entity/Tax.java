@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,10 +13,11 @@ public class Tax {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // e.g., Tva, Service Tax
-    private Double rate; // e.g., 7.5%
+    private String name;
+    private Double rate;
 
     @OneToOne(mappedBy = "tax")
+
     private MenuItem menuItem;
 
     public Tax() {}

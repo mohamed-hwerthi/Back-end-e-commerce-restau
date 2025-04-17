@@ -44,4 +44,15 @@ public class TimbreServiceImpl implements TimbreService {
     public void delete(String id) {
         timbreRepository.deleteById(id);
     }
+    @Override
+    public TimbreDTO update(String timberid  , TimbreDTO timbreDTO) {
+        return timbreRepository.findById(timberid)
+                .map(existing -> {
+                    Timbre updated = timbreMapper.toEntity(timbreDTO);
+                    updated.setId(existing.getId());
+                    Timbre saved = timbreRepository.save(updated);
+                    return timbreMapper.toDto(saved);
+                })
+                .orElse(null);
+    }
 }
