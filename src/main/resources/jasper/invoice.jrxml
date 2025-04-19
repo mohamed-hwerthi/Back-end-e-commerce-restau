@@ -103,42 +103,21 @@
             </textField>
         </band>
     </detail>
-
     <summary>
-        <band height="220"> <!-- Increased band height -->
-            <line>
-                <reportElement x="0" y="0" width="260" height="1" forecolor="#AAAAAA"/>
-            </line>
-
-            <staticText>
-                <reportElement x="140" y="10" width="60" height="20" forecolor="#555555"/>
-                <textElement textAlignment="Right">
-                    <font isBold="true" size="10"/>
-                </textElement>
-                <text><![CDATA[Total HT:]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="200" y="10" width="60" height="20"/>
-                <textElement textAlignment="Right">
-                    <font size="10"/>
-                </textElement>
-                <textFieldExpression><![CDATA[String.format("%.3f", $P{totalHT})]]></textFieldExpression>
-            </textField>
-
-            <textField evaluationTime="Report" isBlankWhenNull="true">
-                <reportElement x="140" y="40" width="120" height="20"/>
-                <textElement textAlignment="Right"><font size="10" isItalic="true"/></textElement>
-                <textFieldExpression><![CDATA[$P{addTimbre} ? "Timbre fiscal : " + String.format("%.3f", $P{timbreAmount}) + " DT" : null]]></textFieldExpression>
-            </textField>
-
+        <band height="360"> <!-- Hauteur totale augmentée pour accueillir l'image plus grande -->
             <staticText>
                 <reportElement x="140" y="70" width="60" height="20" forecolor="#000000"/>
-                <textElement textAlignment="Right"><font isBold="true" size="11"/></textElement>
+                <textElement textAlignment="Right">
+                    <font isBold="true" size="11"/>
+                </textElement>
                 <text><![CDATA[Total TTC:]]></text>
             </staticText>
+
             <textField>
                 <reportElement x="200" y="70" width="60" height="20"/>
-                <textElement textAlignment="Right"><font isBold="true" size="11"/></textElement>
+                <textElement textAlignment="Right">
+                    <font isBold="true" size="11"/>
+                </textElement>
                 <textFieldExpression><![CDATA[String.format("%.3f", $P{totalTTC})]]></textFieldExpression>
             </textField>
 
@@ -146,23 +125,32 @@
                 <reportElement x="0" y="100" width="260" height="1" forecolor="#AAAAAA"/>
             </line>
 
-            <!-- Moved image up and increased size -->
+            <!-- Image agrandie et bien centrée -->
             <image hAlign="Center" vAlign="Top">
-                <reportElement x="10" y="110" width="240" height="80"> <!-- larger and centered -->
+                <reportElement x="10" y="110" width="240" height="120"> <!-- taille augmentée -->
                     <property name="net.sf.jasperreports.export.pdf.image.scale" value="RetainShape"/>
                 </reportElement>
                 <imageExpression><![CDATA["images/frame.png"]]></imageExpression>
             </image>
 
-            <!-- Merci text moved below image -->
+            <!-- Message de remerciement en gras -->
             <staticText>
-                <reportElement x="0" y="195" width="260" height="20" forecolor="#888888"/>
+                <reportElement x="0" y="240" width="260" height="20" forecolor="#000000"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="10" isItalic="true"/>
+                    <font size="10" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Merci pour votre visite - À bientôt !]]></text>
             </staticText>
+
+            <!-- Espace vide pour assurer l'impression complète -->
+            <staticText>
+                <reportElement x="0" y="270" width="260" height="90"/> <!-- espace vide en bas -->
+                <textElement/>
+                <text><![CDATA[]]></text>
+            </staticText>
         </band>
     </summary>
+
+
 
 </jasperReport>
