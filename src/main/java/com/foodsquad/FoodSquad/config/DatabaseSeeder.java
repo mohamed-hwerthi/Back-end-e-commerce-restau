@@ -73,11 +73,16 @@ public class DatabaseSeeder {
             System.out.println("MenuItems already exist in the database, skipping menu item seeding.");
         }
 
-        if (orderRepository.count() == 0) {
+        /*
+              if (orderRepository.count() == 0) {
             seedOrders();
         } else {
             System.out.println("Orders already exist in the database, skipping order seeding.");
         }
+
+         */
+
+
         if (reviewRepository.count() == 0) {
 
         } else {
@@ -127,7 +132,6 @@ public class DatabaseSeeder {
         Category ORYX_FRAGRANCE = categoryRepository.findByName("ORYX FRAGRANCE").orElseThrow(()->new RuntimeException("category does not be founded"));
         Category ORYX_BIO = categoryRepository.findByName("ORYX BIO").orElseThrow(()->new RuntimeException("category does not be founded"));
         Category ORYX_PHYTO = categoryRepository.findByName("ORYX PHYTO").orElseThrow(()->new RuntimeException("category does not be founded"));
-        //Use a default currency TND
         Currency currency =currencyRepository.findBySymbol("TND").orElseThrow(()->new RuntimeException("Currency does not exist"));
 
         List<MenuItem> fragranceItems = List.of(
@@ -177,7 +181,6 @@ public class DatabaseSeeder {
                 createMenuItem("tisane LIBRASMOKE", 65.0, "6192499600527", defaultUser, ORYX_PHYTO,currency)
         );
 
-        // Save all MenuItems in the database
         List<MenuItem> allItems = new ArrayList<>();
         allItems.addAll(fragranceItems);
         allItems.addAll(bioItems);
@@ -206,81 +209,17 @@ public class DatabaseSeeder {
     private void seedUsers() {
 
         List<User> users = List.of(
-                createUser("John Doe", "med@gmail.com", "123123", "+359 899 78 7878", UserRole.NORMAL),
-                createUser("Jane Smith", "jane.smith@example.com", "123123", "+359 899 78 7878", UserRole.NORMAL),
-                createUser("Admin User", "admin@example.com", "123123", "+359 899 78 7878", UserRole.ADMIN),
-                createUser("Moderator User", "moderator@example.com", "123123", "+359 899 78 7878", UserRole.MODERATOR)
+                createUser("OrixBio", "orixbio@gmail.com", "123123", "+359 899 78 7878", UserRole.NORMAL),
+                createUser("Admin User", "admin@example.com", "123123", "+359 899 78 7878", UserRole.ADMIN)
         );
 
         userRepository.saveAll(users);
         System.out.println("Users seeded successfully.");
     }
 
-    /*
-        private void seedMenuItems() {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ClassPathResource resource = new ClassPathResource("menu_batch.json");
-            InputStream inputStream = resource.getInputStream();
-
-            // Check if the file exists
-            if (!resource.exists()) {
-                System.out.println("File not found: menu_batch.json");
-                return;
-            }
-
-            // Read the JSON array from the file
-            JsonNode rootNode = objectMapper.readTree(inputStream);
-            List<MenuItem> menuItems = new ArrayList<>();
-
-            // Retrieve users
-            User adminUser = userRepository.findByEmail("admin@example.com").orElse(null);
-            User moderator = userRepository.findByEmail("moderator@example.com").orElse(null);
-
-            if (adminUser == null || moderator == null) {
-                System.out.println("Admin or Moderator user not found. Cannot seed menu items.");
-                return;
-            }
-
-            // Iterate over each element in the JSON array
-            for (JsonNode node : rootNode) {
-                String title = node.get("title").asText();
-                String description = node.get("description").asText();
-                String imageUrl = node.get("imageUrl").asText();
-                double price = node.get("price").asDouble();
-                boolean defaultItem = node.get("defaultItem").asBoolean();
-                String categoryText = node.get("category").asText();
-                String creatorField = node.get("creator").asText();
-
-                MenuItemCategory category;
-                try {
-                    category = MenuItemCategory.valueOf(categoryText.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid category: " + categoryText);
-                    continue; // Skip this item if category is invalid
-                }
-
-                User creator = creatorField.equalsIgnoreCase("adminUser") ? adminUser : moderator;
-
-                MenuItem menuItem = createMenuItem(title, description, imageUrl, price, defaultItem, creator);
-                menuItems.add(menuItem);
-            }
-
-            // Save all menu items to the repository
-            Collections.reverse(menuItems); // Reverse the menuItems list before saving
-            menuItemRepository.saveAll(menuItems);
-            System.out.println("Menu items seeded successfully.");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-     */
 
 
-
-
+/*
     private void seedOrders() {
 
         List<MenuItem> allMenuItems = menuItemRepository.findAll();
@@ -303,6 +242,9 @@ public class DatabaseSeeder {
         orderRepository.saveAll(orders);
         System.out.println("Orders seeded successfully.");
     }
+ */
+
+
 
     private User createUser(String name, String email, String password, String phoneNumber, UserRole role) {
 

@@ -179,22 +179,17 @@
                 <text><![CDATA[Merci pour votre visite - À bientôt !]]></text>
             </staticText>
 
-            <!-- Large empty space (100px) -->
-            <rectangle>
-                <reportElement x="0" y="250" width="260" height="100" forecolor="#FFFFFF" backcolor="#FFFFFF"/>
-            </rectangle>
+
 
             <!-- Thick white line  -->
             <line>
-                <reportElement x="0" y="350" width="260" height="2" forecolor="#FFFFFF">
+                <reportElement x="0" y="350" width="260" height="2" forecolor="#AAAAAA">
                     <property name="net.sf.jasperreports.export.pdf.line.width" value="3.0"/>
                 </reportElement>
             </line>
 
             <!-- Additional empty space below the white line -->
-            <rectangle>
-                <reportElement x="0" y="352" width="260" height="48" forecolor="#FFFFFF" backcolor="#FFFFFF"/>
-            </rectangle>
+
         </band>
     </summary>
 
