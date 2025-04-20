@@ -43,6 +43,10 @@ public class DatabaseSeeder {
     @Autowired
     private CurrencyRepository currencyRepository ;
 
+    @Autowired
+    private TimbreRepository timbreRepository;
+
+
 
 
 
@@ -73,14 +77,13 @@ public class DatabaseSeeder {
             System.out.println("MenuItems already exist in the database, skipping menu item seeding.");
         }
 
-        /*
-              if (orderRepository.count() == 0) {
-            seedOrders();
+        if (timbreRepository.count() == 0) {
+            createTimbre();
         } else {
-            System.out.println("Orders already exist in the database, skipping order seeding.");
+            System.out.println("default timbre already exist in the database, skipping seeding.");
         }
 
-         */
+
 
 
         if (reviewRepository.count() == 0) {
@@ -119,6 +122,12 @@ public class DatabaseSeeder {
         category.setName(name);
         category.setDescription(description);
         return category;
+    }
+    private void createTimbre() {
+
+      Timbre timbre=new Timbre();
+      timbre.setAmount(0.0);
+      timbreRepository.save(timbre);
     }
 
     private void seedMenuItems() {
