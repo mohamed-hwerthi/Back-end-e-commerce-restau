@@ -183,7 +183,22 @@
             <rectangle>
                 <reportElement x="0" y="250" width="260" height="60" forecolor="#FFFFFF" backcolor="#FFFFFF"/> <!-- 60px empty space -->
             </rectangle>
+
+
+            <line>
+                <reportElement x="0" y="255" width="260" height="1" forecolor="#FFFFFF"/>
+            </line>
+            <line>
+                <reportElement x="0" y="255" width="260" height="1" forecolor="#FFFFFF"/>
+            </line>
+            <line>
+                <reportElement x="0" y="255" width="260" height="1" forecolor="#FFFFFF"/>
+            </line>
+            <line>
+                <reportElement x="0" y="255" width="260" height="1" forecolor="#FFFFFF"/>
+            </line>
         </band>
+
     </summary>
 
 </jasperReport>
