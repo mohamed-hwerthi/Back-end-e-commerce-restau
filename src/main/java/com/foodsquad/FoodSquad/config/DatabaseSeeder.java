@@ -2,21 +2,26 @@ package com.foodsquad.FoodSquad.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foodsquad.FoodSquad.model.dto.MediaDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.model.entity.Currency;
 import com.foodsquad.FoodSquad.repository.*;
+import com.foodsquad.FoodSquad.service.declaration.MediaService;
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -46,6 +51,12 @@ public class DatabaseSeeder {
     @Autowired
     private TimbreRepository timbreRepository;
 
+    @Autowired
+    private MediaService mediaService ;
+
+    @Autowired
+    private MediaRepository mediaRepository  ;
+
 
 
 
@@ -58,11 +69,13 @@ public class DatabaseSeeder {
 
     @PostConstruct
     public void seedDatabase() {
-        // Check if the database is empty before seeding
         if (userRepository.count() == 0) {
             seedUsers();
         } else {
             System.out.println("Users already exist in the database, skipping user seeding.");
+        }
+        if(mediaRepository.count()==0){
+            this.seedMedias();
         }
         if (categoryRepository.count() == 0) {
             seedCategories();
@@ -83,17 +96,48 @@ public class DatabaseSeeder {
             System.out.println("default timbre already exist in the database, skipping seeding.");
         }
 
-
-
-
         if (reviewRepository.count() == 0) {
 
         } else {
             System.out.println("Reviews already exist in the database, skipping review seeding.");
         }
+
     }
 
+
+    private void seedMedias(){
+        List<String>menuItemsImagesNames  = List.of("menu_item_image_1.png" ,"menu_item_image_2.jpg" , "menu_item_image_3.jpg" , "menu_item_image_4.jpg" , "category_image_1.jpg" , "category_image_2.jpg" , "category_image_3.webp");
+        menuItemsImagesNames.forEach(this::saveMedia);
+    }
+    private void saveMedia(String imageName) {
+        try {
+            Resource resource = resourceLoader.getResource("classpath:images/"+imageName);
+
+            File file = resource.getFile();
+            FileInputStream input = new FileInputStream(file);
+
+            MultipartFile multipartFile = new MockMultipartFile(
+                    file.getName(),
+                    file.getName(),
+                    Files.probeContentType(file.toPath()),
+                    IOUtils.toByteArray(input)
+            );
+
+            MediaDTO uploadedMedia = mediaService.uploadFile(multipartFile);
+
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to seed default media image", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+
     private void seedCategories() {
+
 
         List<Category> categories = List.of(
                 createCategory("Oryx Fragrance", "ORYX FRAGRANCE"),
@@ -121,7 +165,12 @@ public class DatabaseSeeder {
 
         category.setName(name);
         category.setDescription(description);
-        return category;
+
+        List<Media>media = mediaRepository.findAll();
+        category.setMedias(Collections.singletonList(media.get(generateRandomNumber())));
+
+        return  category ;
+
     }
     private void createTimbre() {
 
@@ -142,6 +191,7 @@ public class DatabaseSeeder {
         Category ORYX_BIO = categoryRepository.findByName("ORYX BIO").orElseThrow(()->new RuntimeException("category does not be founded"));
         Category ORYX_PHYTO = categoryRepository.findByName("ORYX PHYTO").orElseThrow(()->new RuntimeException("category does not be founded"));
         Currency currency =currencyRepository.findBySymbol("TND").orElseThrow(()->new RuntimeException("Currency does not exist"));
+
 
         List<MenuItem> fragranceItems = List.of(
                 createMenuItem("ORYX N°1 - 50ML", 95.0, "66192499601340", defaultUser, ORYX_FRAGRANCE,currency),
@@ -178,7 +228,6 @@ public class DatabaseSeeder {
                 createMenuItem("YNABET 150 ML", 69.0, "6192499600015", defaultUser, ORYX_BIO,currency),
                 createMenuItem("YNABET 250 ML", 90.0, "6192499600039", defaultUser, ORYX_BIO,currency),
                 createMenuItem("acnestop 10", 27.0, "6192499600244", defaultUser, ORYX_BIO,currency)
-                // Add more items similarly
         );
 
         List<MenuItem> phytoItems = List.of(
@@ -200,7 +249,8 @@ public class DatabaseSeeder {
 
 
 
-    private MenuItem createMenuItem(String title, double price, String barCode, User user, Category category,Currency currency) {
+
+    private MenuItem createMenuItem(String title, double price, String barCode, User user, Category category,Currency currency ) {
 
         MenuItem item = new MenuItem();
         item.setTitle(title) ;
@@ -211,7 +261,14 @@ public class DatabaseSeeder {
         item.setCategories(List.of(category));
         item.setCurrency(currency);
         item.setCreatedOn(LocalDateTime.now());
+
+        List<Media>medias = mediaRepository.findAll();
+        item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
         return item ;
+    }
+    public  int generateRandomNumber() {
+        Random random = new Random();
+        return random.nextInt(4);
     }
 
 
