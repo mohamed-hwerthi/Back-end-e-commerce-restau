@@ -5,6 +5,5 @@ import java.util.Locale;
 
 public interface InvoiceService {
 
-      File generateOrderInvoice(String orderId  , Locale localeKey);
 
 }

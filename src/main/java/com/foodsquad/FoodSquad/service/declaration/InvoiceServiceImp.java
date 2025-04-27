@@ -47,26 +47,8 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
 
-    @Override
-    public File generateOrderInvoice(String orderId, Locale localeKey) {
-        try {
-            Order order = fetchOrder(orderId);
-            if (order == null) {
-                log.error("Order not found: {}", orderId);
-                throw new EntityNotFoundException("Order not found for ID: " + orderId);
-            }
 
-            File pdfFile = createTempPdfFile();
-            generateInvoicePdf(order, localeKey, pdfFile);
-            log.info("Invoice PDF generated successfully: {}", pdfFile.getAbsolutePath());
-            return pdfFile;
-        } catch (IOException e) {
-            log.error("Error creating temporary PDF file", e);
-        } catch (Exception e) {
-            log.error("An error occurred during PDF creation", e);
-        }
-        return null;
-    }
+
 
     private Order fetchOrder(String orderId) {
         return orderService.getSimpleOrderById(orderId);
@@ -134,6 +116,17 @@ public class InvoiceServiceImp implements InvoiceService {
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+        if (order.getMenuItemsWithQuantity() != null) {
+            for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
+                MenuItem menuItem = entry.getKey();
+                if (menuItem != null && menuItem.getPrice() != null) {
+                    double originalPrice = menuItem.getPrice();
+                    double discountedPrice = originalPrice * 0.8; // -20%
+                    menuItem.setPrice(discountedPrice);
+                }
+            }
+        }
+
 
         // Calculate totals and tax details
         double totalHT = 0;

@@ -9,6 +9,7 @@ spring:
     url: jdbc:mysql://localhost:3306/ecommerce-db
     username: root
     password: med
+
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   flyway:
@@ -54,10 +55,6 @@ logging:
 
 jwt:
   secret: 2KECiXj8IGx/Vfvnpqe8LXTwbPbNlyPACaazXGzI458=
-#  access-token-expiration: 3600000 # 1 hour
-#  refresh-token-expiration: 86400000 # 1 day
-#  access-token-expiration: 60000 # 1 minute in milliseconds
-#  refresh-token-expiration: 300000 # 5 minutes in milliseconds
   access-token-expiration: 604800000 # 1 week in milliseconds
   refresh-token-expiration: 2592000000 # 1 month in milliseconds
 

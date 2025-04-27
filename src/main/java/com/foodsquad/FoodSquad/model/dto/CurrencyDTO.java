@@ -7,7 +7,6 @@ import lombok.Data;
 public class CurrencyDTO {
 
     private Long id;
-    @NotBlank(message = "name  cannot be blank")
     private String name;
     private String symbol;
     private int scale;

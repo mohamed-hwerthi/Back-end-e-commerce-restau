@@ -1,16 +1,12 @@
 package com.foodsquad.FoodSquad.config;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foodsquad.FoodSquad.model.dto.MediaDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.model.entity.Currency;
 import com.foodsquad.FoodSquad.repository.*;
 import com.foodsquad.FoodSquad.service.declaration.MediaService;
 import jakarta.annotation.PostConstruct;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockMultipartFile;
@@ -18,10 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -74,9 +70,12 @@ public class DatabaseSeeder {
         } else {
             System.out.println("Users already exist in the database, skipping user seeding.");
         }
+        /*
         if(mediaRepository.count()==0){
             this.seedMedias();
         }
+
+         */
         if (categoryRepository.count() == 0) {
             seedCategories();
         }
@@ -103,35 +102,39 @@ public class DatabaseSeeder {
         }
 
     }
-
+/*
 
     private void seedMedias(){
         List<String>menuItemsImagesNames  = List.of("menu_item_image_1.png" ,"menu_item_image_2.jpg" , "menu_item_image_3.jpg" , "menu_item_image_4.jpg" , "category_image_1.jpg" , "category_image_2.jpg" , "category_image_3.webp");
         menuItemsImagesNames.forEach(this::saveMedia);
     }
+
+ */
+    /*
     private void saveMedia(String imageName) {
         try {
-            Resource resource = resourceLoader.getResource("classpath:images/"+imageName);
+            Resource resource = resourceLoader.getResource("capplicalasspath:images/" + imageName);
 
-            File file = resource.getFile();
-            FileInputStream input = new FileInputStream(file);
+            try (InputStream inputStream = resource.getInputStream()) {
 
-            MultipartFile multipartFile = new MockMultipartFile(
-                    file.getName(),
-                    file.getName(),
-                    Files.probeContentType(file.toPath()),
-                    IOUtils.toByteArray(input)
-            );
+                MultipartFile multipartFile = new MockMultipartFile(
+                        imageName,
+                        imageName,
+                        Files.probeContentType(Paths.get(imageName)),
+                        inputStream
+                );
 
-            MediaDTO uploadedMedia = mediaService.uploadFile(multipartFile);
-
+                MediaDTO uploadedMedia = mediaService.uploadFile(multipartFile);
+            }
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to seed default media image", e);
+            throw new RuntimeException("Failed to seed default media image: " + imageName, e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+     */
 
 
 
@@ -167,7 +170,7 @@ public class DatabaseSeeder {
         category.setDescription(description);
 
         List<Media>media = mediaRepository.findAll();
-        category.setMedias(Collections.singletonList(media.get(generateRandomNumber())));
+        //category.setMedias(Collections.singletonList(media.get(generateRandomNumber())));
 
         return  category ;
 
@@ -262,8 +265,8 @@ public class DatabaseSeeder {
         item.setCurrency(currency);
         item.setCreatedOn(LocalDateTime.now());
 
-        List<Media>medias = mediaRepository.findAll();
-        item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
+       // List<Media>medias = mediaRepository.findAll();
+        //item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
         return item ;
     }
     public  int generateRandomNumber() {
@@ -290,6 +293,7 @@ public class DatabaseSeeder {
 
         List<MenuItem> allMenuItems = menuItemRepository.findAll();
         List<Order> orders = new ArrayList<>();
+githgi
 
         // Example data: Creating orders with quantities for seeding
         Map<Long, Integer> order1Items = new HashMap<>();
