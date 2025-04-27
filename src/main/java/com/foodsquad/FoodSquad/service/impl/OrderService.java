@@ -83,7 +83,7 @@ public class OrderService {
         order.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
         order.setTotalCost(roundedTotalCost.doubleValue());
         order.setCreatedOn(orderDTO.getCreatedOn());
-        order.setPaid(orderDTO.getPaid());
+        order.setPaid(true);
 
         orderRepository.save(order);
         OrderDTO responseDTO = modelMapper.map(order, OrderDTO.class);
