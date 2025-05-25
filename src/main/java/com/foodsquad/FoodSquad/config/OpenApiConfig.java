@@ -37,7 +37,8 @@ public class OpenApiConfig {
                 .addTagsItem(new Tag().name("9. InvoiceManagement").description("Invoice  Management API"))
                 .addTagsItem(new Tag().name("10. Media Management").description("Media Management API"))
                 .addTagsItem(new Tag().name("11. Currency Management").description("Currency Management API"))
-                .addTagsItem(new Tag().name("12. Timbre Management").description("APIs for managing timbres"));
+                .addTagsItem(new Tag().name("12. Timbre Management").description("APIs for managing timbres"))
+                .addTagsItem(new Tag().name("13. Promotion Management").description("APIs for managing promotions"));
 
 
     }

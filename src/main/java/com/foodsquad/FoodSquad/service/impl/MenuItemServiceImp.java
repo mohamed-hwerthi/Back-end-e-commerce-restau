@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.exception.DuplicateMenuItemException;
 import com.foodsquad.FoodSquad.mapper.*;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
@@ -11,6 +12,7 @@ import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.*;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.TaxService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +20,7 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,37 +51,29 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final ModelMapper modelMapper;
 
-
-    private final CategoryMapper categoryMapper;
-
-    private final MenuItemMapper menuItemMapper;
-
-    private final MediaMapper mediaMapper;
-
-    private final TaxService taxService;
-
-    private final CurrencyMapper currencyMapper;
-
-    private final TaxMapper taxMapper;
     private final TaxRepository taxRepository;
 
     private final CurrencyRepository currencyRepository;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, MediaMapper mediaMapper, TaxService taxService, CurrencyMapper currencyMapper, TaxMapper taxMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository) {
+    private final MenuItemPromotionSharedService menuItemPromotionSharedService;
+
+    private final MenuItemMapper menuItemMapper;
+
+    private final  TaxService taxService ;
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, TaxService taxService) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.categoryMapper = categoryMapper;
         this.menuItemMapper = menuItemMapper;
-        this.mediaMapper = mediaMapper;
-        this.taxService = taxService;
-        this.currencyMapper = currencyMapper;
-        this.taxMapper = taxMapper;
+
         this.taxRepository = taxRepository;
         this.currencyRepository = currencyRepository;
+        this.menuItemPromotionSharedService = menuItemPromotionSharedService;
+        this.taxService = taxService;
     }
 
     private User getCurrentUser() {
@@ -99,6 +94,9 @@ public class MenuItemServiceImp implements MenuItemService {
     public ResponseEntity<MenuItemDTO> createMenuItem(MenuItemDTO menuItemDTO) {
 
         logger.debug("Creating menu item: {}", menuItemDTO);
+        if (isMenuItemExistByBarCode(menuItemDTO.getBarCode())) {
+            throw new DuplicateMenuItemException("Menu item with bar code " + menuItemDTO.getBarCode() + " already exists");
+        }
         MenuItem menuItem = menuItemMapper.toEntity(menuItemDTO);
         User currentUser = getCurrentUser();
         menuItem.setUser(currentUser);
@@ -107,19 +105,23 @@ public class MenuItemServiceImp implements MenuItemService {
             menuItem.setTax(tax);
 
             double price = menuItem.getPrice();
-            double taxRate = (menuItemDTO.getTax().getRate())/100; // Assuming rate is 0.20 for 20%
+            double taxRate = (menuItemDTO.getTax().getRate()) / 100;
             double priceWithTax = price * (1 + taxRate);
 
-            // Get currency scale (default to 2 if not specified)
             int scale = menuItem.getCurrency() != null ? menuItem.getCurrency().getScale() : 2;
 
-            // Round to the correct number of decimal places
             double roundedPrice = roundToScale(priceWithTax, scale);
             menuItem.setPrice(roundedPrice);
         }
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
         MenuItemDTO responseDTO = menuItemMapper.toDto(savedMenuItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+
+
+    private boolean isMenuItemExistByBarCode(String barCode) {
+
+        return menuItemRepository.findByBarCode(barCode).isPresent();
     }
 
     @Override
@@ -160,7 +162,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
     }
 
-    public ResponseEntity<MenuItemDTO> getMenuItemById(Long id) {
+    public MenuItemDTO getMenuItemById(Long id) {
 
         logger.debug("Getting menu item by ID: {}", id);
 
@@ -176,12 +178,11 @@ public class MenuItemServiceImp implements MenuItemService {
             averageRating = 0.0;
         }
         averageRating = Math.round(averageRating * 10.0) / 10.0;
-        List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-        List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
-        CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
-        TaxDTO menuItemTax = taxMapper.toDto(menuItem.getTax());
-        MenuItemDTO menuItemDTO = new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency ,menuItemTax);
-        return ResponseEntity.ok(menuItemDTO);
+
+        MenuItemDTO menuItemDTO = menuItemMapper.toMenuItemDtoWithMoreInformation(menuItem, salesCount, reviewCount, averageRating);
+
+        return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem, menuItemDTO);
+
     }
 
     public PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, Long categoryId, String isDefault, String priceSortDirection) {
@@ -205,20 +206,15 @@ public class MenuItemServiceImp implements MenuItemService {
                     long reviewCount = reviewRepository.countByMenuItemId(menuItem.getId());
                     Double averageRating = reviewRepository.findAverageRatingByMenuItemId(menuItem.getId());
                     if (averageRating == null) {
-                        averageRating = 0.0; // Default to 0.0 if there are no reviews
+                        averageRating = 0.0;
                     }
-                    averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
-                    List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-                    CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
-                    List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
-                    TaxDTO menuItemTax = taxMapper.toDto(menuItem.getTax());
+                    averageRating = Math.round(averageRating * 10.0) / 10.0;
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency ,menuItemTax);
+                    MenuItemDTO menuItemDTO = menuItemMapper.toMenuItemDtoWithMoreInformation(menuItem, salesCount, reviewCount, averageRating);
+                    return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem, menuItemDTO);
                 })
                 .collect(Collectors.toList());
 
-
-        // Sort by price
         if (priceSortDirection != null && !priceSortDirection.isEmpty()) {
             menuItems.sort((a, b) -> {
                 if (priceSortDirection.equals("asc")) {
@@ -229,19 +225,19 @@ public class MenuItemServiceImp implements MenuItemService {
             });
         }
 
-        // Sort by salesCount if specified (workaround for now)
         if ("salesCount".equals(sortBy)) {
             menuItems.sort((item1, item2) -> desc
                     ? item2.getSalesCount().compareTo(item1.getSalesCount())
                     : item1.getSalesCount().compareTo(item2.getSalesCount()));
         }
 
-        // PaginatedResponseDTO with the list of items and the total count
+
         return new PaginatedResponseDTO<>(menuItems, menuItemPage.getTotalElements());
     }
 
     @Transactional
     public ResponseEntity<MenuItemDTO> updateMenuItem(Long id, MenuItemDTO menuItemDTO) {
+
         logger.debug("Updating menu item with ID: {}", id);
 
         MenuItem existingMenuItem = menuItemRepository.findById(id)
@@ -291,7 +287,6 @@ public class MenuItemServiceImp implements MenuItemService {
                 double priceWithTax = newPrice * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
-
             }
             // Case 3: Price unchanged, tax rate changed
             else if (Math.abs(newPrice - existingPriceTTC) < 0.0001 &&
@@ -347,7 +342,6 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
 
-    //  method to fetch multiple menu items by their IDs
     public ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(List<Long> ids) {
 
         logger.debug("Getting menu items by IDs: {}", ids);
@@ -365,32 +359,75 @@ public class MenuItemServiceImp implements MenuItemService {
                     long reviewCount = reviewRepository.countByMenuItemId(menuItem.getId());
                     Double averageRating = reviewRepository.findAverageRatingByMenuItemId(menuItem.getId());
                     if (averageRating == null) {
-                        averageRating = 0.0; // Default to 0.0 if there are no reviews
+                        averageRating = 0.0;
                     }
-                    averageRating = Math.round(averageRating * 10.0) / 10.0; // Format to 1 decimal place
-                    List<CategoryDTO> menuItemCategories = menuItem.getCategories().stream().map(categoryMapper::toDto).toList();
-                    CurrencyDTO menuItemCurrency = currencyMapper.toDto(menuItem.getCurrency());
-                    List<MediaDTO> menuItemMedia = menuItem.getMedias().stream().map(mediaMapper::toDto).toList();
+                    averageRating = Math.round(averageRating * 10.0) / 10.0;
 
 
-                    return new MenuItemDTO(menuItem, salesCount, reviewCount, averageRating, menuItemCategories, menuItemMedia, menuItemCurrency);
+                    MenuItemDTO menuItemDTO = menuItemMapper.toMenuItemDtoWithMoreInformation(menuItem, salesCount, reviewCount, averageRating);
+                    return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem, menuItemDTO);
                 })
                 .toList();
         return ResponseEntity.ok(menuItemDTOs);
     }
 
     @Override
-    public MenuItemDTO findByBarCode(String qrCode) {
+    public MenuItemDTO findByBarCode(String barCode) {
 
-        return menuItemRepository.findByBarCode(qrCode)
+        return menuItemRepository.findByBarCode(barCode)
                 .map(menuItemMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for qrCode"));
+                .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for barCode"));
     }
+
     private double roundToScale(double value, int scale) {
+
         if (scale < 0) throw new IllegalArgumentException("Scale must be a positive integer");
 
         double factor = Math.pow(10, scale);
         return Math.round(value * factor) / factor;
     }
+
+    @Override
+    public List<MenuItemDTO> saveMenuItems(List<MenuItem> menuItems) {
+
+        return menuItemRepository.saveAll(menuItems).stream().map(menuItemMapper::toDto).toList();
+    }
+
+    @Override
+    public MenuItemDTO save(MenuItem menuItem) {
+
+        return menuItemMapper.toDto(menuItemRepository.save(menuItem));
+    }
+
+    @Override
+    public MenuItem findMenuItemById(Long id) {
+
+        return menuItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
+    }
+
+
+    private MenuItemDTO verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(MenuItem menuItem, MenuItemDTO menuItemDTO) {
+
+        boolean hasActivePromotion = menuItemPromotionSharedService.isMenuItemHasActivePromotionInCurrentDay(menuItem.getId());
+
+        menuItemDTO.setPromoted(hasActivePromotion);
+
+        if (hasActivePromotion) {
+            PercentageDiscountPromotion promotion = menuItemPromotionSharedService.getMenuItemActivePromotionInCurrentDay(menuItem.getId());
+
+            if (promotion != null && promotion.getDiscountPercentage() != null) {
+                double discountedPrice = menuItem.getPrice() * (1 - promotion.getDiscountPercentage() / 100.0);
+                menuItemDTO.setDiscountedPrice(discountedPrice);
+            } else {
+                menuItemDTO.setDiscountedPrice(menuItem.getPrice());
+            }
+        } else {
+            menuItemDTO.setDiscountedPrice(menuItem.getPrice());
+        }
+
+        return menuItemDTO;
+    }
+
 
 }

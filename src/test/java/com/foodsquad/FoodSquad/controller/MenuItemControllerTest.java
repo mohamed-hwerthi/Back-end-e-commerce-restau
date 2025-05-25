@@ -50,7 +50,7 @@ class MenuItemControllerTest {
     @Test
     void testGetMenuItemById() {
         MenuItemDTO menuItemDTO = new MenuItemDTO();
-        when(menuItemService.getMenuItemById(anyLong())).thenReturn(ResponseEntity.ok(menuItemDTO));
+        when(menuItemService.getMenuItemById(anyLong())).thenReturn(menuItemDTO);
 
         ResponseEntity<MenuItemDTO> response = menuItemController.getMenuItemById(1L);
 

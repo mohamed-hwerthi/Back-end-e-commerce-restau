@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class MenuItemController {
             @Parameter(description = "ID of the menu item to retrieve", example = "1")
             @PathVariable Long id) {
 
-        return menuItemService.getMenuItemById(id);
+        return  ResponseEntity.status(HttpStatus.OK)    .body(  menuItemService.getMenuItemById(id));
     }
 
     @Operation(summary = "Get all menu items", description = "Retrieve a list of menu items with optional filters and sorting.")
@@ -78,8 +79,12 @@ public class MenuItemController {
             @RequestParam(required = false) String isDefault,
 
             @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
-            @RequestParam(required = false) String priceSortDirection) {
-        PaginatedResponseDTO<MenuItemDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
+
+            @RequestParam(required = false) String priceSortDirection
+             )
+
+    {
+        PaginatedResponseDTO<MenuItemDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection );
         return ResponseEntity.ok(response);
     }
 

@@ -131,4 +131,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(DuplicateMenuItemException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemException(DuplicateMenuItemException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+
+    @ExceptionHandler(MenuItemHasActivePromotionInAPeriodException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(DuplicateMenuItemException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+
+
+
+
 }

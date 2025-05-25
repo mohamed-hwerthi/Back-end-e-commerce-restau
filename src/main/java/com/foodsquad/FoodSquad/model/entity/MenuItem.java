@@ -33,7 +33,7 @@ public class MenuItem {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
 
@@ -68,6 +68,18 @@ public class MenuItem {
             inverseJoinColumns = @JoinColumn(name = "media_id")
     )
     private List<Media> medias = new ArrayList<>();
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "menu_item_promotions",
+            joinColumns = @JoinColumn(name = "menu_item_id"),
+            inverseJoinColumns = @JoinColumn(name = "promotion_id")
+    )
+    private List<Promotion> promotions = new ArrayList<>();
+
+
+
 
     @PrePersist
     protected void onCreate() {

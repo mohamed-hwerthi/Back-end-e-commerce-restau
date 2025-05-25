@@ -53,7 +53,7 @@ public class MenuServiceImpl implements MenuService {
         if (!ObjectUtils.isEmpty(menuDTO.getMenuItemsIds())){
             menuDTO.getMenuItemsIds().forEach(
                     menuItemId-> {
-                        MenuItemDTO foundedMenuItem = menuItemService.getMenuItemById(menuItemId).getBody() ;
+                        MenuItemDTO foundedMenuItem = menuItemService.getMenuItemById(menuItemId) ;
                         MenuItem menuItem = menuItemMapper.toEntity(foundedMenuItem);
                         menu.getMenuItems().add(menuItem);
                     }
