@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -76,6 +77,8 @@ public class DatabaseSeeder {
         }
 
          */
+
+
         if (categoryRepository.count() == 0) {
             seedCategories();
         }
@@ -102,15 +105,16 @@ public class DatabaseSeeder {
         }
 
     }
-/*
 
+/*
     private void seedMedias(){
         List<String>menuItemsImagesNames  = List.of("menu_item_image_1.png" ,"menu_item_image_2.jpg" , "menu_item_image_3.jpg" , "menu_item_image_4.jpg" , "category_image_1.jpg" , "category_image_2.jpg" , "category_image_3.webp");
         menuItemsImagesNames.forEach(this::saveMedia);
     }
 
  */
-    /*
+
+
     private void saveMedia(String imageName) {
         try {
             Resource resource = resourceLoader.getResource("capplicalasspath:images/" + imageName);
@@ -134,7 +138,7 @@ public class DatabaseSeeder {
         }
     }
 
-     */
+
 
 
 
@@ -264,9 +268,10 @@ public class DatabaseSeeder {
         item.setCategories(List.of(category));
         item.setCurrency(currency);
         item.setCreatedOn(LocalDateTime.now());
-
-       // List<Media>medias = mediaRepository.findAll();
-        //item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
+        item.setPurchasePrice(BigDecimal.valueOf(100));
+        item.setQuantity(4);
+        List<Media>medias = mediaRepository.findAll();
+      //  item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
         return item ;
     }
     public  int generateRandomNumber() {

@@ -4,6 +4,7 @@ import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.MenuItemCategory;
+import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,6 +33,9 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
             @Param("query") String query,
             Pageable pageable
     );
+
+    List<MenuItem> findAllByPromotionsContaining(Promotion promotion);
+
 
 
 

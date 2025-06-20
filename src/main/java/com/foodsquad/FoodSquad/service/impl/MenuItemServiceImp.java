@@ -15,8 +15,10 @@ import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.TaxService;
+import com.foodsquad.FoodSquad.service.helpers.MenuItemDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,21 +61,24 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final MenuItemMapper menuItemMapper;
 
-    private final  TaxService taxService ;
+    private final TaxService taxService;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryMapper categoryMapper, MenuItemMapper menuItemMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, TaxService taxService) {
+    private final MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator;
+
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository ,@Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.menuItemMapper = menuItemMapper;
-
         this.taxRepository = taxRepository;
         this.currencyRepository = currencyRepository;
         this.menuItemPromotionSharedService = menuItemPromotionSharedService;
+        this.menuItemMapper = menuItemMapper;
         this.taxService = taxService;
+        this.menuItemDiscountPriceCalculator = menuItemDiscountPriceCalculator;
     }
 
     private User getCurrentUser() {
@@ -252,7 +257,6 @@ public class MenuItemServiceImp implements MenuItemService {
             existingMenuItem.setCurrency(currency);
         }
 
-        // Handle tax update/creation and price calculation
         if (menuItemDTO.getTax() != null) {
             Tax existingTax = existingMenuItem.getTax();
             double newPrice = menuItemDTO.getPrice();
@@ -311,6 +315,19 @@ public class MenuItemServiceImp implements MenuItemService {
         MenuItemDTO responseDTO = modelMapper.map(savedMenuItem, MenuItemDTO.class);
 
         return ResponseEntity.ok(responseDTO);
+    }
+
+
+    @Override
+    public MenuItemDTO decrementMenuItemQuantity(Long menuItemId, int quantity) {
+
+        MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + menuItemId));
+        if (menuItem.getQuantity() < quantity) {
+            throw new EntityNotFoundException("MenuItem quantity is not enough");
+        }
+        menuItem.setQuantity(menuItem.getQuantity() - quantity);
+        return menuItemMapper.toDto(menuItemRepository.save(menuItem));
+
     }
 
     @Transactional
@@ -406,6 +423,18 @@ public class MenuItemServiceImp implements MenuItemService {
                 .orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + id));
     }
 
+    @Override
+    public Double findMenuItemDiscountedPrice(Long menuItemId) {
+
+        MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + menuItemId));
+        return menuItemDiscountPriceCalculator.calculateDiscountedPrice(menuItem);
+    }
+
+    @Override
+    public List<MenuItem> findByPromotion(Promotion promotion) {
+
+        return menuItemRepository.findAllByPromotionsContaining(promotion);
+    }
 
     private MenuItemDTO verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(MenuItem menuItem, MenuItemDTO menuItemDTO) {
 

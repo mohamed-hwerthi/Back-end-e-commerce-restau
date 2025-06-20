@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.controller;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
+import com.foodsquad.FoodSquad.model.dto.PromotionType;
 import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,7 +49,7 @@ public class PromotionController {
                     content = @Content(schema = @Schema(implementation = PromotionDTO.class))),
             @ApiResponse(responseCode = "400", description = "Données invalides fournies")
     })
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<PromotionDTO> createPromotion(@Valid @RequestBody PromotionDTO promotionDTO) {
         PromotionDTO created = promotionService.createPromotion(promotionDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -164,6 +165,12 @@ public class PromotionController {
             @PathVariable Long id) {
         promotionService.changePromotionActivationStatus(id);
         return ResponseEntity.noContent().build();
+    }
+
+     @GetMapping("/types")
+    ResponseEntity  <PromotionType[]> getAllPromotionTypes() {
+        PromotionType[] promotionTypes =  PromotionType.values();
+        return ResponseEntity.ok(promotionTypes);
     }
 
 

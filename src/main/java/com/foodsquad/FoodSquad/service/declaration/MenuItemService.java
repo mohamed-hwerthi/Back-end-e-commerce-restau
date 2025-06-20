@@ -4,6 +4,7 @@ import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
@@ -38,6 +39,12 @@ public interface MenuItemService {
     MenuItemDTO save(MenuItem  menuItem) ;
 
     MenuItem   findMenuItemById(Long id) ;
+
+    MenuItemDTO decrementMenuItemQuantity(Long menuItemId  , int quantity);
+
+    Double findMenuItemDiscountedPrice(Long menuItemId);
+
+    public List<MenuItem> findByPromotion(Promotion promotion) ;
 
 
 

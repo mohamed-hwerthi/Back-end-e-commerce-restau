@@ -24,9 +24,8 @@ public interface PromotionService {
 
     Promotion savePromotion(Promotion promotion);
 
-    void     changePromotionActivationStatus(Long promotionId);
+    void   changePromotionActivationStatus(Long promotionId);
 
- ;
 
 
 

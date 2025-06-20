@@ -6,7 +6,9 @@ import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,11 @@ public class MenuItemDTO {
     private String description;
 
     private String barCode;
+    @Positive(message = "Quantity must be positive")
+    private int  quantity  ;
+
+    @Positive(message = "Purchase price must be positive")
+    private BigDecimal purchasePrice  ;
 
     @Positive(message = "Price must be positive")
     private Double price;

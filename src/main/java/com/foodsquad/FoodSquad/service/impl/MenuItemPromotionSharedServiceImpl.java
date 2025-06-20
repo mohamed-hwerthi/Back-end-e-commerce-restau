@@ -66,7 +66,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
         Promotion   savedPromotion = promotionService.savePromotion(promotion);
 
-        return promotionMapper.toDTO(promotion);
+        return promotionMapper.toDTO(savedPromotion);
     }
 
 
@@ -183,7 +183,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
      * Vérifie si deux périodes se chevauchent (au moins un jour en commun).
      */
     private boolean arePeriodsOverlapping(LocalDate period1Start, LocalDate period1End, LocalDate period2Start, LocalDate period2End) {
-        return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
+                return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
     }
 
 

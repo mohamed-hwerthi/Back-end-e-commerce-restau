@@ -31,6 +31,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(OutOfStockException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleProductOutOfStockException(OutOfStockException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMenuItemName()+ex.getMessage());
+        errors.put("status"  , "409");
+        return ResponseEntity.badRequest().body(errors);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {

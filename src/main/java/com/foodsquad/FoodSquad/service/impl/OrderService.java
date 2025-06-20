@@ -5,7 +5,9 @@ import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.MenuItemRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,38 +27,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
-    private   final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    private  final  UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private   final  MenuItemRepository menuItemRepository;
+    private final MenuItemRepository menuItemRepository;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, MenuItemRepository menuItemRepository ,  ModelMapper modelMapper) {
+    private final MenuItemService menuItemService;
 
-        this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
-        this.menuItemRepository = menuItemRepository;
-        this.modelMapper = modelMapper;
-    }
+    private final ModelMapper modelMapper;
 
-    private ModelMapper modelMapper;
 
-    private User getCurrentUser() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-    }
-
-    private void checkOwnership(User owner) {
-        User currentUser = getCurrentUser();
-        if (!currentUser.equals(owner) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
-            throw new IllegalArgumentException("Access denied");
-        }
-    }
 
     public ResponseEntity<OrderDTO> createOrder(OrderDTO orderDTO) {
+
         if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one menu item");
         }
@@ -70,11 +57,11 @@ public class OrderService {
         for (Map.Entry<Long, Integer> entry : menuItemQuantities.entrySet()) {
             MenuItem menuItem = menuItemRepository.findById(entry.getKey())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + entry.getKey()));
+            menuItemService.decrementMenuItemQuantity(menuItem.getId(), entry.getValue());
             int quantity = entry.getValue() != null ? entry.getValue() : 1;
             menuItemsWithQuantity.put(menuItem, quantity);
             totalCost += menuItem.getPrice() * quantity;
         }
-        // Round the totalCost to 2 decimal places
         BigDecimal roundedTotalCost = BigDecimal.valueOf(totalCost).setScale(2, RoundingMode.HALF_UP);
 
         Order order = new Order();
@@ -91,6 +78,7 @@ public class OrderService {
     }
 
     public List<OrderDTO> getAllOrders(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdOn"));
         Page<Order> orderPage = orderRepository.findAllOrdersWithUsers(pageable);
         return orderPage.stream()
@@ -99,6 +87,7 @@ public class OrderService {
     }
 
     public List<OrderDTO> getOrdersByUserId(String userId, int page, int size) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
         checkOwnership(user);
@@ -109,7 +98,8 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseEntity<OrderDTO>getOrderById(String id) {
+    public ResponseEntity<OrderDTO> getOrderById(String id) {
+
         Order order = orderRepository.findOrderWithUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found for ID: " + id));
         checkOwnership(order.getUser());
@@ -118,6 +108,7 @@ public class OrderService {
     }
 
     public ResponseEntity<OrderDTO> updateOrder(String id, OrderDTO orderDTO) {
+
         if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one menu item");
         }
@@ -126,12 +117,10 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Order not found for ID: " + id));
         checkOwnership(existingOrder.getUser());
 
-        // Update user
         User user = userRepository.findByEmail(orderDTO.getUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + orderDTO.getUserEmail()));
         existingOrder.setUser(user);
 
-        // Update menu items with quantities
         Map<Long, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
         Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
         Double totalCost = 0.0;
@@ -161,6 +150,7 @@ public class OrderService {
 
 
     public ResponseEntity<Map<String, String>> deleteOrder(String id) {
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found for ID: " + id));
         checkOwnership(order.getUser());
@@ -169,6 +159,7 @@ public class OrderService {
     }
 
     public ResponseEntity<Map<String, String>> deleteOrders(List<String> ids) {
+
         List<Order> orders = orderRepository.findAllById(ids);
         if (orders.isEmpty()) {
             throw new EntityNotFoundException("No Orders found for the given IDs");
@@ -179,9 +170,26 @@ public class OrderService {
         orderRepository.deleteAll(orders);
         return ResponseEntity.ok(Map.of("message", "Orders successfully deleted"));
     }
-    public  Order  getSimpleOrderById(String OrderId){
-        return  orderRepository.findById(OrderId).orElseThrow(() -> new EntityNotFoundException("Order not found for ID: " + OrderId));
 
+    public Order getSimpleOrderById(String OrderId) {
+
+        return orderRepository.findById(OrderId).orElseThrow(() -> new EntityNotFoundException("Order not found for ID: " + OrderId));
+
+    }
+
+    private User getCurrentUser() {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    private void checkOwnership(User owner) {
+
+        User currentUser = getCurrentUser();
+        if (!currentUser.equals(owner) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
+            throw new IllegalArgumentException("Access denied");
+        }
     }
 
 }

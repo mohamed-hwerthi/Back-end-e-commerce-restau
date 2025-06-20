@@ -3,16 +3,19 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 
-import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.mapper.PromotionMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
+import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import com.foodsquad.FoodSquad.repository.PromotionRepository;
-import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +29,12 @@ public class PromotionServiceImpl implements PromotionService {
 
     private final PromotionMapper promotionMapper;
 
-    private final MenuItemService menuItemService;
-
-    private final MenuItemMapper menuItemMapper ;
-
+    private final MenuItemService menuItemService ;
 
 
     @Override
     public PromotionDTO createPromotion(PromotionDTO promotionDTO) {
+
         Promotion promotion = promotionMapper.toEntity(promotionDTO);
         Promotion saved = promotionRepository.save(promotion);
         return promotionMapper.toDTO(saved);
@@ -41,6 +42,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public PromotionDTO getPromotionById(Long id) {
+
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
         return promotionMapper.toDTO(promotion);
@@ -49,13 +51,20 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public PaginatedResponseDTO<PromotionDTO> getAllPromotions(Pageable pageable) {
 
-        List<PromotionDTO> promotions  = promotionRepository.findAll(pageable).stream().map(promotionMapper::toDTO).toList();
-        return new PaginatedResponseDTO<>(promotions, promotionRepository.count());
+        Page<Promotion> promotions = promotionRepository.findAll(pageable);
+        List<PromotionDTO> promotionDTOS = promotions.stream().map(promotion -> {
+            if (promotion instanceof PercentageDiscountPromotion) {
+                return promotionMapper.mapPromotionPercentageDiscountPromotionToPromotionDTO((PercentageDiscountPromotion) promotion);
+            }
+            return promotionMapper.toDTO(promotion);
+        }).toList();
+        return new PaginatedResponseDTO<>(promotionDTOS, promotionRepository.count());
 
     }
 
     @Override
     public PromotionDTO updatePromotion(Long id, PromotionDTO promotionDTO) {
+
         Promotion existingPromotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
 
@@ -65,33 +74,37 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
+    @Transactional
     public void deletePromotion(Long id) {
-        if (!promotionRepository.existsById(id)) {
-            throw new EntityNotFoundException("Promotion not found with id: " + id);
-        }
-        promotionRepository.deleteById(id);
+        Promotion promotion = promotionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
+
+        List<MenuItem> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
+        menuItemsWithPromotion.forEach(menuItem -> menuItem.getPromotions().remove(promotion));
+        promotionRepository.delete(promotion);
     }
 
     @Override
     public Promotion getPromotion(Long id) {
 
-        return  promotionRepository.findById(id)
+        return promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
     }
 
     @Override
     public Promotion savePromotion(Promotion promotion) {
 
-        return  promotionRepository.save(promotion);
+        return promotionRepository.save(promotion);
     }
 
     @Override
-    public void  changePromotionActivationStatus(Long promotionId) {
+    public void changePromotionActivationStatus(Long promotionId) {
 
         Promotion promotion = promotionRepository.findById(promotionId)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + promotionId));
 
         promotion.setActive(!promotion.isActive());
+        promotionRepository.save(promotion);
     }
 
 }

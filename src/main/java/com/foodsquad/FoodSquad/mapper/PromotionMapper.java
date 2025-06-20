@@ -12,7 +12,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface PromotionMapper {
-
     PromotionDTO toDTO(Promotion promotion);
 
     Promotion toEntity(PromotionDTO promotionDTO);
@@ -24,5 +23,7 @@ public interface PromotionMapper {
     PercentageDiscountPromotion mapPromotionDTOToPercentageDiscountPromotion(PromotionDTO promotionDTO);
 
     PromotionDTO mapPromotionPercentageDiscountPromotionToPromotionDTO(PercentageDiscountPromotion promotion);
+
+
 }
 

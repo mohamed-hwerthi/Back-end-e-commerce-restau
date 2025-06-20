@@ -2,8 +2,11 @@ package com.foodsquad.FoodSquad.model.entity;
 
 import com.foodsquad.FoodSquad.model.Menu;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,14 @@ public class MenuItem {
 
     @Column(nullable = true, name = "codeBar", unique = true)
     private String barCode;
+
+   @Column (nullable = false  , name = "purchase_price")
+   @Positive(message = "Purchase price must be positive")
+    private BigDecimal purchasePrice ;
+
+   @Column(nullable = false , name = "quantity" )
+   @Min(value = 0, message = "Quantity must be at least 0")
+   private int quantity;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,7 +74,7 @@ public class MenuItem {
 
     @ManyToMany
     @JoinTable(
-            name = "menu_item_medias",
+            name = "x",
             joinColumns = @JoinColumn(name = "menu_item_id"),
             inverseJoinColumns = @JoinColumn(name = "media_id")
     )
@@ -77,8 +88,6 @@ public class MenuItem {
             inverseJoinColumns = @JoinColumn(name = "promotion_id")
     )
     private List<Promotion> promotions = new ArrayList<>();
-
-
 
 
     @PrePersist

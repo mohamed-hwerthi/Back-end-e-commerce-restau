@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
+import com.foodsquad.FoodSquad.model.dto.PromotionWithMenuItemsRequestDTO;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,10 +24,10 @@ public class MenuItemPromotionSharedController {
      */
     @PostMapping("/create")
     public ResponseEntity<PromotionDTO> createPromotionForMenuItems(
-            @RequestBody PromotionDTO promotionDTO,
-            @RequestParam List<Long> menuItemIds) {
+            @RequestBody PromotionWithMenuItemsRequestDTO promotionWithMenuItemsRequestDTO
+            ) {
 
-        PromotionDTO createdPromotion = promotionSharedService.createPromotionForMenuItems(menuItemIds, promotionDTO);
+        PromotionDTO createdPromotion = promotionSharedService.createPromotionForMenuItems(promotionWithMenuItemsRequestDTO.getMenuItemsIds(), promotionWithMenuItemsRequestDTO.getPromotion());
         if (createdPromotion == null) {
             return ResponseEntity.badRequest().build();
         }

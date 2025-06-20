@@ -64,6 +64,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/promotions/**").permitAll()
+                                .requestMatchers(HttpMethod.PATCH, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/promotions/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/orders/**").permitAll()

@@ -4,12 +4,11 @@ package com.foodsquad.FoodSquad.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class PromotionDTO {
@@ -27,14 +26,13 @@ public class PromotionDTO {
     private Integer discountPercentage;
 
     @NotNull(message = "Start date is required")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @NotNull(message = "End date is required")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     private boolean active;
 
-    @NotBlank(message = "promotion type is required")
     private PromotionType promotionType;
 
 
