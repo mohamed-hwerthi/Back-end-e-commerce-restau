@@ -67,10 +67,13 @@ public class PromotionServiceImpl implements PromotionService {
 
         Promotion existingPromotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
+        if(existingPromotion instanceof  PercentageDiscountPromotion percentageDiscountPromotion ){
+            promotionMapper.updatePercentageDiscountPromotionWithNewPromotion(promotionDTO , percentageDiscountPromotion);
+            return promotionMapper.toDTO(promotionRepository.save(percentageDiscountPromotion));
+        }
 
-        promotionMapper.updateEntityFromDTO(promotionDTO, existingPromotion);
-        Promotion updated = promotionRepository.save(existingPromotion);
-        return promotionMapper.toDTO(updated);
+        return null  ;
+
     }
 
     @Override

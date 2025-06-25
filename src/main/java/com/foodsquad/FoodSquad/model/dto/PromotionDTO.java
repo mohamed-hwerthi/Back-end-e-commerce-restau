@@ -20,11 +20,6 @@ public class PromotionDTO {
     @Size(max = 100, message = "Title must be at most 100 characters")
     private String name;
 
-    @NotNull(message = "Discount is required")
-    @Min(value = 1, message = "Discount must be at least 1")
-    @Max(value = 100, message = "Discount must be at most 100")
-    private Integer discountPercentage;
-
     @NotNull(message = "Start date is required")
     private LocalDate startDate;
 
@@ -34,6 +29,20 @@ public class PromotionDTO {
     private boolean active;
 
     private PromotionType promotionType;
+
+    @NotNull(message = "Discount is required")
+    @Min(value = 1, message = "Discount must be at least 1")
+    @Max(value = 100, message = "Discount must be at most 100")
+    private Integer discountPercentage;
+
+
+    @Min(value = 1, message = "Discount must be at least 1")
+    private  Double      promotionalPrice ;
+
+    private  DiscountType discountType  ;
+
+
+
 
 
 

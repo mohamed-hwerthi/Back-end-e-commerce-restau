@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.mapper;
 
 
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
+import com.foodsquad.FoodSquad.model.dto.PromotionType;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.mapstruct.BeanMapping;
@@ -17,12 +18,19 @@ public interface PromotionMapper {
     Promotion toEntity(PromotionDTO promotionDTO);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromDTO(PromotionDTO dto, @MappingTarget Promotion entity);
+    void updateEntityFromDTO(PromotionDTO dto, @MappingTarget Promotion entity) ;
+
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        void updatePercentageDiscountPromotionWithNewPromotion(PromotionDTO dto, @MappingTarget PercentageDiscountPromotion  entity) ;
+
+
 
 
     PercentageDiscountPromotion mapPromotionDTOToPercentageDiscountPromotion(PromotionDTO promotionDTO);
 
-    PromotionDTO mapPromotionPercentageDiscountPromotionToPromotionDTO(PercentageDiscountPromotion promotion);
+    @Mapping(target = "promotionType"  , constant = "DISCOUNT")
+        PromotionDTO mapPromotionPercentageDiscountPromotionToPromotionDTO(PercentageDiscountPromotion promotion);
 
 
 }

@@ -19,10 +19,9 @@ public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String name; // Name of the currency (e.g., US Dollar, Euro)
-    private String symbol; // Symbol of the currency (e.g., $, €)
-    private int scale; // Number of decimal places after the comma (e.g., 2 for USD)
+    private String name;
+    private String symbol;
+    private int scale;
     @OneToMany(mappedBy = "currency", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItem> menuItems = new ArrayList<>();
     public Currency(String name, String symbol, int scale) {

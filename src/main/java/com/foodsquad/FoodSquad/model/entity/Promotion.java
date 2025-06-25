@@ -1,6 +1,7 @@
     package com.foodsquad.FoodSquad.model.entity;
 
 
+    import com.foodsquad.FoodSquad.model.dto.DiscountType;
     import jakarta.persistence.DiscriminatorColumn;
     import jakarta.persistence.Entity;
     import jakarta.persistence.GeneratedValue;
@@ -35,11 +36,13 @@
 
         private LocalDate startDate;
 
+
         private LocalDate endDate;
 
         private boolean active  ;
 
         @ManyToMany(mappedBy = "promotions")
+
         private List<MenuItem> menuItems = new ArrayList<>();
 
 

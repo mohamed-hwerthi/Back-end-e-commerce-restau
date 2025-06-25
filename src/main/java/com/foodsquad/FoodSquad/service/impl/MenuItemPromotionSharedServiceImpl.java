@@ -39,7 +39,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
         List<MenuItemDTO> menuItems = getMenuItems(menuItemsIds);
 
-        if (promotionDTO.getPromotionType().equals(PromotionType.PERCENTAGE_DISCOUNT)) {
+        if (promotionDTO.getPromotionType().equals(PromotionType.DISCOUNT)) {
             return createPercentageDiscountPromotion(promotionDTO, menuItems);
 
         }
@@ -63,7 +63,6 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
         Promotion savePromotion = promotionService.savePromotion(promotion);
 
         associatePromotionWithMenuItems(savePromotion, menuItems);
-
         Promotion   savedPromotion = promotionService.savePromotion(promotion);
 
         return promotionMapper.toDTO(savedPromotion);
