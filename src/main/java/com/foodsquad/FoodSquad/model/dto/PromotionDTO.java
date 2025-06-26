@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class PromotionDTO {
@@ -30,16 +32,16 @@ public class PromotionDTO {
 
     private PromotionType promotionType;
 
-    @NotNull(message = "Discount is required")
     @Min(value = 1, message = "Discount must be at least 1")
     @Max(value = 100, message = "Discount must be at most 100")
     private Integer discountPercentage;
-
 
     @Min(value = 1, message = "Discount must be at least 1")
     private  Double      promotionalPrice ;
 
     private  DiscountType discountType  ;
+
+    private List<MenuItemDTO > menuItems  = new ArrayList<>();
 
 
 
