@@ -40,7 +40,7 @@ public class CategoryController {
     public   ResponseEntity < List<CategoryDTO> > findAllCategories() {
         return  ResponseEntity.ok().body( categoryService.findAllCategories());
     }
-
+    
     @Operation(summary = "Get all categories  with pagination ", description = "Retrieve all categories  with pagination.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully retrieved all categories",

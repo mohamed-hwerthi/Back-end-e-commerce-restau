@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.service.helpers;
 
 
+import com.foodsquad.FoodSquad.model.dto.DiscountType;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
@@ -24,11 +25,19 @@ public class MenuItemDiscountPriceCalculator {
         }
 
         PercentageDiscountPromotion promotion = promotionService.getMenuItemActivePromotionInCurrentDay(menuItemId);
+
         if (promotion == null || promotion.getDiscountPercentage() == null || promotion.getDiscountPercentage() <= 0) {
             return menuItem.getPrice();
         }
+        if(promotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE)){
+            return applyDiscount(menuItem.getPrice(), promotion.getDiscountPercentage());
 
-        return applyDiscount(menuItem.getPrice(), promotion.getDiscountPercentage());
+        }
+        if(promotion.getDiscountType().equals(DiscountType.BY_AMOUNT)){
+            return applyDiscount(menuItem.getPrice(), promotion.getPromotionalPrice());
+
+        }
+        return menuItem.getPrice();
     }
 
     private double applyDiscount(double originalPrice, double discountPercentage) {

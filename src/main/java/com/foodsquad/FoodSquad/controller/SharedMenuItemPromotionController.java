@@ -13,20 +13,19 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/promotions")
+@RequestMapping("/api/items-promotions")
 @RequiredArgsConstructor
-public class MenuItemPromotionSharedController {
+public class SharedMenuItemPromotionController {
 
     private final MenuItemPromotionSharedService promotionSharedService;
 
     /**
      * Crée une promotion pour une liste d'items de menu.
      */
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<PromotionDTO> createPromotionForMenuItems(
             @RequestBody PromotionWithMenuItemsRequestDTO promotionWithMenuItemsRequestDTO
             ) {
-
         PromotionDTO createdPromotion = promotionSharedService.createPromotionForMenuItems(promotionWithMenuItemsRequestDTO.getMenuItemsIds(), promotionWithMenuItemsRequestDTO.getPromotion());
         if (createdPromotion == null) {
             return ResponseEntity.badRequest().build();

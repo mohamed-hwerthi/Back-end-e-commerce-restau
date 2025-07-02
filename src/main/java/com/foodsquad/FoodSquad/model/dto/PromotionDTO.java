@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.model.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.foodsquad.FoodSquad.model.entity.PromotionTarget;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -39,10 +40,18 @@ public class PromotionDTO {
     @Min(value = 1, message = "Discount must be at least 1")
     private  Double      promotionalPrice ;
 
+
     private  DiscountType discountType  ;
 
+    @NotNull
+    private PromotionTarget promotionTarget ;
+
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<MenuItemDTO > menuItems  = new ArrayList<>();
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<CategoryDTO> categories  = new ArrayList<>();
 
 
 

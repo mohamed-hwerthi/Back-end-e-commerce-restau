@@ -6,10 +6,9 @@ package com.foodsquad.FoodSquad.service.impl;
 import com.foodsquad.FoodSquad.mapper.PromotionMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
-import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
-import com.foodsquad.FoodSquad.model.entity.Promotion;
+import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.PromotionRepository;
+import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +29,8 @@ public class PromotionServiceImpl implements PromotionService {
     private final PromotionMapper promotionMapper;
 
     private final MenuItemService menuItemService ;
+
+    private  final CategoryService categoryService  ;
 
 
     @Override
@@ -81,9 +82,17 @@ public class PromotionServiceImpl implements PromotionService {
     public void deletePromotion(Long id) {
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
+        if(promotion.getPromotionTarget().equals(PromotionTarget.MENUITEMS)){
+            List<MenuItem> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
+            menuItemsWithPromotion.forEach(menuItem -> menuItem.getPromotions().remove(promotion));
 
-        List<MenuItem> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
-        menuItemsWithPromotion.forEach(menuItem -> menuItem.getPromotions().remove(promotion));
+        }
+        if (promotion.getPromotionTarget().equals(PromotionTarget.CATEGORIES)){
+              List<Category>categories =categoryService.findCategoriesWithPromotions(promotion) ;
+                categories.forEach(category -> category.getPromotions().remove(promotion)
+              );
+
+        }
         promotionRepository.delete(promotion);
     }
 

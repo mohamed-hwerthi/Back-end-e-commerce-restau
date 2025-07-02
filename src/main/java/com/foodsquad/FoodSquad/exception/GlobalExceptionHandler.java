@@ -149,7 +149,16 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(MenuItemHasActivePromotionInAPeriodException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(DuplicateMenuItemException ex) {
+    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(MenuItemHasActivePromotionInAPeriodException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+
+
+    @ExceptionHandler(CategoryActivePromotionInAPeriodException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(CategoryActivePromotionInAPeriodException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);

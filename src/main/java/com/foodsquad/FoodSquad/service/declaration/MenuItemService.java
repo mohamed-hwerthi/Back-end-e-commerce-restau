@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.service.declaration;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
+import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,9 @@ public interface MenuItemService {
 
     Double findMenuItemDiscountedPrice(Long menuItemId);
 
-    public List<MenuItem> findByPromotion(Promotion promotion) ;
+     List<MenuItem> findByPromotion(Promotion promotion) ;
+
+     List<MenuItem>findByCategory(Category  category) ;
 
 
 

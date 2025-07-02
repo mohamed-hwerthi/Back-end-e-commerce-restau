@@ -36,6 +36,8 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
     List<MenuItem> findAllByPromotionsContaining(Promotion promotion);
 
+    List<MenuItem> findAllByCategoriesContaining(Category category);
+
 
 
 

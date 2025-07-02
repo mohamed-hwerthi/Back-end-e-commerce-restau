@@ -4,6 +4,7 @@ import com.foodsquad.FoodSquad.mapper.CategoryMapper;
 import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
+import com.foodsquad.FoodSquad.model.entity.Promotion;
 import com.foodsquad.FoodSquad.repository.CategoryRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
@@ -13,9 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImp implements CategoryService {
@@ -82,5 +85,29 @@ public class CategoryServiceImp implements CategoryService {
         return categoryRepository.findAll().stream().map(categoryMapper::toDto).toList();
     }
 
+    @Override
+    public List<Category> findCategoriesWithPromotions(Promotion promotion) {
+
+        return  categoryRepository.findAllByPromotionsContaining(promotion) ;
+
+    }
+
+    @Override
+    public Category findCategory(Long categoryId) {
+        return  categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + categoryId));
+       }
+
+
+    @Override
+    public Category saveCategory(Category category) {
+         return    categoryRepository.save(category);
+    }
+
+
+    @Override
+    public List<Category> saveCategories(List<Category> categories) {
+        return  categoryRepository.saveAll(categories);
+    }
 }
 

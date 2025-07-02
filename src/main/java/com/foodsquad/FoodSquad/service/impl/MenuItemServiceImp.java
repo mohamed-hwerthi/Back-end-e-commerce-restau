@@ -1,24 +1,18 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.exception.DuplicateMenuItemException;
-import com.foodsquad.FoodSquad.mapper.*;
-import com.foodsquad.FoodSquad.model.dto.*;
+import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
+import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
-import com.foodsquad.FoodSquad.model.dto.*;
-import com.foodsquad.FoodSquad.model.entity.Category;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
-import com.foodsquad.FoodSquad.model.entity.MenuItemCategory;
-import com.foodsquad.FoodSquad.model.entity.User;
-import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.*;
-import com.foodsquad.FoodSquad.service.declaration.CategoryService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.TaxService;
 import com.foodsquad.FoodSquad.service.helpers.MenuItemDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,7 +244,6 @@ public class MenuItemServiceImp implements MenuItemService {
 
         checkOwnership(existingMenuItem);
 
-        // Handle currency update
         if (menuItemDTO.getCurrency() != null && menuItemDTO.getCurrency().getId() != null) {
             Currency currency = currencyRepository.findById(menuItemDTO.getCurrency().getId())
                     .orElseThrow(() -> new EntityNotFoundException("Currency not found"));
@@ -262,48 +255,38 @@ public class MenuItemServiceImp implements MenuItemService {
             double newPrice = menuItemDTO.getPrice();
             double newTaxRate = menuItemDTO.getTax().getRate();
 
-            // Get existing values (use 0 if no existing tax)
             double existingTaxRate = (existingTax != null) ? existingTax.getRate() : 0;
             double existingPriceTTC = existingMenuItem.getPrice();
 
-            // Update or create tax
+
             Tax tax = existingTax != null ? existingTax : new Tax();
             tax.setRate(newTaxRate);
             tax.setName(menuItemDTO.getTax().getName());
             tax = taxRepository.save(tax);
             existingMenuItem.setTax(tax);
 
-            // Get currency scale
             int scale = existingMenuItem.getCurrency() != null ?
                     existingMenuItem.getCurrency().getScale() : 2;
 
-            // Case 1: Both price and tax rate unchanged - keep existing price
             if (Math.abs(newPrice - existingPriceTTC) < 0.0001 &&
                     Math.abs(newTaxRate - existingTaxRate) < 0.0001) {
-                // No recalculation needed
                 menuItemDTO.setPrice(existingPriceTTC);
             }
-            // Case 2: Price changed, tax rate unchanged
             else if (Math.abs(newPrice - existingPriceTTC) >= 0.0001 &&
                     Math.abs(newTaxRate - existingTaxRate) < 0.0001) {
-                // Calculate HT from existing TTC price and apply to new price
                 double existingPriceHT = existingPriceTTC / (1 + existingTaxRate / 100);
                 double priceWithTax = newPrice * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
             }
-            // Case 3: Price unchanged, tax rate changed
             else if (Math.abs(newPrice - existingPriceTTC) < 0.0001 &&
                     Math.abs(newTaxRate - existingTaxRate) >= 0.0001) {
-                // Calculate HT from existing TTC price and apply new tax rate
                 double priceHT = existingPriceTTC / (1 + existingTaxRate / 100);
                 double priceWithNewTax = priceHT * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithNewTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
             }
-            // Case 4: Both price and tax rate changed
             else {
-                // Calculate new TTC price with new tax rate
                 double priceWithTax = newPrice * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
@@ -458,5 +441,8 @@ public class MenuItemServiceImp implements MenuItemService {
         return menuItemDTO;
     }
 
-
+    @Override
+    public List<MenuItem> findByCategory(Category category) {
+        return  menuItemRepository.findAllByCategoriesContaining(category) ;
+    }
 }

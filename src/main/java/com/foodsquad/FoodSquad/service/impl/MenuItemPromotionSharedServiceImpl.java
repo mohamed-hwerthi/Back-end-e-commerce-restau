@@ -44,8 +44,6 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
         }
         return null;
-
-
     }
 
     @Override
@@ -63,6 +61,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
         Promotion savePromotion = promotionService.savePromotion(promotion);
 
         associatePromotionWithMenuItems(savePromotion, menuItems);
+
         Promotion   savedPromotion = promotionService.savePromotion(promotion);
 
         return promotionMapper.toDTO(savedPromotion);
@@ -153,11 +152,17 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
     }
 
+
+    /*
+   todo  : we have to add some  logic here  for getting the  last created promotion  :our metier is to apply the last created  promotion for the  same type
+
+     **  getting related categories promotions to display them
+     */
+
     @Override
     public PercentageDiscountPromotion getMenuItemActivePromotionInCurrentDay(Long menuItemId) {
 
         MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
-
         LocalDate today = LocalDate.now();
 
         return menuItem.getPromotions().stream()
@@ -169,8 +174,6 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
                 )
                 .filter(promotion -> promotion instanceof PercentageDiscountPromotion)
                 .map(promotion -> (PercentageDiscountPromotion) promotion)
-
-
                 .findFirst().orElse(null);
     }
 

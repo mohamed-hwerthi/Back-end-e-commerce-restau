@@ -4,6 +4,7 @@ import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionType;
+import com.foodsquad.FoodSquad.model.entity.PromotionTarget;
 import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -172,6 +173,15 @@ public class PromotionController {
         PromotionType[] promotionTypes =  PromotionType.values();
         return ResponseEntity.ok(promotionTypes);
     }
+
+    @GetMapping("/targets")
+    ResponseEntity  <PromotionTarget[]> getAllPromotionTargets() {
+        PromotionTarget[] promotionTargets =  PromotionTarget.values();
+        return ResponseEntity.ok(promotionTargets);
+    }
+
+
+
 
 
 
