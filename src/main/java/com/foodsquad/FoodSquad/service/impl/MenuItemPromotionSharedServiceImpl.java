@@ -124,15 +124,13 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
     @Override
     public boolean isMenuItemHasActivePromotionInCurrentDay(Long menuItemId) {
-        MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
-
+        List<PromotionDTO>promotionDTOS = promotionService.findAllPromotionForMenuItem(menuItemId);
         LocalDate today = LocalDate.now();
-
-        return menuItem.getPromotions().stream()
-                .filter(Promotion::isActive)
-                .anyMatch(promotion ->
-                        ( !today.isBefore(promotion.getStartDate()) ) &&
-                                ( !today.isAfter(promotion.getEndDate()) )
+        return promotionDTOS.stream()
+                .filter(PromotionDTO::isActive)
+                .anyMatch(promotionDTO ->
+                        ( !today.isBefore(promotionDTO.getStartDate()) ) &&
+                                ( !today.isAfter(promotionDTO.getEndDate()) )
                 );
     }
 
@@ -154,27 +152,26 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
 
     /*
-   todo  : we have to add some  logic here  for getting the  last created promotion  :our metier is to apply the last created  promotion for the  same type
+   todo  : we have to add some  logic here  for getting the  last created promotion  :
+    our metier is to apply the last created  promotion for the  same type
 
      **  getting related categories promotions to display them
      */
 
     @Override
     public PercentageDiscountPromotion getMenuItemActivePromotionInCurrentDay(Long menuItemId) {
-
-        MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
+        List<Promotion> menuItemPromotions = promotionService.findPromotionsForMenuItem(menuItemId);
         LocalDate today = LocalDate.now();
 
-        return menuItem.getPromotions().stream()
+        return menuItemPromotions.stream()
                 .filter(Promotion::isActive)
                 .filter(promotion ->
-                        ( !today.isBefore(promotion.getStartDate()) ) &&
-                                ( !today.isAfter(promotion.getEndDate()) )
-
+                        promotion.getStartDate() != null && promotion.getEndDate() != null &&
+                                !today.isBefore(promotion.getStartDate()) && !today.isAfter(promotion.getEndDate())
                 )
                 .filter(promotion -> promotion instanceof PercentageDiscountPromotion)
-                .map(promotion -> (PercentageDiscountPromotion) promotion)
-                .findFirst().orElse(null);
+                .map(promotion -> (PercentageDiscountPromotion) promotion).max((p1, p2) -> p2.getCreatedOn().compareTo(p1.getCreatedOn()))
+                .orElse(null);
     }
 
 
@@ -187,6 +184,8 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     private boolean arePeriodsOverlapping(LocalDate period1Start, LocalDate period1End, LocalDate period2Start, LocalDate period2End) {
                 return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
     }
+
+
 
 
 

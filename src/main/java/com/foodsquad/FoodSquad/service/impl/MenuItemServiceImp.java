@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.exception.DuplicateMenuItemException;
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
+import com.foodsquad.FoodSquad.model.dto.DiscountType;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
@@ -9,6 +10,7 @@ import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.*;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import com.foodsquad.FoodSquad.service.declaration.TaxService;
 import com.foodsquad.FoodSquad.service.helpers.MenuItemDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
@@ -60,7 +62,8 @@ public class MenuItemServiceImp implements MenuItemService {
     private final MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator;
 
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository ,@Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator) {
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository , @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -420,29 +423,39 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     private MenuItemDTO verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(MenuItem menuItem, MenuItemDTO menuItemDTO) {
-
         boolean hasActivePromotion = menuItemPromotionSharedService.isMenuItemHasActivePromotionInCurrentDay(menuItem.getId());
-
         menuItemDTO.setPromoted(hasActivePromotion);
+
+        double originalPrice = menuItem.getPrice();
+        double discountedPrice = originalPrice;
 
         if (hasActivePromotion) {
             PercentageDiscountPromotion promotion = menuItemPromotionSharedService.getMenuItemActivePromotionInCurrentDay(menuItem.getId());
 
-            if (promotion != null && promotion.getDiscountPercentage() != null) {
-                double discountedPrice = menuItem.getPrice() * (1 - promotion.getDiscountPercentage() / 100.0);
-                menuItemDTO.setDiscountedPrice(discountedPrice);
-            } else {
-                menuItemDTO.setDiscountedPrice(menuItem.getPrice());
+            if (isPromotionDiscountTypeByPercentage(promotion)) {
+                discountedPrice = originalPrice * (1 - promotion.getDiscountPercentage() / 100.0);
+            } else if (isPromotionDiscountTypeByAmount(promotion)) {
+                discountedPrice = promotion.getPromotionalPrice();
             }
-        } else {
-            menuItemDTO.setDiscountedPrice(menuItem.getPrice());
         }
 
+        menuItemDTO.setDiscountedPrice(discountedPrice);
         return menuItemDTO;
     }
+
 
     @Override
     public List<MenuItem> findByCategory(Category category) {
         return  menuItemRepository.findAllByCategoriesContaining(category) ;
     }
+
+
+    private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion  percentageDiscountPromotion) {
+        return  !ObjectUtils.isEmpty(percentageDiscountPromotion)  && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
+    }
+    private boolean isPromotionDiscountTypeByAmount(PercentageDiscountPromotion  percentageDiscountPromotion) {
+        return  !ObjectUtils.isEmpty(percentageDiscountPromotion)  && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
+    }
+
+
 }
