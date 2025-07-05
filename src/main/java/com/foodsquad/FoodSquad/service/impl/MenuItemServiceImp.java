@@ -157,7 +157,10 @@ public class MenuItemServiceImp implements MenuItemService {
         Page<MenuItem> menuItemPage = menuItemRepository.findByQuery(query, pageable);
         List<MenuItem> menuItems = menuItemPage.getContent();
         List<MenuItemDTO> menuItemDTOs = menuItems.stream()
-                .map(menuItemMapper::toDto)
+                .map(menuItem -> {
+                    MenuItemDTO dto = menuItemMapper.toDto(menuItem);
+                    return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem,dto);
+                })
                 .toList();
         return new PaginatedResponseDTO<>(menuItemDTOs, menuItemPage.getTotalElements());
 
@@ -426,19 +429,11 @@ public class MenuItemServiceImp implements MenuItemService {
         boolean hasActivePromotion = menuItemPromotionSharedService.isMenuItemHasActivePromotionInCurrentDay(menuItem.getId());
         menuItemDTO.setPromoted(hasActivePromotion);
 
-        double originalPrice = menuItem.getPrice();
-        double discountedPrice = originalPrice;
+        double discountedPrice = menuItem.getPrice();
 
         if (hasActivePromotion) {
-            PercentageDiscountPromotion promotion = menuItemPromotionSharedService.getMenuItemActivePromotionInCurrentDay(menuItem.getId());
-
-            if (isPromotionDiscountTypeByPercentage(promotion)) {
-                discountedPrice = originalPrice * (1 - promotion.getDiscountPercentage() / 100.0);
-            } else if (isPromotionDiscountTypeByAmount(promotion)) {
-                discountedPrice = promotion.getPromotionalPrice();
-            }
+            discountedPrice = menuItemDiscountPriceCalculator.calculateDiscountedPrice(menuItem);
         }
-
         menuItemDTO.setDiscountedPrice(discountedPrice);
         return menuItemDTO;
     }

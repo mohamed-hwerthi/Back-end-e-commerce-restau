@@ -26,15 +26,13 @@ public class MenuItemDiscountPriceCalculator {
 
         PercentageDiscountPromotion promotion = promotionService.getMenuItemActivePromotionInCurrentDay(menuItemId);
 
-        if (promotion == null || promotion.getDiscountPercentage() == null || promotion.getDiscountPercentage() <= 0) {
-            return menuItem.getPrice();
-        }
+
         if(promotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE)){
             return applyDiscount(menuItem.getPrice(), promotion.getDiscountPercentage());
 
         }
         if(promotion.getDiscountType().equals(DiscountType.BY_AMOUNT)){
-            return applyDiscount(menuItem.getPrice(), promotion.getPromotionalPrice());
+            return  promotion.getPromotionalPrice();
 
         }
         return menuItem.getPrice();
