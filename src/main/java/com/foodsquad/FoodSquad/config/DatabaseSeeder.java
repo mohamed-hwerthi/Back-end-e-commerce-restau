@@ -71,14 +71,9 @@ public class DatabaseSeeder {
         } else {
             System.out.println("Users already exist in the database, skipping user seeding.");
         }
-        /*
         if(mediaRepository.count()==0){
             this.seedMedias();
         }
-
-         */
-
-
         if (categoryRepository.count() == 0) {
             seedCategories();
         }
@@ -106,18 +101,18 @@ public class DatabaseSeeder {
 
     }
 
-/*
+
     private void seedMedias(){
         List<String>menuItemsImagesNames  = List.of("menu_item_image_1.png" ,"menu_item_image_2.jpg" , "menu_item_image_3.jpg" , "menu_item_image_4.jpg" , "category_image_1.jpg" , "category_image_2.jpg" , "category_image_3.webp");
         menuItemsImagesNames.forEach(this::saveMedia);
     }
 
- */
+
 
 
     private void saveMedia(String imageName) {
         try {
-            Resource resource = resourceLoader.getResource("capplicalasspath:images/" + imageName);
+            Resource resource = resourceLoader.getResource("classpath:images/" + imageName);
 
             try (InputStream inputStream = resource.getInputStream()) {
 
@@ -174,7 +169,8 @@ public class DatabaseSeeder {
         category.setDescription(description);
 
         List<Media>media = mediaRepository.findAll();
-        //category.setMedias(Collections.singletonList(media.get(generateRandomNumber())));
+
+        category.setMedias(Collections.singletonList(media.get(generateRandomNumber())));
 
         return  category ;
 
@@ -271,7 +267,7 @@ public class DatabaseSeeder {
         item.setPurchasePrice(BigDecimal.valueOf(100));
         item.setQuantity(4);
         List<Media>medias = mediaRepository.findAll();
-      //  item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
+        item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
         return item ;
     }
     public  int generateRandomNumber() {
@@ -290,35 +286,6 @@ public class DatabaseSeeder {
         userRepository.saveAll(users);
         System.out.println("Users seeded successfully.");
     }
-
-
-
-/*
-    private void seedOrders() {
-
-        List<MenuItem> allMenuItems = menuItemRepository.findAll();
-        List<Order> orders = new ArrayList<>();
-githgi
-
-        // Example data: Creating orders with quantities for seeding
-        Map<Long, Integer> order1Items = new HashMap<>();
-        order1Items.put(58L, 5); // 5 of MenuItem with ID 58
-        order1Items.put(64L, 4); // 4 of MenuItem with ID 64
-
-        Map<Long, Integer> order2Items = new HashMap<>();
-        order2Items.put(56L, 3); // 3 of MenuItem with ID 56
-        order2Items.put(47L, 21); // 21 of MenuItem with ID 47
-
-        Map<Long, Integer> order3Items = new HashMap<>();
-        order3Items.put(61L, 1); // 1 of MenuItem with ID 61
-        order3Items.put(47L, 3); // 3 of MenuItem with ID 47
-
-
-        orderRepository.saveAll(orders);
-        System.out.println("Orders seeded successfully.");
-    }
- */
-
 
 
     private User createUser(String name, String email, String password, String phoneNumber, UserRole role) {
@@ -342,62 +309,6 @@ githgi
             return menuItem;
     }
 
-    /*
 
-    private Order createOrder(OrderStatus status, LocalDateTime createdOn, User user, boolean paid, Map<Long, Integer> menuItemQuantities) {
-
-        Order order = new Order();
-        order.setStatus(status);
-        order.setCreatedOn(createdOn);
-        order.setUser(user);
-        order.setPaid(paid);
-
-        Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
-        for (Map.Entry<Long, Integer> entry : menuItemQuantities.entrySet()) {
-            MenuItem menuItem = menuItemRepository.findById(entry.getKey()).orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID"));
-            menuItemsWithQuantity.put(menuItem, entry.getValue());
-        }
-
-        order.setMenuItemsWithQuantity(menuItemsWithQuantity);
-        double totalCost = menuItemsWithQuantity.entrySet().stream()
-                .mapToDouble(entry -> entry.getKey().getPrice().doubleValue() * entry.getValue())
-                .sum();
-        // Round the totalCost to 2 decimal places
-        BigDecimal roundedTotalCost = BigDecimal.valueOf(totalCost).setScale(2, RoundingMode.HALF_UP);
-        order.setTotalCost(roundedTotalCost.doubleValue());
-        return order;
-    }
-
-    private void seedReviews() {
-
-        List<MenuItem> menuItems = menuItemRepository.findAll();
-        List<User> users = userRepository.findAll();
-        Random random = new Random();
-
-        List<Review> reviews = new ArrayList<>();
-        String[] comments = {"Great taste!", "Could be better.", "I loved it!", "Not my favorite.", "Amazing quality!"};
-
-        for (MenuItem menuItem : menuItems) {
-            for (int i = 0; i < 3; i++) {  // Each item gets 3 reviews
-                User user = users.get(random.nextInt(users.size())); // Random user
-                String comment = comments[random.nextInt(comments.length)]; // Random comment
-                int rating = random.nextInt(5) + 1; // Rating between 1 and 5
-
-                Review review = new Review();
-                review.setMenuItem(menuItem);
-                review.setUser(user);
-                review.setComment(comment);
-                review.setRating(rating);
-                review.setCreatedOn(LocalDateTime.now().minusDays(random.nextInt(30)));
-
-                reviews.add(review);
-            }
-        }
-
-        reviewRepository.saveAll(reviews);
-        System.out.println("Reviews seeded successfully.");
-    }
-
-     */
 
 }
