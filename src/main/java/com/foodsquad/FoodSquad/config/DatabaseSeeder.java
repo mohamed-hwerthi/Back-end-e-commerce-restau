@@ -142,7 +142,7 @@ public class DatabaseSeeder {
 
 
         List<Category> categories = List.of(
-                createCategory("Oryx Fragrance", "ORYX FRAGRANCE"),
+                createCategory("Oryx Fragrance", "ORYX fFRAGRANCE"),
                 createCategory("Oryx Bio", "ORYX BIO"),
                 createCategory("Oryx Phyto", "ORYX PHYTO")
 
@@ -170,7 +170,7 @@ public class DatabaseSeeder {
 
         List<Media>media = mediaRepository.findAll();
 
-        category.setMedias(Collections.singletonList(media.get(generateRandomNumber())));
+        category.setMedias(Collections.singletonList(media.get(0)));
 
         return  category ;
 
@@ -267,7 +267,7 @@ public class DatabaseSeeder {
         item.setPurchasePrice(BigDecimal.valueOf(100));
         item.setQuantity(4);
         List<Media>medias = mediaRepository.findAll();
-        item.setMedias(Collections.singletonList(medias.get(generateRandomNumber())));
+        item.setMedias(Collections.singletonList(medias.get(0)));
         return item ;
     }
     public  int generateRandomNumber() {

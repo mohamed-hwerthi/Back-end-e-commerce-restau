@@ -1,6 +1,5 @@
     package com.foodsquad.FoodSquad.model.entity;
 
-    import com.foodsquad.FoodSquad.model.Menu;
     import jakarta.persistence.*;
     import jakarta.validation.constraints.Min;
     import jakarta.validation.constraints.Positive;
@@ -10,7 +9,6 @@
     import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.List;
-    import java.util.Objects;
 
     @Entity
     @Table(name = "menu_items")

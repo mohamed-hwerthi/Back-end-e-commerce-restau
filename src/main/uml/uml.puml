@@ -1,0 +1,199 @@
+@startuml
+' Enable PlantUML style
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classFontColor #000000
+skinparam classBackgroundColor #F8F8F8
+skinparam classBorderColor #666666
+skinparam arrowColor #666666
+skinparam shadowing false
+
+class User {
+  +Long id
+  +String firstname
+  +String lastname
+  +String email
+  +String password
+  +UserRole role
+  +Boolean locked
+  +Boolean enabled
+  +String address
+  +String phoneNumber
+  +String image
+}
+
+class Employee {
+
+}
+
+class Caissier {
+
+}
+
+class admin {
+}
+
+class Client {
+
+}
+
+class Role {
+  - id : int
+  -code : String
+  - nom : String
+  - description : String
+}
+
+class Token {
+  +Long id
+  +String token
+  +TokenType tokenType
+  +boolean expired
+  +boolean revoked
+}
+
+class MenuItem {
+  +Long id
+  +String title
+  +String description
+  +Double price
+  +String barCode
+  +BigDecimal purchasePrice
+  +int quantity
+  +LocalDateTime createdOn
+}
+
+class Category {
+  +Long id
+  +String name
+  +String description
+  +List<MenuItem> menuItems
+  +List<Media> medias
+  +List<Promotion> promotions
+}
+
+class Order {
+  +Long id
+  +String orderNumber
+  +LocalDateTime orderDate
+  +Double totalAmount
+  +User user
+  +Set<OrderItem> orderItems
+}
+
+class OrderItem {
+  +Long id
+  +Integer quantity
+  +Double price
+  +Order order
+  +MenuItem menuItem
+}
+
+class Review {
+  +Long id
+  +String comment
+  +Integer rating
+  +LocalDateTime reviewDate
+  +User user
+  +MenuItem menuItem
+}
+
+class Promotion {
+  +Long id
+  +String name
+  +String description
+  +LocalDateTime startDate
+  +LocalDateTime endDate
+  +PromotionTarget target
+  +Set<MenuItem> menuItems
+}
+
+class BuyOneGetOneFreePromotion {
+  +Long id
+  +MenuItem freeItem
+}
+
+class PercentageDiscountPromotion {
+  +Long id
+  +Double percentage
+  +Double maxDiscount
+}
+
+class Tax {
+  +Long id
+  +String name
+  +Double rate
+}
+
+class Media {
+  +Long id
+  +String name
+  +String path
+  +String url
+  +String type
+  +List<MenuItem> menuItems
+  +List<Category> categories
+}
+
+class Currency {
+  +Long id
+  +String name
+  +String symbol
+  +int scale
+  +List<MenuItem> menuItems
+}
+
+class Timbre {
+  +Long id
+  +String name
+  +String description
+  +String image
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY_FOR_DELIVERY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PromotionTarget {
+MENUITEMS  CATEGORIES
+}
+
+' Héritages
+Employee --|> User
+Caissier --|> Employee
+admin --|> Employee
+Client --|> User
+
+' Relationships
+User "1" -- "*" Token : has
+User "1" -- "*" Order : places
+User "1" -- "*" Review : writes
+User "*" -- "*" Role : assigned
+
+MenuItem "1" -- "*" Review : has
+MenuItem "*" -- "*" Order : "ordered in"
+MenuItem "*" -- "*" Category : has
+MenuItem "*" -- "*" Media : has
+Category "*" -- "*" Media : has
+MenuItem "*" -- "1" Currency : uses
+MenuItem "1" -- "0..1" Tax : has
+User "1" -- "*" MenuItem : owns
+MenuItem "*" -- "*" Menu : part of
+MenuItem "*" -- "*" Promotion : "has"
+Promotion "*" -- "1" PromotionTarget : "has"
+
+Order "1" -- "*" OrderItem : contains
+OrderItem "*" -- "1" MenuItem : refers to
+Order "*" -- "1" OrderStatus
+
+Promotion <|-- BuyOneGetOneFreePromotion
+Promotion <|-- PercentageDiscountPromotion
+
+@enduml
+c

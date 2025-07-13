@@ -23,7 +23,6 @@ import java.util.Optional;
 public class AuthService implements UserDetailsService {
 
     private  final UserRepository userRepository;
-    private final  TokenRepository tokenRepository;
     private   final PasswordEncoder passwordEncoder;
     private  final ModelMapper modelMapper;
 
@@ -49,7 +48,7 @@ public class AuthService implements UserDetailsService {
         User user = new User();
         user.setEmail(userRegistrationDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
-        user.setRole(UserRole.NORMAL); // default value for user register through client form
+        user.setRole(UserRole.NORMAL);
 
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserResponseDTO.class);

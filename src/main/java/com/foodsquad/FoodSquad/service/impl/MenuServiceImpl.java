@@ -2,7 +2,7 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.mapper.MenuMapper;
-import com.foodsquad.FoodSquad.model.Menu;
+import com.foodsquad.FoodSquad.model.entity.Menu;
 import com.foodsquad.FoodSquad.model.dto.MenuDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
