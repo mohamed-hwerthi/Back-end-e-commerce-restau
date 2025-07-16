@@ -12,7 +12,6 @@ import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -26,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Tag(name = "2. Authentication", description = "Authentication API")
@@ -37,12 +35,19 @@ public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    private  final  AuthService authService;
+    private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
 
-    private  final  TokenService tokenService;
+    private static final String AUTH_HEADER_PREFIX = "Bearer ";
 
-    private  final   JwtUtil jwtUtil;
+    private static final String COOKIE_PATH = "/";
 
+    private static final String SAME_SITE_POLICY = "None";
+
+    private final AuthService authService;
+
+    private final TokenService tokenService;
+
+    private final JwtUtil jwtUtil;
 
     public AuthController(AuthService authService, TokenService tokenService, JwtUtil jwtUtil) {
 
@@ -59,12 +64,14 @@ public class AuthController {
 
     @Operation(summary = "User registration", description = "Register a new user with the provided registration details.")
     @PostMapping("/sign-up")
-    public ResponseEntity<UserResponseDTO> registerUser(
+    public ResponseEntity<?> registerUser(
             @Parameter(description = "User registration details", required = true)
             @Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
+
         if (!userRegistrationDTO.getPassword().equals(userRegistrationDTO.getConfirmPassword())) {
-            throw new IllegalArgumentException("Passwords do not match");
+            return badRequest("Passwords do not match");
         }
+
         UserResponseDTO user = authService.registerUser(userRegistrationDTO);
         return ResponseEntity.ok(user);
     }
@@ -75,101 +82,145 @@ public class AuthController {
             @Parameter(description = "User login details", required = true)
             @Valid @RequestBody UserLoginDTO userLoginDTO,
             HttpServletResponse response) {
+
         UserResponseDTO user = authService.loginUser(userLoginDTO);
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", user.getId());
-        claims.put("name", user.getName());
-        claims.put("email", user.getEmail());
-        claims.put("role", user.getRole());
-        claims.put("imageUrl", user.getImageUrl());
-        claims.put("phoneNumber", user.getPhoneNumber());
+        return generateTokenResponse(user, response);
+    }
 
-        String accessToken = jwtUtil.generateToken(claims, user.getEmail(), accessTokenExpiration);
-        String refreshToken = jwtUtil.generateToken(claims, user.getEmail(), refreshTokenExpiration);
+    @Operation(summary = "Cashier login", description = "Authenticate a cashier or admin user and issue JWT tokens")
+    @PostMapping("/cashier/sign-in")
+    public ResponseEntity<Map<String, String>> loginCashier(
+            @Parameter(description = "Cashier login details", required = true)
+            @Valid @RequestBody UserLoginDTO userLoginDTO,
+            HttpServletResponse response) {
 
-        tokenService.saveTokens(user.getEmail(), accessToken, refreshToken);
+        UserResponseDTO user = authService.loginCashier(userLoginDTO);
 
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(refreshTokenExpiration / 1000)
-                .sameSite("None")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-
-        return ResponseEntity.ok(tokens);
+        return generateTokenResponse(user, response);
     }
 
     @Operation(summary = "Logout user", description = "Invalidate the refresh token and logout the user.")
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logoutUser(
             @Parameter(description = "Access token stored in header", required = true)
-            @RequestHeader("Authorization") String accessTokenHeader,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @Parameter(description = "Refresh token stored in cookie", required = true)
-            @CookieValue("refreshToken") String refreshToken,
+            @CookieValue(REFRESH_TOKEN_COOKIE) String refreshToken,
             HttpServletResponse response) {
-            String accessToken = accessTokenHeader.replace("Bearer ", "");
 
-        String email;
+        String accessToken = extractBearerToken(authorizationHeader);
+        if (accessToken == null) {
+            return badRequest("Missing or invalid Authorization header");
+        }
+
         try {
-            email = jwtUtil.extractClaims(refreshToken).getSubject();
+            jwtUtil.extractClaims(refreshToken);
         } catch (JwtException e) {
-            logger.error("Failed to extract claims from refresh token: {}", refreshToken);
-            throw e;
+            logger.error("Invalid refresh token during logout: {}", e.getMessage());
+            return unauthorized("Invalid refresh token");
         }
 
         tokenService.invalidateTokens(accessToken, refreshToken);
+        clearRefreshTokenCookie(response);
 
-        // Clear refresh token cookie
-        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
-        response.addCookie(refreshTokenCookie);
-
-        Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("message", "Successfully logged out");
-
-        return ResponseEntity.ok(responseMap);
+        return ResponseEntity.ok(Map.of("message", "Successfully logged out"));
     }
 
     @Operation(summary = "Get current user", description = "Get the details of the currently authenticated user.")
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        String accessTokenHeader = request.getHeader("Authorization");
 
-        // Check if the Authorization header is missing or does not start with "Bearer "
-        if (accessTokenHeader == null || !accessTokenHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Missing or invalid Authorization header"));
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String accessToken = extractBearerToken(authorizationHeader);
+
+        if (accessToken == null) {
+            return unauthorized("Missing or invalid Authorization header");
         }
 
-        // Extract the actual token from the header
-        String accessToken = accessTokenHeader.replace("Bearer ", "");
         String email;
-
         try {
             email = jwtUtil.extractClaims(accessToken).getSubject();
         } catch (ExpiredJwtException e) {
-            logger.error("Access token is expired: {}", accessToken);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Access token is expired"));
+            logger.warn("Expired access token: {}", e.getMessage());
+            return unauthorized("Access token is expired");
         } catch (JwtException e) {
-            logger.error("Failed to extract claims from access token: {}", accessToken);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Failed to extract claims from access token"));
+            logger.error("Error extracting claims from access token: {}", e.getMessage());
+            return unauthorized("Failed to extract claims from access token");
         }
 
         User user = authService.loadUserEntityByUsername(email);
-        UserResponseDTO userResponseDTO = new UserResponseDTO(user);
-
-        return ResponseEntity.ok(userResponseDTO);
+        return ResponseEntity.ok(new UserResponseDTO(user));
     }
+
+
+    private ResponseEntity<Map<String, String>> generateTokenResponse(UserResponseDTO user, HttpServletResponse response) {
+
+        Map<String, Object> claims = buildClaims(user);
+
+        String accessToken = jwtUtil.generateToken(claims, user.getEmail(), accessTokenExpiration);
+        String refreshToken = jwtUtil.generateToken(claims, user.getEmail(), refreshTokenExpiration);
+
+        tokenService.saveTokens(user.getEmail(), accessToken, refreshToken);
+        addRefreshTokenCookie(response, refreshToken);
+
+        return ResponseEntity.ok(Map.of("accessToken", accessToken));
+    }
+
+    private Map<String, Object> buildClaims(UserResponseDTO user) {
+
+        return Map.of(
+                "id", user.getId(),
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "role", user.getRole(),
+                "imageUrl", user.getImageUrl(),
+                "phoneNumber", user.getPhoneNumber()
+        );
+    }
+
+    private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path(COOKIE_PATH)
+                .maxAge(refreshTokenExpiration / 1000)
+                .sameSite(SAME_SITE_POLICY)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    private void clearRefreshTokenCookie(HttpServletResponse response) {
+
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
+                .httpOnly(true)
+                .secure(true)
+                .path(COOKIE_PATH)
+                .maxAge(0)
+                .sameSite(SAME_SITE_POLICY)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    private String extractBearerToken(String authorizationHeader) {
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith(AUTH_HEADER_PREFIX)) {
+            return null;
+        }
+        return authorizationHeader.substring(AUTH_HEADER_PREFIX.length());
+    }
+
+    private ResponseEntity<Map<String, String>> unauthorized(String message) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", message));
+    }
+
+    private ResponseEntity<Map<String, String>> badRequest(String message) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", message));
+    }
+
 }

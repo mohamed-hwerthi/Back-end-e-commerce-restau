@@ -61,13 +61,13 @@
         @OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "tax_id", referencedColumnName = "id")
         private Tax tax;
-        @ManyToMany
-        @JoinTable(
-                name = "menu_item_categories",
-                joinColumns = @JoinColumn(name = "menu_item_id"),
+            @ManyToMany
+            @JoinTable(
+                    name = "menu_item_categories",
+                    joinColumns = @JoinColumn(name = "menu_item_id"),
 
-                inverseJoinColumns = @JoinColumn(name = "category_id")
-        )
+                    inverseJoinColumns = @JoinColumn(name = "category_id")
+            )
         private List<Category> categories = new ArrayList<>();
 
         @ManyToMany

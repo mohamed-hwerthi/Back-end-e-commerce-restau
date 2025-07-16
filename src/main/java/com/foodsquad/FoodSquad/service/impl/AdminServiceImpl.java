@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDTO findAdminByAdminId(String adminId) {
-        Admin admin = adminRepository.findByAdminId(adminId)
+        Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new EntityNotFoundException("Admin not found with admin ID: " + adminId));
         return adminMapper.toDto(admin);
     }
@@ -59,8 +59,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public AdminDTO createAdmin(AdminDTO adminDTO) {
-        if (adminRepository.existsByAdminId(adminDTO.getAdminId())) {
-            throw new EntityNotFoundException("Admin with ID " + adminDTO.getAdminId() + " already exists");
+        if (adminRepository.existsById(adminDTO.getId())) {
+            throw new EntityNotFoundException("Admin with ID " + adminDTO.getId() + " already exists");
         }
         Admin admin = adminMapper.toEntity(adminDTO);
         Admin savedAdmin = adminRepository.save(admin);

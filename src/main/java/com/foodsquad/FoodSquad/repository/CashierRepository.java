@@ -9,8 +9,6 @@ import java.util.Optional;
 @Repository
 public interface CashierRepository extends JpaRepository<Cashier, String> {
 
-    Optional<Cashier> findByCashierId(String cashierId);
 
-    boolean existsByCashierId(String cashierId);
 
 }

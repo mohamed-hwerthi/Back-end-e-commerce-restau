@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.UserUpdateDTO;
+import com.foodsquad.FoodSquad.model.entity.Admin;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
@@ -22,18 +23,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl  implements UserService {
+public class UserServiceImpl implements UserService {
 
-    private final  UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private  final  ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-
-    private  final  OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
     private User getCurrentUser() {
 
@@ -42,15 +41,8 @@ public class UserServiceImpl  implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    private void checkOwnership(String userId) {
 
-        User currentUser = getCurrentUser();
-        if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
-            throw new IllegalArgumentException("Access denied");
-        }
-    }
-
-   @Override
+    @Override
     public List<UserResponseDTO> getAllUsers(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdOn"));
@@ -64,7 +56,8 @@ public class UserServiceImpl  implements UserService {
                 })
                 .toList();
     }
-  @Override
+
+    @Override
     public ResponseEntity<UserResponseDTO> getUserById(String id) {
 
         User user = userRepository.findById(id)
@@ -88,7 +81,7 @@ public class UserServiceImpl  implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
 
 
-        if (currentUser.getRole().equals(UserRole.NORMAL) && !userUpdateDTO.getRole().equals(UserRole.NORMAL.name())) {
+        if (currentUser.getRole().equals(UserRole.EMPLOYEE) && !userUpdateDTO.getRole().equals(UserRole.EMPLOYEE.name())) {
             throw new IllegalArgumentException("Normal users cannot change roles.");
         }
 
@@ -119,7 +112,7 @@ public class UserServiceImpl  implements UserService {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
-        if (user.getRole().equals(UserRole.ADMIN)) {
+        if (user instanceof Admin) {
             throw new IllegalArgumentException("Admin users cannot be deleted.");
         }
 
@@ -129,6 +122,15 @@ public class UserServiceImpl  implements UserService {
 
         userRepository.delete(user);
         return ResponseEntity.ok(Map.of("message", "User successfully deleted."));
+    }
+
+
+    private void checkOwnership(String userId) {
+
+        User currentUser = getCurrentUser();
+        if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.EMPLOYEE)) {
+            throw new IllegalArgumentException("Access denied");
+        }
     }
 
 }

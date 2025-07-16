@@ -59,8 +59,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
-        if (employeeRepository.existsById(employeeDTO.getEmployeeId())) {
-            throw new EntityNotFoundException("Employee with ID " + employeeDTO.getEmployeeId() + " already exists");
+        if (employeeRepository.existsById(employeeDTO.getId())) {
+            throw new EntityNotFoundException("Employee with ID " + employeeDTO.getId() + " already exists");
         }
         Employee employee = employeeMapper.toEntity(employeeDTO);
         Employee savedEmployee = employeeRepository.save(employee);

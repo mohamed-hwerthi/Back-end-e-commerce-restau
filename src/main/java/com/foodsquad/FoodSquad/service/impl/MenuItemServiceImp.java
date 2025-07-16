@@ -88,7 +88,7 @@ public class MenuItemServiceImp implements MenuItemService {
     private void checkOwnership(MenuItem menuItem) {
 
         User currentUser = getCurrentUser();
-        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
+        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.EMPLOYEE)) {
             throw new IllegalArgumentException("Access denied");
         }
     }
