@@ -71,7 +71,7 @@ public class DatabaseSeeder {
         this.resourceLoader = resourceLoader;
     }
 
-
+/*
     @PostConstruct
     public void seedDatabase() {
 
@@ -115,6 +115,8 @@ public class DatabaseSeeder {
 
     }
 
+
+ */
 
     private void seedMedias() {
 

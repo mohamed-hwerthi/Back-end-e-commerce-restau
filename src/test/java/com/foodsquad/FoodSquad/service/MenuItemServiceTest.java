@@ -125,7 +125,7 @@ class MenuItemServiceTest {
         Long menuItemId = 1L;
         User user = new User();
         user.setEmail("test@example.com");
-        user.setRole(UserRole.NORMAL);
+        user.setRole(UserRole.EMPLOYEE);
 
         MenuItem menuItem = new MenuItem();
         menuItem.setId(menuItemId);

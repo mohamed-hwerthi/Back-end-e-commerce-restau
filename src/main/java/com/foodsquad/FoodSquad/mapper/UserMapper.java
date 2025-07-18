@@ -1,7 +1,8 @@
 package com.foodsquad.FoodSquad.mapper;
 
-import com.foodsquad.FoodSquad.model.dto.TaxDTO;
-import com.foodsquad.FoodSquad.model.entity.Tax;
+
+import com.foodsquad.FoodSquad.model.dto.UserDTO;
+import com.foodsquad.FoodSquad.model.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
@@ -9,10 +10,10 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = {MediaMapper.class})
-public interface TaxMapper {
+public interface UserMapper {
 
-    Tax toEntity(TaxDTO taxDTO);
+    User toEntity(UserDTO userDTO);
 
-    TaxDTO toDto(Tax tax);
+    UserDTO toDto(User tax);
 
 }

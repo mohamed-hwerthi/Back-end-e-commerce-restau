@@ -8,6 +8,10 @@ skinparam classBorderColor #666666
 skinparam arrowColor #666666
 skinparam shadowing false
 
+
+
+
+
 class User {
   +Long id
   +String firstname
@@ -43,6 +47,44 @@ class Role {
   - nom : String
   - description : String
 }
+
+class Store {
+  - id: String
+  - name: String
+  - phone: String
+  - email: String
+  - address: String
+  - about: String
+  - facebookUrl: String
+  - instagramUrl: String
+  - linkedInUrl: String
+  - websiteUrl: String
+  - backgroundColor: String
+  - templateName: String
+  - accentColor: String
+  - status: String
+  - createdAt: LocalDateTime
+}
+
+class Media {
+  - id: Long
+  - name: String
+  - path: String
+  - url: String
+  - type: String
+}
+
+class ActivitySector {
+  - id: Long
+  - code: String
+  - name: String
+}
+
+' Relationships
+User "1" -- "*" Store : owns >
+Store "*" -- "1" ActivitySector : belongs to >
+Store "1" -- "1" Media : has logo >
+Store "1" -- "1" Media : has cover image >
 
 class Token {
   +Long id

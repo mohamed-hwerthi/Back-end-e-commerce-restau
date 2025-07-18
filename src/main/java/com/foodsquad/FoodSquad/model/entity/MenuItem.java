@@ -94,5 +94,9 @@
             this.createdOn = LocalDateTime.now();
         }
 
+        @ManyToOne
+        @JoinColumn(name = "store_id")
+        private Store store;
+
 
     }

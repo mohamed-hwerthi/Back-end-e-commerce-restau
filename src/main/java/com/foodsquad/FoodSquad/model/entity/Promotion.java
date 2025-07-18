@@ -9,7 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,6 +63,11 @@ public class Promotion {
     protected void onCreate() {
         this.createdOn = LocalDateTime.now();
     }
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
+
 
 
 

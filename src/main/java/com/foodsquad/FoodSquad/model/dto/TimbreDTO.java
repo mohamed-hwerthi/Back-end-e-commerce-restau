@@ -5,6 +5,11 @@ import lombok.Data;
 
 @Data
 public class TimbreDTO {
-    private  String id  ;
-    private Double amount  ;
+
+    private String id;
+
+    private Double amount;
+
+    private StoreDTO store;
+
 }

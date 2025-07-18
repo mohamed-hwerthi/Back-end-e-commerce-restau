@@ -51,7 +51,7 @@ class UserServiceTest {
         User user = new User();
         user.setId("1");
         user.setEmail("test@example.com");
-        user.setRole(UserRole.NORMAL);
+        user.setRole(UserRole.EMPLOYEE);
 
         Page<User> userPage = mock(Page.class);
         when(userPage.stream()).thenReturn(Arrays.asList(user).stream());
@@ -108,7 +108,7 @@ class UserServiceTest {
 
         User currentUser = new User();
         currentUser.setId(userId);
-        currentUser.setRole(UserRole.NORMAL);
+        currentUser.setRole(UserRole.EMPLOYEE);
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(currentUser));
 
         User user = new User();
@@ -150,7 +150,7 @@ class UserServiceTest {
         String userId = "1";
         User user = new User();
         user.setId(userId);
-        user.setRole(UserRole.NORMAL);
+        user.setRole(UserRole.EMPLOYEE);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
