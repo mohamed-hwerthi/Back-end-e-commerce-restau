@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.service;
 
-import com.foodsquad.FoodSquad.config.StoreContextHolder;
 import com.foodsquad.FoodSquad.model.dto.TimbreDTO;
 import com.foodsquad.FoodSquad.service.declaration.TimbreService;
 import jakarta.transaction.Transactional;

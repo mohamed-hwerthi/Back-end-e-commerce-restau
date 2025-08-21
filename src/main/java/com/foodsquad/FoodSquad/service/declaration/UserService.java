@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface UserService {
 
@@ -22,7 +23,7 @@ public interface UserService {
      * @param id user ID
      * @return ResponseEntity with UserResponseDTO
      */
-    ResponseEntity<UserResponseDTO> getUserById(String id);
+    ResponseEntity<UserResponseDTO> getUserById(UUID id);
 
     /**
      * Updates a user's details.

@@ -15,13 +15,6 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final StoreContextInterceptor storeContextInterceptor;
-
-    public WebConfig(StoreContextInterceptor storeContextInterceptor) {
-
-        this.storeContextInterceptor = storeContextInterceptor;
-    }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -49,6 +42,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 
+    /*
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(storeContextInterceptor);
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(storeContextInterceptor) .excludePathPatterns(
@@ -58,5 +57,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/api/stores/**"
         );
     }
+
+     */
 
 }

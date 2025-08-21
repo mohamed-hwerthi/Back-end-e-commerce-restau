@@ -37,9 +37,7 @@ public class Category {
     )
     private List<Promotion> promotions = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
+
 
 
 }

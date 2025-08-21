@@ -87,16 +87,5 @@ public class TimbreServiceImpl implements TimbreService {
                 });
     }
 
-    @Override
-    public List<TimbreDTO> findByStoreId(String storeId) {
-
-        logger.info("Finding Timbres by Store id: {}", storeId);
-        List<TimbreDTO> result = timbreRepository.findByStoreId(storeId)
-                .stream()
-                .map(timbreMapper::toDto)
-                .collect(Collectors.toList());
-        logger.info("Found {} Timbres for Store id: {}", result.size(), storeId);
-        return result;
-    }
 
 }

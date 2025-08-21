@@ -19,9 +19,5 @@ public class Timbre {
     @Column(nullable = false)
     private Double  amount ;
 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
-
 
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
@@ -17,14 +18,20 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+
         return new OpenAPI()
                 .info(new Info()
-                        .title("Food Squad API")
+                        .title("Easy API")
                         .version("1.0")
-                        .description("API documentation for Food Squad application"))
+                        .description("API documentation for Easy application"))
                 .components(new Components()
                         .addSecuritySchemes("bearer-key",
-                                new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
+                                new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT"))
+                        .addParameters("X-TenantID", new HeaderParameter()
+                                .name("X-TenantID")
+                                .description("Tenant identifier")
+                                .required(false)
+                                .example("tenant_1")))
                 .addSecurityItem(new SecurityRequirement().addList("bearer-key"))
                 .addTagsItem(new Tag().name("1. Token Management").description("Token Management API"))
                 .addTagsItem(new Tag().name("2. Authentication").description("Authentication API"))
@@ -48,6 +55,21 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("public")
                 .pathsToMatch("/api/**")
+                .addOpenApiCustomizer(openApi -> {
+                    openApi.getPaths().forEach((path, pathItem) -> {
+                        if (!path.startsWith("/api/stores")) {
+                            pathItem.readOperations().forEach(operation -> {
+                                operation.addParametersItem(new HeaderParameter()
+                                        .name("X-TenantID")
+                                        .description("Tenant identifier")
+                                        .required(false)
+                                        .example("tenant_1"));
+                            });
+                        }
+                    });
+                })
                 .build();
     }
+
+
 }

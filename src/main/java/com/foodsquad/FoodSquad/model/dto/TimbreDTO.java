@@ -10,6 +10,4 @@ public class TimbreDTO {
 
     private Double amount;
 
-    private StoreDTO store;
-
 }

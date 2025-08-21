@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Validated
 @RestController
@@ -57,7 +58,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getUserById(
             @Parameter(description = "ID of the user to retrieve", example = "1")
             @PathVariable String id) {
-        return userService.getUserById(id);
+        return userService.getUserById(UUID.fromString(id));
     }
 
     @Operation(summary = "Update a user by ID", description = "Update the details of an existing user by their unique ID.")

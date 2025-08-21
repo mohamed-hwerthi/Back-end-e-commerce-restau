@@ -7,12 +7,16 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+import java.util.UUID;
+
+@Data
 public class UserResponseDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Unique identifier of the user", example = "123e4567-e89b-12d3-a456-426614174000")
-    private String id;
+    private UUID id;
 
 //    @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
@@ -55,60 +59,5 @@ public class UserResponseDTO {
         this.phoneNumber = user.getPhoneNumber();
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public long getOrdersCount() {
-        return ordersCount;
-    }
-
-
-    public void setOrdersCount(long ordersCount) {
-        this.ordersCount = ordersCount;
-    }
 }

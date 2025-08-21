@@ -9,6 +9,7 @@ import com.foodsquad.FoodSquad.model.entity.Admin;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.AdminRepository;
+import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.AdminService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,8 @@ public class AdminServiceImpl implements AdminService {
     private final AdminMapper adminMapper;
 
     private final UserMapper userMapper;
+
+    private  final UserRepository userRepository ;
 
     private static  final String ADMIN_NOT_FOUND = "Admin not found with id: ";
 
@@ -120,7 +123,8 @@ public class AdminServiceImpl implements AdminService {
     public User createStoreOwner(UserDTO userDTO) {
             User user = userMapper.toEntity(userDTO);
             user.setRole(UserRole.OWNER);
-            return  user;
+
+            return  userRepository.save(user);
         }
 
 }

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +59,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserResponseDTO> getUserById(String id) {
+    public ResponseEntity<UserResponseDTO> getUserById(UUID id) {
 
-        User user = userRepository.findById(id)
+        User user = userRepository.findById(id.toString())
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
         long ordersCount = orderRepository.countByUserId(id);
         UserResponseDTO userDTO = modelMapper.map(user, UserResponseDTO.class);
@@ -99,9 +100,8 @@ public class UserServiceImpl implements UserService {
         user.setRole(UserRole.valueOf(userUpdateDTO.getRole()));
         user.setImageUrl(userUpdateDTO.getImageUrl());
         user.setPhoneNumber(userUpdateDTO.getPhoneNumber());
-
         userRepository.save(user);
-        long ordersCount = orderRepository.countByUserId(id);
+        long ordersCount = orderRepository.countByUserId(UUID.fromString(id));
         UserResponseDTO updatedUserDTO = modelMapper.map(user, UserResponseDTO.class);
         updatedUserDTO.setOrdersCount(ordersCount);
         return ResponseEntity.ok(updatedUserDTO);

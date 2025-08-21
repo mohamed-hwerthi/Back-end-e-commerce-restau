@@ -9,8 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -26,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -33,30 +32,31 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public      class User implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private String name = "Default Name";
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role ;
+    @Column(nullable = true)
+    private UserRole role;
 
-    @Column(nullable = false)
+    @Column(name = "image_url", nullable = true)
     private String imageUrl = "https://www.pngarts.com/files/11/Avatar-Transparent-Images.png";
 
+    @Column(name = "phone_number", nullable = true)
     private String phoneNumber = "000-000-0000";
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_on", nullable = true, updatable = false)
     private LocalDateTime createdOn;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -71,13 +71,11 @@ public      class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItem> menuItems = new ArrayList<>();
-
-
+    /*
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
-
-
+    */
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

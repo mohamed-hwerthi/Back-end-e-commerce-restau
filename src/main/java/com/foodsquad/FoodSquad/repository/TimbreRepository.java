@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface TimbreRepository  extends JpaRepository<Timbre , String> {
 
-    List<Timbre> findByStoreId(String storeId);
 
 }

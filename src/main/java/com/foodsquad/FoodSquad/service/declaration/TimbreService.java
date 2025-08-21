@@ -8,7 +8,7 @@ public interface TimbreService {
 
     TimbreDTO save(TimbreDTO timbreDTO);
 
-    TimbreDTO update(String timberId, TimbreDTO timbreDTO); // ✅ Méthode ajoutée
+    TimbreDTO update(String timberId, TimbreDTO timbreDTO);
 
     List<TimbreDTO> findAll();
 
@@ -16,7 +16,6 @@ public interface TimbreService {
 
     void delete(String id);
 
-    List<TimbreDTO> findByStoreId(String storeId);
 
 
 }

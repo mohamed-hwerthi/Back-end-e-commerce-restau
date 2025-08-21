@@ -11,8 +11,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Customer  extends  User{
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
 
 }

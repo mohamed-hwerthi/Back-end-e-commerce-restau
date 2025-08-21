@@ -7,14 +7,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
     List<Review> findByMenuItemId(Long menuItemId);
-    List<Review> findByUserId(String userId);
+
+    List<Review> findByUserId(UUID userId);
+
     List<Review> findByUserIdOrderByCreatedOnDesc(String userId, Pageable pageable);
+
     long countByMenuItemId(Long menuItemId);
 
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.menuItem.id = :menuItemId")
     Double findAverageRatingByMenuItemId(Long menuItemId);
+
 }
