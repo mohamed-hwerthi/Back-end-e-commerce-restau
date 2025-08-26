@@ -187,7 +187,7 @@ public class OrderService {
     private void checkOwnership(User owner) {
 
         User currentUser = getCurrentUser();
-        if (!currentUser.equals(owner) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
+        if (!currentUser.equals(owner) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.EMPLOYEE)) {
             throw new IllegalArgumentException("Access denied");
         }
     }

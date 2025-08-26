@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
 
@@ -68,7 +69,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param userId The ID of the user.
      * @return The number of orders for the user.
      */
-    long countByUserId(String userId);
+    long countByUserId(UUID userId);
 
     /**
      * Finds orders created before a specific date and with a specific status.

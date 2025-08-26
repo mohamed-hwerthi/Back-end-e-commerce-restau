@@ -1,11 +1,12 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.exception.UserAlreadyExistsException;
+import com.foodsquad.FoodSquad.exception.InvalidCredentialsException;
 import com.foodsquad.FoodSquad.model.dto.UserLoginDTO;
 import com.foodsquad.FoodSquad.model.dto.UserRegistrationDTO;
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
-import com.foodsquad.FoodSquad.repository.TokenRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,57 +17,80 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
 
-    private  final UserRepository userRepository;
-    private final  TokenRepository tokenRepository;
-    private   final PasswordEncoder passwordEncoder;
-    private  final ModelMapper modelMapper;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());
+    public UserDetails loadUserByUsername(String email) {
+        User user = findUserByEmail(email);
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword())
+                .authorities(user.getAuthorities())
+                .build();
     }
 
-    public User loadUserEntityByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    public User loadUserEntityByUsername(String email) {
+        return findUserByEmail(email);
     }
 
     @Transactional
-    public UserResponseDTO registerUser(UserRegistrationDTO userRegistrationDTO) {
-        Optional<User> existingUser = userRepository.findByEmail(userRegistrationDTO.getEmail());
-        if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
-        }
-        User user = new User();
-        user.setEmail(userRegistrationDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
-        user.setRole(UserRole.NORMAL); // default value for user register through client form
+    public UserResponseDTO registerUser(UserRegistrationDTO registrationDTO) {
+        checkUserExists(registrationDTO.getEmail());
 
-        User savedUser = userRepository.save(user);
+        User newUser = User.builder()
+                .email(registrationDTO.getEmail())
+                .password(passwordEncoder.encode(registrationDTO.getPassword()))
+                .role(UserRole.EMPLOYEE)
+                .build();
+
+        User savedUser = userRepository.save(newUser);
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
 
     @Transactional
-    public UserResponseDTO loginUser(UserLoginDTO userLoginDTO) {
-        Optional<User> optionalUser = userRepository.findByEmail(userLoginDTO.getEmail());
-        if (optionalUser.isEmpty()) {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
+    public UserResponseDTO loginUser(UserLoginDTO loginDTO) {
+        User user = userRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
-        User user = optionalUser.get();
-        if (!passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid email or password");
+        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+
+    @Transactional
+    public UserResponseDTO loginCashier(UserLoginDTO loginDTO) {
+        User user = userRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        if (user.getRole() != UserRole.ADMIN && user.getRole() != UserRole.CASHIER) {
+            throw new InvalidCredentialsException("User is not authorized as an admin or cashier");
+        }
+
+        return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    }
+
+    private void checkUserExists(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException("Email already exists");
+        }
     }
 }

@@ -29,7 +29,6 @@ public interface PromotionService {
 
     void   changePromotionActivationStatus(Long promotionId);
 
-
     /**
      * Returns all promotions associated with a given menu item.
      * <p>

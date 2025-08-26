@@ -2,14 +2,16 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.UserUpdateDTO;
+import com.foodsquad.FoodSquad.model.entity.Admin;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.service.declaration.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,34 +23,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
-public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final ModelMapper modelMapper;
+
+    private final OrderRepository orderRepository;
 
     private User getCurrentUser() {
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    private void checkOwnership(String userId) {
-        User currentUser = getCurrentUser();
-        if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
-            throw new IllegalArgumentException("Access denied");
-        }
-    }
 
-
+    @Override
     public List<UserResponseDTO> getAllUsers(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdOn"));
         Page<User> userPage = userRepository.findAll(pageable);
         return userPage.stream()
@@ -58,11 +55,13 @@ public class UserService {
                     userResponseDTO.setOrdersCount(ordersCount);
                     return userResponseDTO;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public ResponseEntity<UserResponseDTO> getUserById(String id) {
-        User user = userRepository.findById(id)
+    @Override
+    public ResponseEntity<UserResponseDTO> getUserById(UUID id) {
+
+        User user = userRepository.findById(id.toString())
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
         long ordersCount = orderRepository.countByUserId(id);
         UserResponseDTO userDTO = modelMapper.map(user, UserResponseDTO.class);
@@ -72,9 +71,9 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<UserResponseDTO> updateUser(String id, UserUpdateDTO userUpdateDTO) {
+
         User currentUser = getCurrentUser();
         checkOwnership(id);
-        // Check if the current user is trying to update their own role
         if (currentUser.getId().equals(id) && !currentUser.getRole().name().equals(userUpdateDTO.getRole())) {
             throw new IllegalArgumentException("Users cannot update their own role.");
         }
@@ -82,8 +81,8 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
 
-        // Check if the current user is a normal user and is trying to change the role to something other than NORMAL
-        if (currentUser.getRole().equals(UserRole.NORMAL) && !userUpdateDTO.getRole().equals(UserRole.NORMAL.name())) {
+
+        if (currentUser.getRole().equals(UserRole.EMPLOYEE) && !userUpdateDTO.getRole().equals(UserRole.EMPLOYEE.name())) {
             throw new IllegalArgumentException("Normal users cannot change roles.");
         }
 
@@ -101,9 +100,8 @@ public class UserService {
         user.setRole(UserRole.valueOf(userUpdateDTO.getRole()));
         user.setImageUrl(userUpdateDTO.getImageUrl());
         user.setPhoneNumber(userUpdateDTO.getPhoneNumber());
-
         userRepository.save(user);
-        long ordersCount = orderRepository.countByUserId(id);
+        long ordersCount = orderRepository.countByUserId(UUID.fromString(id));
         UserResponseDTO updatedUserDTO = modelMapper.map(user, UserResponseDTO.class);
         updatedUserDTO.setOrdersCount(ordersCount);
         return ResponseEntity.ok(updatedUserDTO);
@@ -111,13 +109,13 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Map<String, String>> deleteUser(String id) {
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
-        if (user.getRole().equals(UserRole.ADMIN)) {
+        if (user instanceof Admin) {
             throw new IllegalArgumentException("Admin users cannot be deleted.");
         }
 
-        // Delete menu item references in order_menu_item (w/o this foreign key table error appears)
         user.getMenuItems().forEach(menuItem -> {
             orderRepository.removeMenuItemReferences(menuItem.getId());
         });
@@ -125,4 +123,14 @@ public class UserService {
         userRepository.delete(user);
         return ResponseEntity.ok(Map.of("message", "User successfully deleted."));
     }
+
+
+    private void checkOwnership(String userId) {
+
+        User currentUser = getCurrentUser();
+        if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.EMPLOYEE)) {
+            throw new IllegalArgumentException("Access denied");
+        }
+    }
+
 }

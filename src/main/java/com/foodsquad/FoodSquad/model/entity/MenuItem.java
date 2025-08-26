@@ -1,6 +1,5 @@
     package com.foodsquad.FoodSquad.model.entity;
 
-    import com.foodsquad.FoodSquad.model.Menu;
     import jakarta.persistence.*;
     import jakarta.validation.constraints.Min;
     import jakarta.validation.constraints.Positive;
@@ -10,7 +9,6 @@
     import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.List;
-    import java.util.Objects;
 
     @Entity
     @Table(name = "menu_items")
@@ -63,13 +61,13 @@
         @OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "tax_id", referencedColumnName = "id")
         private Tax tax;
-        @ManyToMany
-        @JoinTable(
-                name = "menu_item_categories",
-                joinColumns = @JoinColumn(name = "menu_item_id"),
+            @ManyToMany
+            @JoinTable(
+                    name = "menu_item_categories",
+                    joinColumns = @JoinColumn(name = "menu_item_id"),
 
-                inverseJoinColumns = @JoinColumn(name = "category_id")
-        )
+                    inverseJoinColumns = @JoinColumn(name = "category_id")
+            )
         private List<Category> categories = new ArrayList<>();
 
         @ManyToMany
@@ -95,6 +93,8 @@
 
             this.createdOn = LocalDateTime.now();
         }
+
+
 
 
     }

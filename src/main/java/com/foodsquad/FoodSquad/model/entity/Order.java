@@ -1,12 +1,14 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
 @Table(name = "orders")
+@Data
 public class Order {
 
     @Id
@@ -38,74 +40,8 @@ public class Order {
     private User user;
 
 
-    public String getId() {
 
-        return id;
-    }
 
-    public void setId(String id) {
 
-        this.id = id;
-    }
-
-    public Double getTotalCost() {
-
-        return totalCost;
-    }
-
-    public void setTotalCost(Double totalCost) {
-
-        this.totalCost = totalCost;
-    }
-
-    public OrderStatus getStatus() {
-
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedOn() {
-
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-
-        this.createdOn = createdOn;
-    }
-
-    public Map<MenuItem, Integer> getMenuItemsWithQuantity() {
-
-        return menuItemsWithQuantity;
-    }
-
-    public void setMenuItemsWithQuantity(Map<MenuItem, Integer> menuItemsWithQuantity) {
-
-        this.menuItemsWithQuantity = menuItemsWithQuantity;
-    }
-
-    public User getUser() {
-
-        return user;
-    }
-
-    public void setUser(User user) {
-
-        this.user = user;
-    }
-
-    public Boolean getPaid() {
-
-        return paid;
-    }
-
-    public void setPaid(Boolean paid) {
-
-        this.paid = paid;
-    }
 
 }

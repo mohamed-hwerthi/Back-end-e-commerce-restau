@@ -3,8 +3,9 @@ package com.foodsquad.FoodSquad.controller;
 import com.foodsquad.FoodSquad.model.dto.UserRegistrationDTO;
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.UserUpdateDTO;
+import com.foodsquad.FoodSquad.service.declaration.UserService;
 import com.foodsquad.FoodSquad.service.impl.AuthService;
-import com.foodsquad.FoodSquad.service.impl.UserService;
+import com.foodsquad.FoodSquad.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,13 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Validated
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "3. User Management", description = "User Management API")
 public class UserController {
-    private  final  UserService userService;
+    private  final UserService userService;
 
     private   final  AuthService authService;
 
@@ -56,7 +58,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getUserById(
             @Parameter(description = "ID of the user to retrieve", example = "1")
             @PathVariable String id) {
-        return userService.getUserById(id);
+        return userService.getUserById(UUID.fromString(id));
     }
 
     @Operation(summary = "Update a user by ID", description = "Update the details of an existing user by their unique ID.")

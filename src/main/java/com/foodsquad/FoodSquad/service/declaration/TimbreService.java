@@ -5,9 +5,17 @@ import com.foodsquad.FoodSquad.model.dto.TimbreDTO;
 import java.util.List;
 
 public interface TimbreService {
+
     TimbreDTO save(TimbreDTO timbreDTO);
-    TimbreDTO update(String timberId , TimbreDTO timbreDTO); // ✅ Méthode ajoutée
+
+    TimbreDTO update(String timberId, TimbreDTO timbreDTO);
+
     List<TimbreDTO> findAll();
+
     TimbreDTO findById(String id);
+
     void delete(String id);
+
+
+
 }

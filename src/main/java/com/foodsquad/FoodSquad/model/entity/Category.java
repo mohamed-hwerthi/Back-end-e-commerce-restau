@@ -38,4 +38,6 @@ public class Category {
     private List<Promotion> promotions = new ArrayList<>();
 
 
+
+
 }

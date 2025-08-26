@@ -62,8 +62,7 @@ public class MenuItemServiceImp implements MenuItemService {
     private final MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator;
 
 
-
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository , @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator) {
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, UserRepository userRepository, ModelMapper modelMapper, TaxRepository taxRepository, CurrencyRepository currencyRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -88,7 +87,7 @@ public class MenuItemServiceImp implements MenuItemService {
     private void checkOwnership(MenuItem menuItem) {
 
         User currentUser = getCurrentUser();
-        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.MODERATOR)) {
+        if (!menuItem.getUser().equals(currentUser) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.EMPLOYEE)) {
             throw new IllegalArgumentException("Access denied");
         }
     }
@@ -159,7 +158,7 @@ public class MenuItemServiceImp implements MenuItemService {
         List<MenuItemDTO> menuItemDTOs = menuItems.stream()
                 .map(menuItem -> {
                     MenuItemDTO dto = menuItemMapper.toDto(menuItem);
-                    return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem,dto);
+                    return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem, dto);
                 })
                 .toList();
         return new PaginatedResponseDTO<>(menuItemDTOs, menuItemPage.getTotalElements());
@@ -277,22 +276,19 @@ public class MenuItemServiceImp implements MenuItemService {
             if (Math.abs(newPrice - existingPriceTTC) < 0.0001 &&
                     Math.abs(newTaxRate - existingTaxRate) < 0.0001) {
                 menuItemDTO.setPrice(existingPriceTTC);
-            }
-            else if (Math.abs(newPrice - existingPriceTTC) >= 0.0001 &&
+            } else if (Math.abs(newPrice - existingPriceTTC) >= 0.0001 &&
                     Math.abs(newTaxRate - existingTaxRate) < 0.0001) {
                 double existingPriceHT = existingPriceTTC / (1 + existingTaxRate / 100);
                 double priceWithTax = newPrice * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
-            }
-            else if (Math.abs(newPrice - existingPriceTTC) < 0.0001 &&
+            } else if (Math.abs(newPrice - existingPriceTTC) < 0.0001 &&
                     Math.abs(newTaxRate - existingTaxRate) >= 0.0001) {
                 double priceHT = existingPriceTTC / (1 + existingTaxRate / 100);
                 double priceWithNewTax = priceHT * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithNewTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
-            }
-            else {
+            } else {
                 double priceWithTax = newPrice * (1 + newTaxRate / 100);
                 existingMenuItem.setPrice(roundToScale(priceWithTax, scale));
                 menuItemDTO.setPrice(existingMenuItem.getPrice());
@@ -426,6 +422,7 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     private MenuItemDTO verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(MenuItem menuItem, MenuItemDTO menuItemDTO) {
+
         boolean hasActivePromotion = menuItemPromotionSharedService.isMenuItemHasActivePromotionInCurrentDay(menuItem.getId());
         menuItemDTO.setPromoted(hasActivePromotion);
 
@@ -441,15 +438,19 @@ public class MenuItemServiceImp implements MenuItemService {
 
     @Override
     public List<MenuItem> findByCategory(Category category) {
-        return  menuItemRepository.findAllByCategoriesContaining(category) ;
+
+        return menuItemRepository.findAllByCategoriesContaining(category);
     }
 
 
-    private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion  percentageDiscountPromotion) {
-        return  !ObjectUtils.isEmpty(percentageDiscountPromotion)  && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
+    private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion percentageDiscountPromotion) {
+
+        return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
     }
-    private boolean isPromotionDiscountTypeByAmount(PercentageDiscountPromotion  percentageDiscountPromotion) {
-        return  !ObjectUtils.isEmpty(percentageDiscountPromotion)  && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
+
+    private boolean isPromotionDiscountTypeByAmount(PercentageDiscountPromotion percentageDiscountPromotion) {
+
+        return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
     }
 
 

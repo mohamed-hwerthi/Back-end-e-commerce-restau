@@ -1,9 +1,7 @@
 package com.foodsquad.FoodSquad.repository;
 
-import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
-import com.foodsquad.FoodSquad.model.entity.MenuItemCategory;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

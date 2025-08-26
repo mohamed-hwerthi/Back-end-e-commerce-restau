@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.mapper;
 
 
-import com.foodsquad.FoodSquad.model.Menu;
+import com.foodsquad.FoodSquad.model.entity.Menu;
 import com.foodsquad.FoodSquad.model.dto.MenuDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
