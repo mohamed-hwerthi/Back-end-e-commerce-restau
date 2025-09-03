@@ -1,18 +1,21 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foodsquad.FoodSquad.model.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Data
-public class UserResponseDTO {
+@Builder
+@Getter
+@Setter
+public class StoreOwnerAuthResponse {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Unique identifier of the user", example = "123e4567-e89b-12d3-a456-426614174000")
@@ -33,26 +36,10 @@ public class UserResponseDTO {
 
     @Schema(description = "URL of the user's profile image", example = "http://example.com/image.jpg")
     private String imageUrl;
+
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     @Schema(description = "Phone number of the user", example = "+359 899 78 7878")
     private String phoneNumber;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Schema(description = "Number of orders placed by the user", example = "10")
-    private long ordersCount;
-
-
-    public UserResponseDTO() {
-    }
-
-    public UserResponseDTO(User user) {
-        this.id = user.getId();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.role = user.getRole().name();
-        this.imageUrl = user.getImageUrl();
-        this.phoneNumber = user.getPhoneNumber();
-    }
-
-
+    private UUID storeId;
 }

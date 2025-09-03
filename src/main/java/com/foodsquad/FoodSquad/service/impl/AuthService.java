@@ -2,12 +2,11 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.exception.UserAlreadyExistsException;
 import com.foodsquad.FoodSquad.exception.InvalidCredentialsException;
-import com.foodsquad.FoodSquad.model.dto.UserLoginDTO;
-import com.foodsquad.FoodSquad.model.dto.UserRegistrationDTO;
-import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
+import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.service.declaration.StoreService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,8 +21,12 @@ import org.springframework.stereotype.Service;
 public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     private final ModelMapper modelMapper;
+
+    private final StoreService storeService;
 
     @Override
     public UserDetails loadUserByUsername(String email) {
@@ -64,6 +67,26 @@ public class AuthService implements UserDetailsService {
 
         return modelMapper.map(user, UserResponseDTO.class);
     }
+
+    @Transactional
+    public StoreOwnerAuthResponse loginStoreOwner(UserLoginDTO loginDTO) {
+        User user = userRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        StoreDTO storeDto = storeService.findByOwner(user);
+
+        return StoreOwnerAuthResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .storeId(storeDto.getId())
+                .build();
+    }
+
+
 
 
     @Transactional

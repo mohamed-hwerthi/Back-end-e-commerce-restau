@@ -6,13 +6,14 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Data
 public class CategoryDTO {
-    private  Long id  ;
+    private UUID id;
     @NotBlank(message = "name  cannot be blank")
-    private String  name  ;
-    private String description  ;
-    private List<MediaDTO> medias  = new ArrayList<>() ;
+    private String name;
+    private String description;
+    private List<MediaDTO> medias = new ArrayList<>();
 }

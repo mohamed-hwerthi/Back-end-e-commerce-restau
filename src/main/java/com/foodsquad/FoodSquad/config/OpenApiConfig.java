@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.CookieValue;
 
+import java.util.List;
+
 @Configuration
 public class OpenApiConfig {
 
@@ -56,8 +58,15 @@ public class OpenApiConfig {
                 .group("public")
                 .pathsToMatch("/api/**")
                 .addOpenApiCustomizer(openApi -> {
+                    var excludedPaths = List.of(
+                            "/api/stores",
+                            "/api/auth/owner/sign-in"
+                    );
+
                     openApi.getPaths().forEach((path, pathItem) -> {
-                        if (!path.startsWith("/api/stores")) {
+                        boolean isExcluded = excludedPaths.stream().anyMatch(path::startsWith);
+
+                        if (!isExcluded) {
                             pathItem.readOperations().forEach(operation -> {
                                 operation.addParametersItem(new HeaderParameter()
                                         .name("X-TenantID")

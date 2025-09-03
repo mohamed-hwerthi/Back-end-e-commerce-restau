@@ -23,8 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-
-@Component
+  // @Component
 public class DatabaseSeeder {
 
     private final ResourceLoader resourceLoader;
@@ -61,8 +60,8 @@ public class DatabaseSeeder {
     @Autowired
     private MediaRepository mediaRepository;
 
-    @Autowired
-    private ActivitySectorRepository activitySectorRepository;
+   // @Autowired
+     //  private ActivitySectorRepository activitySectorRepository;
 
 
     @Autowired
@@ -318,41 +317,41 @@ public class DatabaseSeeder {
         return user;
     }
 
-
-    private void seedActivitySectors() {
-
-        if (activitySectorRepository.count() == 0) {
-            List<ActivitySector> sectors = List.of(
-                    new ActivitySector(null, "FOOD_DRINKS", "Alimentation et boissons"),
-                    new ActivitySector(null, "CLOTHING_ACCESSORIES", "Vetements et accessoires"),
-                    new ActivitySector(null, "ELECTRONICS_GADGETS", "Electronique et gadgets"),
-                    new ActivitySector(null, "HEALTH_PERSONAL", "Sante et soins personnels"),
-                    new ActivitySector(null, "HOME_KITCHEN", "Maison et cuisine"),
-                    new ActivitySector(null, "FURNITURE_DECOR", "Mobilier et decoration"),
-                    new ActivitySector(null, "SPORTS_FITNESS", "Sports et fitness"),
-                    new ActivitySector(null, "TOYS_GAMES", "Jouets et jeux"),
-                    new ActivitySector(null, "BOOKS_STATIONERY", "Livres et papeterie"),
-                    new ActivitySector(null, "AUTOMOTIVE_ACCESSORIES", "Automobile et accessoires"),
-                    new ActivitySector(null, "BEAUTY_COSMETICS", "Beaute et cosmetiques"),
-                    new ActivitySector(null, "JEWELRY_WATCHES", "Bijoux et montres"),
-                    new ActivitySector(null, "PET_SUPPLIES", "Fournitures pour animaux"),
-                    new ActivitySector(null, "OFFICE_SUPPLIES", "Bureau et fournitures"),
-                    new ActivitySector(null, "GARDEN_OUTDOOR", "Jardin et exterieur"),
-                    new ActivitySector(null, "TRAVEL_BAGS", "Voyage et bagagerie"),
-                    new ActivitySector(null, "BABY_CHILDREN", "Produits pour bebes et enfants"),
-                    new ActivitySector(null, "MUSIC_INSTRUMENTS", "Musique et instruments"),
-                    new ActivitySector(null, "DIGITAL_SUBSCRIPTIONS", "Produits et abonnements numeriques"),
-                    new ActivitySector(null, "ART_CRAFTS", "Art et artisanat"),
-                    new ActivitySector(null, "LUXURY", "Produits de luxe"),
-                    new ActivitySector(null, "INDUSTRIAL_TOOLS", "Industriel et outils"),
-                    new ActivitySector(null, "PARTY_GIFTS", "Fournitures pour fetes et cadeaux"),
-                    new ActivitySector(null, "EDUCATIONAL_SUPPLIES", "Materiel educatif"),
-                    new ActivitySector(null, "HEALTH_WELLBEING", "Produits de sante et bien etre"),
-                    new ActivitySector(null, "OTHER", "Autres")
-            );
-            activitySectorRepository.saveAll(sectors);
-        }
-    }
+//
+//    private void seedActivitySectors() {
+//
+//        if (activitySectorRepository.count() == 0) {
+//            List<ActivitySector> sectors = List.of(
+//                    new ActivitySector(null, "FOOD_DRINKS", "Alimentation et boissons"),
+//                    new ActivitySector(null, "CLOTHING_ACCESSORIES", "Vetements et accessoires"),
+//                    new ActivitySector(null, "ELECTRONICS_GADGETS", "Electronique et gadgets"),
+//                    new ActivitySector(null, "HEALTH_PERSONAL", "Sante et soins personnels"),
+//                    new ActivitySector(null, "HOME_KITCHEN", "Maison et cuisine"),
+//                    new ActivitySector(null, "FURNITURE_DECOR", "Mobilier et decoration"),
+//                    new ActivitySector(null, "SPORTS_FITNESS", "Sports et fitness"),
+//                    new ActivitySector(null, "TOYS_GAMES", "Jouets et jeux"),
+//                    new ActivitySector(null, "BOOKS_STATIONERY", "Livres et papeterie"),
+//                    new ActivitySector(null, "AUTOMOTIVE_ACCESSORIES", "Automobile et accessoires"),
+//                    new ActivitySector(null, "BEAUTY_COSMETICS", "Beaute et cosmetiques"),
+//                    new ActivitySector(null, "JEWELRY_WATCHES", "Bijoux et montres"),
+//                    new ActivitySector(null, "PET_SUPPLIES", "Fournitures pour animaux"),
+//                    new ActivitySector(null, "OFFICE_SUPPLIES", "Bureau et fournitures"),
+//                    new ActivitySector(null, "GARDEN_OUTDOOR", "Jardin et exterieur"),
+//                    new ActivitySector(null, "TRAVEL_BAGS", "Voyage et bagagerie"),
+//                    new ActivitySector(null, "BABY_CHILDREN", "Produits pour bebes et enfants"),
+//                    new ActivitySector(null, "MUSIC_INSTRUMENTS", "Musique et instruments"),
+//                    new ActivitySector(null, "DIGITAL_SUBSCRIPTIONS", "Produits et abonnements numeriques"),
+//                    new ActivitySector(null, "ART_CRAFTS", "Art et artisanat"),
+//                    new ActivitySector(null, "LUXURY", "Produits de luxe"),
+//                    new ActivitySector(null, "INDUSTRIAL_TOOLS", "Industriel et outils"),
+//                    new ActivitySector(null, "PARTY_GIFTS", "Fournitures pour fetes et cadeaux"),
+//                    new ActivitySector(null, "EDUCATIONAL_SUPPLIES", "Materiel educatif"),
+//                    new ActivitySector(null, "HEALTH_WELLBEING", "Produits de sante et bien etre"),
+//                    new ActivitySector(null, "OTHER", "Autres")
+//            );
+//            activitySectorRepository.saveAll(sectors);
+//        }
+//    }
 
 
     private MenuItem createMenuItem(String title, String description, String imageUrl, double price, boolean defaultItem, User user, Currency currency) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/category-promotions")
@@ -23,7 +24,7 @@ public class SharedCategoryPromotionController {
      */
     @PostMapping("/create")
     public ResponseEntity<PromotionDTO> createPromotionForCategories(
-            @RequestParam List<Long> categoriesIds,
+            @RequestParam List<UUID> categoriesIds,
             @RequestBody PromotionDTO promotionDTO) {
 
         PromotionDTO createdPromotion = categoryPromotionService.createPromotionForCategories(categoriesIds, promotionDTO);
@@ -38,7 +39,7 @@ public class SharedCategoryPromotionController {
      */
     @PostMapping("category/{categoryId}/promotions/{promotionId}")
     public ResponseEntity<Void> addPromotionToCategory(
-            @PathVariable Long categoryId,
+            @PathVariable UUID categoryId,
             @PathVariable Long promotionId) {
 
         categoryPromotionService.addPromotionToCategory(categoryId, promotionId);
@@ -50,7 +51,7 @@ public class SharedCategoryPromotionController {
      */
     @DeleteMapping("/{categoryId}/promotions/{promotionId}/deactivate")
     public ResponseEntity<Void> deactivatePromotionForCategory(
-            @PathVariable Long categoryId,
+            @PathVariable UUID categoryId,
             @PathVariable Long promotionId) {
 
         categoryPromotionService.deactivatePromotionForCategory(categoryId, promotionId);
@@ -62,7 +63,7 @@ public class SharedCategoryPromotionController {
      */
     @GetMapping("/{categoryId}/active-promotion-overlap")
     public ResponseEntity<Boolean> hasActivePromotionOverlappingPeriod(
-            @PathVariable Long categoryId,
+            @PathVariable UUID categoryId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 

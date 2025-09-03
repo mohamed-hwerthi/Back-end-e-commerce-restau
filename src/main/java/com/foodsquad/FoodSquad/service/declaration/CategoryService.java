@@ -6,24 +6,25 @@ import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CategoryService {
     PaginatedResponseDTO<CategoryDTO> findAllCategories(int page, int limit);
 
-    CategoryDTO findCategoryById(Long id);
+    CategoryDTO findCategoryById(UUID id);
 
     CategoryDTO createCategory(CategoryDTO categoryDTO);
 
-    CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO);
+    CategoryDTO updateCategory(UUID id, CategoryDTO categoryDTO);
 
-    void deleteCategory(Long id);
+    void deleteCategory(UUID id);
 
     List<CategoryDTO> findAllCategories();
 
     List<Category> findCategoriesWithPromotions(Promotion promotion);
 
 
-    Category  findCategory(Long categoryId);
+    Category  findCategory(UUID categoryId);
 
     Category saveCategory(Category  category);
 

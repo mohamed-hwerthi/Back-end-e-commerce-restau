@@ -87,6 +87,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("ADMIN")
 
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/categories/**").permitAll()
+
                                 .requestMatchers(HttpMethod.POST, "/api/items-promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/items-promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/items-promotions/**").permitAll()

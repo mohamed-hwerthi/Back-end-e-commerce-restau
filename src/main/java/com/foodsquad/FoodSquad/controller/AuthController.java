@@ -1,9 +1,11 @@
 package com.foodsquad.FoodSquad.controller;
 
+import com.foodsquad.FoodSquad.model.dto.StoreOwnerAuthResponse;
 import com.foodsquad.FoodSquad.model.dto.UserLoginDTO;
 import com.foodsquad.FoodSquad.model.dto.UserRegistrationDTO;
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
+import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.service.impl.AuthService;
 import com.foodsquad.FoodSquad.service.impl.TokenService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
@@ -11,6 +13,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +32,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * Authentication Controller
+ *
+ * <p>Handles user and store owner authentication including:
+ * - User registration
+ * - User login
+ * - Cashier login
+ * - Store owner login
+ * - Logout
+ * - Fetching current authenticated user</p>
+ */
 @Tag(name = "2. Authentication", description = "Authentication API")
 @Validated
 @RestController
@@ -36,25 +52,13 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private static final String REFRESH_TOKEN_COOKIE = "refreshToken";
-
     private static final String AUTH_HEADER_PREFIX = "Bearer ";
-
     private static final String COOKIE_PATH = "/";
-
     private static final String SAME_SITE_POLICY = "None";
 
     private final AuthService authService;
-
     private final TokenService tokenService;
-
     private final JwtUtil jwtUtil;
-
-    public AuthController(AuthService authService, TokenService tokenService, JwtUtil jwtUtil) {
-
-        this.authService = authService;
-        this.tokenService = tokenService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
@@ -62,6 +66,15 @@ public class AuthController {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
+    public AuthController(AuthService authService, TokenService tokenService, JwtUtil jwtUtil) {
+        this.authService = authService;
+        this.tokenService = tokenService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    // ============================
+    // User Registration
+    // ============================
     @Operation(summary = "User registration", description = "Register a new user with the provided registration details.")
     @PostMapping("/sign-up")
     public ResponseEntity<?> registerUser(
@@ -76,6 +89,9 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    // ============================
+    // User Login
+    // ============================
     @Operation(summary = "User login", description = "Authenticate a user with the provided login credentials.")
     @PostMapping("/sign-in")
     public ResponseEntity<Map<String, String>> loginUser(
@@ -84,11 +100,13 @@ public class AuthController {
             HttpServletResponse response) {
 
         UserResponseDTO user = authService.loginUser(userLoginDTO);
-
         return generateTokenResponse(user, response);
     }
 
-    @Operation(summary = "Cashier login", description = "Authenticate a cashier or admin user and issue JWT tokens")
+    // ============================
+    // Cashier Login
+    // ============================
+    @Operation(summary = "Cashier login", description = "Authenticate a cashier or admin user and issue JWT tokens.")
     @PostMapping("/cashier/sign-in")
     public ResponseEntity<Map<String, String>> loginCashier(
             @Parameter(description = "Cashier login details", required = true)
@@ -96,10 +114,34 @@ public class AuthController {
             HttpServletResponse response) {
 
         UserResponseDTO user = authService.loginCashier(userLoginDTO);
-
         return generateTokenResponse(user, response);
     }
 
+    // ============================
+    // Store Owner Login
+    // ============================
+    @Operation(
+            summary = "Store owner login",
+            description = "Authenticates a store owner using email and password and returns store details.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully authenticated",
+                                content = @Content(schema = @Schema(implementation = StoreOwnerAuthResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+                    @ApiResponse(responseCode = "401", description = "Invalid email or password", content = @Content)
+            }
+    )
+    @PostMapping("/owner/sign-in")
+    // Logout
+    public ResponseEntity<Map<String, String>> loginStoreOwner(
+            @Valid @RequestBody UserLoginDTO loginDTO) {
+
+        StoreOwnerAuthResponse response = authService.loginStoreOwner(loginDTO);
+        return generateTokenResponse(response);
+    }
+
+    // ============================
+    // Logout
+    // ============================
     @Operation(summary = "Logout user", description = "Invalidate the refresh token and logout the user.")
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logoutUser(
@@ -110,9 +152,7 @@ public class AuthController {
             HttpServletResponse response) {
 
         String accessToken = extractBearerToken(authorizationHeader);
-        if (accessToken == null) {
-            return badRequest("Missing or invalid Authorization header");
-        }
+        if (accessToken == null) return badRequest("Missing or invalid Authorization header");
 
         try {
             jwtUtil.extractClaims(refreshToken);
@@ -127,16 +167,14 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Successfully logged out"));
     }
 
+    // ============================
+    // Get Current User
+    // ============================
     @Operation(summary = "Get current user", description = "Get the details of the currently authenticated user.")
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String accessToken = extractBearerToken(authorizationHeader);
-
-        if (accessToken == null) {
-            return unauthorized("Missing or invalid Authorization header");
-        }
+        String accessToken = extractBearerToken(request.getHeader(HttpHeaders.AUTHORIZATION));
+        if (accessToken == null) return unauthorized("Missing or invalid Authorization header");
 
         String email;
         try {
@@ -153,11 +191,11 @@ public class AuthController {
         return ResponseEntity.ok(new UserResponseDTO(user));
     }
 
-
+    // ============================
+    // Private Helpers
+    // ============================
     private ResponseEntity<Map<String, String>> generateTokenResponse(UserResponseDTO user, HttpServletResponse response) {
-
         Map<String, Object> claims = buildClaims(user);
-
         String accessToken = jwtUtil.generateToken(claims, user.getEmail(), accessTokenExpiration);
         String refreshToken = jwtUtil.generateToken(claims, user.getEmail(), refreshTokenExpiration);
 
@@ -167,8 +205,16 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("accessToken", accessToken));
     }
 
-    private Map<String, Object> buildClaims(UserResponseDTO user) {
+    private ResponseEntity<Map<String, String>> generateTokenResponse(StoreOwnerAuthResponse storeOwner) {
+        Map<String, Object> claims = buildClaims(storeOwner);
+        String accessToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), accessTokenExpiration);
+        String refreshToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), refreshTokenExpiration);
 
+        tokenService.saveTokens(storeOwner.getEmail(), accessToken, refreshToken);
+        return ResponseEntity.ok(Map.of("accessToken", accessToken));
+    }
+
+    private Map<String, Object> buildClaims(UserResponseDTO user) {
         return Map.of(
                 "id", user.getId(),
                 "name", user.getName(),
@@ -179,8 +225,16 @@ public class AuthController {
         );
     }
 
-    private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+    private Map<String, Object> buildClaims(StoreOwnerAuthResponse storeOwner) {
+        return Map.of(
+                "id", storeOwner.getId(),
+                "email", storeOwner.getEmail(),
+                "storeId", storeOwner.getStoreId(),
+                "role", UserRole.OWNER
+        );
+    }
 
+    private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, refreshToken)
                 .httpOnly(true)
                 .secure(true)
@@ -192,7 +246,6 @@ public class AuthController {
     }
 
     private void clearRefreshTokenCookie(HttpServletResponse response) {
-
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE, "")
                 .httpOnly(true)
                 .secure(true)
@@ -204,7 +257,6 @@ public class AuthController {
     }
 
     private String extractBearerToken(String authorizationHeader) {
-
         if (authorizationHeader == null || !authorizationHeader.startsWith(AUTH_HEADER_PREFIX)) {
             return null;
         }
@@ -212,15 +264,10 @@ public class AuthController {
     }
 
     private ResponseEntity<Map<String, String>> unauthorized(String message) {
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", message));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", message));
     }
 
     private ResponseEntity<Map<String, String>> badRequest(String message) {
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", message));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", message));
     }
-
 }

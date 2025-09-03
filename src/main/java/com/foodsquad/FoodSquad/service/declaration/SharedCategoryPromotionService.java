@@ -4,16 +4,17 @@ import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface SharedCategoryPromotionService {
 
-    PromotionDTO createPromotionForCategories(List<Long> categoriesIds, PromotionDTO promotionDTO);
+    PromotionDTO createPromotionForCategories(List<UUID> categoriesIds, PromotionDTO promotionDTO);
 
-    void addPromotionToCategory(Long categoryId, Long promotionId);
+    void addPromotionToCategory(UUID categoryId, Long promotionId);
 
-    void deactivatePromotionForCategory(Long categoryId, Long promotionId);
+    void deactivatePromotionForCategory(UUID categoryId, Long promotionId);
 
-    boolean hasActivePromotionOverlappingPeriod(Long categoryId, java.time.LocalDate startDate, java.time.LocalDate endDate);
+    boolean hasActivePromotionOverlappingPeriod(UUID categoryId, java.time.LocalDate startDate, java.time.LocalDate endDate);
 
     List<CategoryDTO> findCategoriesRelatedToPromotion(Long promotionId);
 }

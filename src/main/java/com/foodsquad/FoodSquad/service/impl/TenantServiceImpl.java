@@ -26,12 +26,10 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public void createTenant(String tenantName) {
+    public void createTenant(String storeId ) {
 
-        String safeSchemaName = tenantName.toLowerCase().replaceAll("[^a-z0-9_]", "_");
+        String safeSchemaName = "tenant" +"_" + storeId.toLowerCase().replaceAll("[^a-z0-9_]", "_");
         if (!schemaExists(safeSchemaName)) {
-            entityManager.createNativeQuery("CREATE SCHEMA " + safeSchemaName).executeUpdate();
-
             Flyway flyway = Flyway.configure()
                     .schemas(safeSchemaName)
                     .locations("classpath:db/migration/migration_tenant")

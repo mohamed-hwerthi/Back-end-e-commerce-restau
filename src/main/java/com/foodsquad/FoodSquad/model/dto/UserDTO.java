@@ -17,7 +17,6 @@ import lombok.experimental.SuperBuilder;
 public class UserDTO {
     private String id;
     
-    @NotBlank(message = "Name is required")
     private String name;
     
     @NotBlank(message = "Email is required")

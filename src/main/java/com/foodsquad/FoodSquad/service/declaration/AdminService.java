@@ -28,6 +28,5 @@ public interface AdminService {
 
     Admin saveAdmin(Admin admin);
 
-    User createStoreOwner(UserDTO userDTO);
-
+    User createStoreOwner(String email, String phoneNumber, String password) ;
 }

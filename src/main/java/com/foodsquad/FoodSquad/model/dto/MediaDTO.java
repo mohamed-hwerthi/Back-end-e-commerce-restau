@@ -6,7 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @Builder
@@ -14,12 +15,12 @@ import java.time.LocalDateTime;
 
 
 public class MediaDTO {
-    private Long id;
+    private UUID id;
     @NotBlank(message = "name  cannot be blank")
-    private String name  ;
-    private String url  ;
-    private String path  ;
-    private String type  ;
+    private String name;
+    private String url;
+    private String path;
+    private String type;
 
 
 }

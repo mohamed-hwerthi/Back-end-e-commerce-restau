@@ -11,11 +11,14 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
-@Table(name = "menu")
+@Table(name = "menus")
 @Entity
-@Data
+@Getter
+@Setter
 public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +29,7 @@ public class Menu {
     private String description;
     @ManyToMany
     @JoinTable(
-            name = "menu_menuitem",
+            name = "menu_menuItems",
             joinColumns = @JoinColumn(name = "menu_id"),
             inverseJoinColumns = @JoinColumn(name = "menu_item_id")
     )

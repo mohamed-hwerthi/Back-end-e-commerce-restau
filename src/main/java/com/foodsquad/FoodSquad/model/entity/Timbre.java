@@ -2,19 +2,22 @@ package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
-@Table(name = "Timbre")
-@Data
+import java.util.UUID;
+
+@Table(name = "timbres")
 @Entity
-@FilterDef(name = "storeFilter", parameters = @ParamDef(name = "storeId", type = String.class))
-@Filter(name = "storeFilter", condition = "store_id = :storeId")
+@Getter
+@Setter
 public class Timbre {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Column(nullable = false)
     private Double  amount ;

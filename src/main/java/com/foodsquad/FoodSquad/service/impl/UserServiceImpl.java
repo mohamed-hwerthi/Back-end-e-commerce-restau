@@ -86,12 +86,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Normal users cannot change roles.");
         }
 
-        // Check if the current user is not an admin but is trying to set the role to admin
         if (!currentUser.getRole().equals(UserRole.ADMIN) && userUpdateDTO.getRole().equals(UserRole.ADMIN.name())) {
             throw new IllegalArgumentException("Only admin users can assign the admin role.");
         }
 
-        // Check if the user role is ADMIN and is being changed
         if (user.getRole() == UserRole.ADMIN && !userUpdateDTO.getRole().equals(UserRole.ADMIN.name())) {
             throw new IllegalArgumentException("Admin user role cannot be changed");
         }

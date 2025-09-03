@@ -6,13 +6,13 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommerce-db
+    url: jdbc:postgresql://localhost:5432/db
     username: med
     password: med
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
-    locations: classpath:db/migration
+    locations: classpath:db/migration/migration_public
     password: med
     user: med
     baseline-description: "initial schema"

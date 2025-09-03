@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     private   final MenuItemPromotionSharedService menuItemPromotionSharedService ;
 
     @Override
-    public PromotionDTO createPromotionForCategories(List<Long> categoriesIds, PromotionDTO promotionDTO) {
+    public PromotionDTO createPromotionForCategories(List<UUID> categoriesIds, PromotionDTO promotionDTO) {
         List<CategoryDTO> categories = getCategories(categoriesIds);
 
         if (promotionDTO.getPromotionType().equals(PromotionType.DISCOUNT)) {
@@ -40,7 +41,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     }
 
     @Override
-    public void addPromotionToCategory(Long categoryId, Long promotionId) {
+    public void addPromotionToCategory(UUID categoryId, Long promotionId) {
         Category category = categoryService.findCategory(categoryId);
         Promotion promotion = promotionService.getPromotion(promotionId);
 
@@ -54,7 +55,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     }
 
     @Override
-    public void deactivatePromotionForCategory(Long categoryId, Long promotionId) {
+    public void deactivatePromotionForCategory(UUID categoryId, Long promotionId) {
         Category category = categoryService.findCategory(categoryId);
 
         category.getPromotions().removeIf(promotion -> promotion.getId().equals(promotionId));
@@ -63,7 +64,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     }
 
     @Override
-    public boolean hasActivePromotionOverlappingPeriod(Long categoryId, LocalDate startDate, LocalDate endDate) {
+    public boolean hasActivePromotionOverlappingPeriod(UUID categoryId, LocalDate startDate, LocalDate endDate) {
 
         Category category = categoryService.findCategory(categoryId);
         List<MenuItem> menuItems= menuItemService.findByCategory(category) ;
@@ -93,7 +94,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
         ) ;
     }
 
-    private List<CategoryDTO> getCategories(List<Long> categoriesIds) {
+    private List<CategoryDTO> getCategories(List<UUID> categoriesIds) {
         return categoriesIds.stream()
                 .map(categoryService::findCategoryById)
                 .toList();

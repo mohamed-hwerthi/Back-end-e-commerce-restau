@@ -1,19 +1,23 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
-@Table(name = "category")
+@Table(name = "categories")
 @Entity
-@Data
+@Getter
+@Setter
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id  ;
     @Column(nullable = false, name = "name")
     private String name;
     @Column(nullable = false, name = "description")

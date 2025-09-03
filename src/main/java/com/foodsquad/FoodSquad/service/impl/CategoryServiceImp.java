@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +45,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public CategoryDTO findCategoryById(Long id) {
+    public CategoryDTO findCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
         return categoryMapper.toDto(category);
@@ -58,7 +59,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+    public CategoryDTO updateCategory(UUID id, CategoryDTO categoryDTO) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
 
@@ -68,7 +69,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(Long id) {
+    public void deleteCategory(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
         category.getMenuItems().forEach(
@@ -93,7 +94,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public Category findCategory(Long categoryId) {
+    public Category findCategory(UUID categoryId) {
         return  categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + categoryId));
        }

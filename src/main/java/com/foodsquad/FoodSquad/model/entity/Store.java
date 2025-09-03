@@ -1,24 +1,18 @@
 package com.foodsquad.FoodSquad.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "stores")
 public class Store {
 
     @Id
@@ -26,20 +20,9 @@ public class Store {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = false)
     private String name;
 
-    /*
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id")
-    private User owner;
-    */
-
-    @Column(name = "phone", nullable = true)
-    private String phone;
-
-    @Column(name = "email", nullable = true)
-    private String email;
 
     @Column(name = "address", nullable = true)
     private String address;
@@ -74,28 +57,23 @@ public class Store {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "activity_sector_id")
+    private ActivitySector activitySector;
+
+
+    @OneToOne
+    @JoinColumn(name = "logo_media_id")
+    private Media logo;
+
+    @OneToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
-/*
-@OneToOne
-    @JoinColumn(name = "cover_media_id")
-    private Media coverImage;
- */
 
-
-
-    /*
-      @ManyToOne(optional = true)
-    @JoinColumn(name = "activity_sector_id")
-    private ActivitySector activitySector;
-     */
-
-  /*
-     @OneToOne
-    @JoinColumn(name = "logo_media_id")
-    private Media logo;
-   */
 
 }

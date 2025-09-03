@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/timbres")
@@ -47,7 +48,7 @@ public class TimbreController {
     @ApiResponse(responseCode = "200", description = "Timbre found")
     @ApiResponse(responseCode = "404", description = "Timbre not found")
     @GetMapping("/{id}")
-    public ResponseEntity<TimbreDTO> getById(@PathVariable String id) {
+    public ResponseEntity<TimbreDTO> getById(@PathVariable UUID id) {
         logger.info("Received request to get Timbre by id: {}", id);
         TimbreDTO timbreDTO = timbreService.findById(id);
         if (timbreDTO == null) {
@@ -62,7 +63,7 @@ public class TimbreController {
     @ApiResponse(responseCode = "204", description = "Timbre deleted successfully")
     @ApiResponse(responseCode = "404", description = "Timbre not found")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         logger.info("Received request to delete Timbre id: {}", id);
         TimbreDTO timbreDTO = timbreService.findById(id);
         if (timbreDTO == null) {
@@ -78,7 +79,7 @@ public class TimbreController {
     @ApiResponse(responseCode = "200", description = "Timbre updated successfully")
     @ApiResponse(responseCode = "404", description = "Timbre not found")
     @PutMapping("/{id}")
-    public ResponseEntity<TimbreDTO> updateTimbre(@PathVariable("id") String id, @RequestBody TimbreDTO timbreDTO) {
+    public ResponseEntity<TimbreDTO> updateTimbre(@PathVariable("id") UUID id, @RequestBody TimbreDTO timbreDTO) {
         logger.info("Received request to update Timbre id: {}", id);
         TimbreDTO updated = timbreService.update(id, timbreDTO);
         logger.info("Updated Timbre: {}", updated);
