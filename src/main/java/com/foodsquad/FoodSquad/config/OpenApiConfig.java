@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.config;
 
+import com.foodsquad.FoodSquad.config.db.TenantFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -60,16 +61,16 @@ public class OpenApiConfig {
                 .addOpenApiCustomizer(openApi -> {
                     var excludedPaths = List.of(
                             "/api/stores",
-                            "/api/auth/owner/sign-in"
+                            "/api/auth/owner/sign-in" ,
+                            "/api/activity-sectors"
                     );
 
                     openApi.getPaths().forEach((path, pathItem) -> {
                         boolean isExcluded = excludedPaths.stream().anyMatch(path::startsWith);
-
                         if (!isExcluded) {
                             pathItem.readOperations().forEach(operation -> {
                                 operation.addParametersItem(new HeaderParameter()
-                                        .name("X-TenantID")
+                                        .name(TenantFilter.TENANT_HEADER)
                                         .description("Tenant identifier")
                                         .required(false)
                                         .example("tenant_1"));

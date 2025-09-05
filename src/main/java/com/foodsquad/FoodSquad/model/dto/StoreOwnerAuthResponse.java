@@ -41,5 +41,5 @@ public class StoreOwnerAuthResponse {
     @Schema(description = "Phone number of the user", example = "+359 899 78 7878")
     private String phoneNumber;
 
-    private UUID storeId;
+    private String storeId;
 }

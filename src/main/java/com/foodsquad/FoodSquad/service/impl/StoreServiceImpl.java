@@ -42,7 +42,7 @@ public class StoreServiceImpl implements StoreService {
         User savedOwner =  adminService.createStoreOwner(storeDTO.getEmail(), storeDTO.getPhoneNumber(), storeDTO.getPassword()) ;
         store.setOwner(savedOwner);
         Store saved = storeRepository.save(store);
-            tenantService.createTenant(saved.getId().toString());
+        tenantService.createTenant(saved.getId().toString() , savedOwner);
         StoreDTO result = storeMapper.toDto(saved);
         logger.info("Saved Store with id: {}", result.getId());
         return result;

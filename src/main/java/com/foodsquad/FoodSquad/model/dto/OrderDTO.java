@@ -11,9 +11,7 @@ import java.util.Map;
 
 
 public class OrderDTO {
-    //allows reading while returning the object only, TODO: create additional OrderCreateDTO
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-//    @NotNull(message = "Order ID is required")
     private String id;
 
     @NotNull(message = "Menu item quantities are required")
@@ -37,7 +35,6 @@ public class OrderDTO {
     @Schema(example = "admin@example.com" )
     private String userEmail;
 
-    // Public no-argument constructor
     public OrderDTO() {
     }
 

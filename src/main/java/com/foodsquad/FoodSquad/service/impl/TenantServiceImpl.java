@@ -1,8 +1,12 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.config.db.TenantContext;
+import com.foodsquad.FoodSquad.model.entity.User;
+import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.TenantService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +15,7 @@ import javax.sql.DataSource;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TenantServiceImpl implements TenantService {
 
     @PersistenceContext
@@ -18,15 +23,11 @@ public class TenantServiceImpl implements TenantService {
 
     private final DataSource dataSource;
 
+    private final UserRepository userRepository ;
 
-    @Autowired
-    public TenantServiceImpl(DataSource dataSource) {
-
-        this.dataSource = dataSource;
-    }
 
     @Override
-    public void createTenant(String storeId ) {
+    public void createTenant(String storeId , User user ) {
 
         String safeSchemaName = "tenant" +"_" + storeId.toLowerCase().replaceAll("[^a-z0-9_]", "_");
         if (!schemaExists(safeSchemaName)) {
@@ -37,6 +38,11 @@ public class TenantServiceImpl implements TenantService {
                     .load();
             flyway.migrate();
         }
+
+        TenantContext.setCurrentTenant(safeSchemaName);
+        userRepository.save(user);
+
+
     }
 
     private boolean schemaExists(String schemaName) {

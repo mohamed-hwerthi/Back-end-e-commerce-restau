@@ -33,15 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * Authentication Controller
- *
- * <p>Handles user and store owner authentication including:
- * - User registration
- * - User login
- * - Cashier login
- * - Store owner login
- * - Logout
- * - Fetching current authenticated user</p>
+ * Controller responsible for authentication endpoints including user, cashier, and store owner login,
+ * user registration, logout, and fetching the current authenticated user.
  */
 @Tag(name = "2. Authentication", description = "Authentication API")
 @Validated
@@ -75,23 +68,42 @@ public class AuthController {
     // ============================
     // User Registration
     // ============================
+
+    /**
+     * Register a new user.
+     *
+     * @param userRegistrationDTO the user registration data
+     * @return the registered user data or error response if passwords do not match
+     */
     @Operation(summary = "User registration", description = "Register a new user with the provided registration details.")
     @PostMapping("/sign-up")
     public ResponseEntity<?> registerUser(
             @Parameter(description = "User registration details", required = true)
             @Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
 
+        logger.info("Registering new user with email: {}", userRegistrationDTO.getEmail());
+
         if (!userRegistrationDTO.getPassword().equals(userRegistrationDTO.getConfirmPassword())) {
+            logger.warn("Passwords do not match for user registration: {}", userRegistrationDTO.getEmail());
             return badRequest("Passwords do not match");
         }
 
         UserResponseDTO user = authService.registerUser(userRegistrationDTO);
+        logger.info("User registered successfully: {}", user.getEmail());
         return ResponseEntity.ok(user);
     }
 
     // ============================
     // User Login
     // ============================
+
+    /**
+     * Authenticate a user and generate JWT tokens.
+     *
+     * @param userLoginDTO login credentials
+     * @param response HTTP servlet response to set refresh token cookie
+     * @return access token or error
+     */
     @Operation(summary = "User login", description = "Authenticate a user with the provided login credentials.")
     @PostMapping("/sign-in")
     public ResponseEntity<Map<String, String>> loginUser(
@@ -99,13 +111,23 @@ public class AuthController {
             @Valid @RequestBody UserLoginDTO userLoginDTO,
             HttpServletResponse response) {
 
+        logger.info("User login attempt: {}", userLoginDTO.getEmail());
         UserResponseDTO user = authService.loginUser(userLoginDTO);
+        logger.info("User login successful: {}", user.getEmail());
         return generateTokenResponse(user, response);
     }
 
     // ============================
     // Cashier Login
     // ============================
+
+    /**
+     * Authenticate a cashier or admin user and issue JWT tokens.
+     *
+     * @param userLoginDTO login credentials
+     * @param response HTTP servlet response
+     * @return access token or error
+     */
     @Operation(summary = "Cashier login", description = "Authenticate a cashier or admin user and issue JWT tokens.")
     @PostMapping("/cashier/sign-in")
     public ResponseEntity<Map<String, String>> loginCashier(
@@ -113,35 +135,59 @@ public class AuthController {
             @Valid @RequestBody UserLoginDTO userLoginDTO,
             HttpServletResponse response) {
 
+        logger.info("Cashier login attempt: {}", userLoginDTO.getEmail());
         UserResponseDTO user = authService.loginCashier(userLoginDTO);
+        logger.info("Cashier login successful: {}", user.getEmail());
         return generateTokenResponse(user, response);
     }
 
     // ============================
     // Store Owner Login
     // ============================
+
+    /**
+     * Authenticate a store owner and issue JWT tokens.
+     * @return access token or error
+     */
     @Operation(
             summary = "Store owner login",
             description = "Authenticates a store owner using email and password and returns store details.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully authenticated",
-                                content = @Content(schema = @Schema(implementation = StoreOwnerAuthResponse.class))),
+                            content = @Content(schema = @Schema(implementation = StoreOwnerAuthResponse.class))),
                     @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
                     @ApiResponse(responseCode = "401", description = "Invalid email or password", content = @Content)
             }
     )
     @PostMapping("/owner/sign-in")
-    // Logout
     public ResponseEntity<Map<String, String>> loginStoreOwner(
             @Valid @RequestBody UserLoginDTO loginDTO) {
 
-        StoreOwnerAuthResponse response = authService.loginStoreOwner(loginDTO);
-        return generateTokenResponse(response);
+        logger.info("Store owner login attempt: {}", loginDTO.getEmail());
+        StoreOwnerAuthResponse storeOwner = authService.loginStoreOwner(loginDTO);
+        logger.info("Store owner login successful: {}", storeOwner.getEmail());
+        Map<String, Object> claims = buildClaims(storeOwner);
+        String accessToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), accessTokenExpiration);
+        String refreshToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), refreshTokenExpiration);tokenService.saveTokens(storeOwner.getEmail(), accessToken, refreshToken);
+        logger.debug("Access & refresh tokens generated for store owner: {}", storeOwner.getEmail());
+        return ResponseEntity.ok(Map.of(
+                "accessToken", accessToken,
+                "storeId", storeOwner.getStoreId().toString()
+        ));
     }
 
     // ============================
     // Logout
     // ============================
+
+    /**
+     * Logout the authenticated user and invalidate tokens.
+     *
+     * @param authorizationHeader access token from header
+     * @param refreshToken refresh token from cookie
+     * @param response HTTP servlet response
+     * @return success message or error
+     */
     @Operation(summary = "Logout user", description = "Invalidate the refresh token and logout the user.")
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logoutUser(
@@ -151,8 +197,13 @@ public class AuthController {
             @CookieValue(REFRESH_TOKEN_COOKIE) String refreshToken,
             HttpServletResponse response) {
 
+        logger.info("Logout attempt");
+
         String accessToken = extractBearerToken(authorizationHeader);
-        if (accessToken == null) return badRequest("Missing or invalid Authorization header");
+        if (accessToken == null) {
+            logger.warn("Missing or invalid Authorization header during logout");
+            return badRequest("Missing or invalid Authorization header");
+        }
 
         try {
             jwtUtil.extractClaims(refreshToken);
@@ -164,36 +215,47 @@ public class AuthController {
         tokenService.invalidateTokens(accessToken, refreshToken);
         clearRefreshTokenCookie(response);
 
+        logger.info("User logged out successfully");
         return ResponseEntity.ok(Map.of("message", "Successfully logged out"));
     }
 
     // ============================
     // Get Current User
     // ============================
+
+    /**
+     * Get the currently authenticated user.
+     *
+     * @param request HTTP servlet request
+     * @return authenticated user details or unauthorized error
+     */
     @Operation(summary = "Get current user", description = "Get the details of the currently authenticated user.")
     @GetMapping("/current-user")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         String accessToken = extractBearerToken(request.getHeader(HttpHeaders.AUTHORIZATION));
-        if (accessToken == null) return unauthorized("Missing or invalid Authorization header");
+        if (accessToken == null) {
+            logger.warn("Missing Authorization header when fetching current user");
+            return unauthorized("Missing or invalid Authorization header");
+        }
 
-        String email;
         try {
-            email = jwtUtil.extractClaims(accessToken).getSubject();
+            String email = jwtUtil.extractClaims(accessToken).getSubject();
+            User user = authService.loadUserEntityByUsername(email);
+            logger.info("Fetched current user: {}", email);
+            return ResponseEntity.ok(new UserResponseDTO(user));
         } catch (ExpiredJwtException e) {
             logger.warn("Expired access token: {}", e.getMessage());
             return unauthorized("Access token is expired");
         } catch (JwtException e) {
-            logger.error("Error extracting claims from access token: {}", e.getMessage());
+            logger.error("Failed to extract claims from access token: {}", e.getMessage());
             return unauthorized("Failed to extract claims from access token");
         }
-
-        User user = authService.loadUserEntityByUsername(email);
-        return ResponseEntity.ok(new UserResponseDTO(user));
     }
 
     // ============================
     // Private Helpers
     // ============================
+
     private ResponseEntity<Map<String, String>> generateTokenResponse(UserResponseDTO user, HttpServletResponse response) {
         Map<String, Object> claims = buildClaims(user);
         String accessToken = jwtUtil.generateToken(claims, user.getEmail(), accessTokenExpiration);
@@ -202,16 +264,18 @@ public class AuthController {
         tokenService.saveTokens(user.getEmail(), accessToken, refreshToken);
         addRefreshTokenCookie(response, refreshToken);
 
+        logger.debug("Generated access token for user: {}", user.getEmail());
         return ResponseEntity.ok(Map.of("accessToken", accessToken));
     }
 
-    private ResponseEntity<Map<String, String>> generateTokenResponse(StoreOwnerAuthResponse storeOwner) {
+    private Map<String, String> generateTokenResponse(StoreOwnerAuthResponse storeOwner) {
         Map<String, Object> claims = buildClaims(storeOwner);
         String accessToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), accessTokenExpiration);
         String refreshToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), refreshTokenExpiration);
 
         tokenService.saveTokens(storeOwner.getEmail(), accessToken, refreshToken);
-        return ResponseEntity.ok(Map.of("accessToken", accessToken));
+        logger.debug("Generated access token for store owner: {}", storeOwner.getEmail());
+        return   Map.of("accessToken", accessToken)  ;
     }
 
     private Map<String, Object> buildClaims(UserResponseDTO user) {

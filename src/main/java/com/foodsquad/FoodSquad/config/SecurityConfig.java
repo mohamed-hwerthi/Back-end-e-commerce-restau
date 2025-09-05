@@ -1,9 +1,8 @@
 package com.foodsquad.FoodSquad.config;
 
-import com.foodsquad.FoodSquad.filter.JwtRequestFilter;
 import com.foodsquad.FoodSquad.exception.CustomAccessDeniedHandler;
 import com.foodsquad.FoodSquad.exception.CustomAuthenticationEntryPoint;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.foodsquad.FoodSquad.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -56,16 +55,22 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/invoice/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/invoice/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/currency/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
-                                .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/users/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/users/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.PATCH, "/api/promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/promotions/**").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/api/activity-sectors/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/activity-sectors/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/activity-sectors/**").permitAll()
+                                .requestMatchers(HttpMethod.PATCH, "/api/activity-sectors/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/activity-sectors/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/orders/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/orders/**").permitAll()
@@ -81,10 +86,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/menu-items/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/menu-items/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/menu-items/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/reviews/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
-                                .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasAnyRole("ADMIN", "MODERATOR", "NORMAL")
-                                .requestMatchers(HttpMethod.PUT, "/api/reviews/**").hasAnyRole("ADMIN", "MODERATOR")
-                                .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/reviews/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/categories/**").permitAll()

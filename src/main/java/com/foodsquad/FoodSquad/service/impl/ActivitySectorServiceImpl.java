@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,11 +25,13 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
 
     private final ActivitySectorRepository activitySectorRepository;
     private final ActivitySectorMapper activitySectorMapper;
+    private final DataSource dataSource  ;
 
     @Override
     @Transactional
     public ActivitySectorDTO save(ActivitySectorDTO activitySectorDTO) {
         log.info("Saving new ActivitySector: {}", activitySectorDTO);
+        logCurrentSchema();
         ActivitySector activitySector = activitySectorMapper.toEntity(activitySectorDTO);
         ActivitySector saved = activitySectorRepository.save(activitySector);
         ActivitySectorDTO result = activitySectorMapper.toDto(saved);
@@ -56,6 +62,7 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
     @Transactional(readOnly = true)
     public List<ActivitySectorDTO> findAll() {
         log.info("Fetching all ActivitySectors");
+        logCurrentSchema();
         List<ActivitySectorDTO> result = activitySectorRepository.findAll()
                 .stream()
                 .map(activitySectorMapper::toDto)
@@ -86,5 +93,20 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
         }
         activitySectorRepository.deleteById(id);
         log.info("Deleted ActivitySector with id: {}", id);
+    }
+
+
+    private void logCurrentSchema() {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery("SHOW search_path")) {
+
+            if (rs.next()) {
+                String schema = rs.getString(1);
+                log.info("Current database schema (search_path): {}", schema);
+            }
+        } catch (Exception e) {
+            log.error("Failed to get current schema", e);
+        }
     }
 }

@@ -51,6 +51,8 @@ public class Store {
     @Column(name = "accent_color", length = 10, nullable = true)
     private String accentColor;
 
+
+
     @Column(name = "active", nullable = false)
     private boolean active;
 

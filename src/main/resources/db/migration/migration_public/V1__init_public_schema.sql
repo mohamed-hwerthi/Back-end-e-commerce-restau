@@ -24,7 +24,7 @@
         role    VARCHAR(50)  NOT NULL,
         image_url VARCHAR(1024) DEFAULT 'https://www.pngarts.com/files/11/Avatar-Transparent-Images.png',
         phone_number  VARCHAR(50)  NOT NULL ,
-        created_on TIMESTAMP DEFAULT now() ,
+        created_at TIMESTAMP DEFAULT now() ,
         dtype VARCHAR(31) NOT NULL
 
     );

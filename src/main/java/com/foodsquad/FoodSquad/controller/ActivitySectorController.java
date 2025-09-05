@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -81,4 +82,16 @@ public class ActivitySectorController {
         log.info("Deleted ActivitySector with id: {}", id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @Operation(summary = "Get all activity sectors", description = "Retrieve a list of all available activity sectors")
+    @ApiResponse(responseCode = "200", description = "List of activity sectors retrieved successfully")
+    @GetMapping
+    public ResponseEntity<List<ActivitySectorDTO>> findAll() {
+        log.info("Fetching all ActivitySectors");
+        List<ActivitySectorDTO> sectors = activitySectorService.findAll();
+        log.info("Fetched {} ActivitySectors", sectors.size());
+        return ResponseEntity.ok(sectors);
+    }
+
 }

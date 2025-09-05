@@ -47,8 +47,8 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = true)
     private String phoneNumber = "000-000-0000";
 
-    @Column(name = "created_on", nullable = true, updatable = false)
-    private LocalDateTime createdOn;
+    @Column(name = "created_at", nullable = true, updatable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
