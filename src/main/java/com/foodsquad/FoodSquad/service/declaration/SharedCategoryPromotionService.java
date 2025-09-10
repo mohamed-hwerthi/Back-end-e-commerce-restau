@@ -10,11 +10,11 @@ public interface SharedCategoryPromotionService {
 
     PromotionDTO createPromotionForCategories(List<UUID> categoriesIds, PromotionDTO promotionDTO);
 
-    void addPromotionToCategory(UUID categoryId, Long promotionId);
+    void addPromotionToCategory(UUID categoryId, UUID promotionId);
 
-    void deactivatePromotionForCategory(UUID categoryId, Long promotionId);
+    void deactivatePromotionForCategory(UUID categoryId, UUID promotionId);
 
     boolean hasActivePromotionOverlappingPeriod(UUID categoryId, java.time.LocalDate startDate, java.time.LocalDate endDate);
 
-    List<CategoryDTO> findCategoriesRelatedToPromotion(Long promotionId);
+    List<CategoryDTO> findCategoriesRelatedToPromotion(UUID promotionId);
 }

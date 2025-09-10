@@ -81,7 +81,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(
             @Parameter(description = "Category details to be created", required = true) @RequestBody CategoryDTO categoryDTO) {
-        if(  categoryDTO.getId() != null && StringUtils.hasText(categoryDTO.getId().toString())){
+        if (categoryDTO.getId() != null && StringUtils.hasText(categoryDTO.getId().toString())) {
             throw new IllegalArgumentException("Category ID must be null in creation mode ");
         }
         CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);

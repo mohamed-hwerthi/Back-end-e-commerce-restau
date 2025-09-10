@@ -24,6 +24,7 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,11 +51,11 @@ public class OrderService {
         User user = userRepository.findByEmail(orderDTO.getUserEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + orderDTO.getUserEmail()));
 
-        Map<Long, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
+        Map<UUID, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
         Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
         Double totalCost = 0.0;
 
-        for (Map.Entry<Long, Integer> entry : menuItemQuantities.entrySet()) {
+        for (Map.Entry<UUID, Integer> entry : menuItemQuantities.entrySet()) {
             MenuItem menuItem = menuItemRepository.findById(entry.getKey())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + entry.getKey()));
             menuItemService.decrementMenuItemQuantity(menuItem.getId(), entry.getValue());
@@ -69,7 +70,7 @@ public class OrderService {
         order.setMenuItemsWithQuantity(menuItemsWithQuantity);
         order.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
         order.setTotalCost(roundedTotalCost.doubleValue());
-        order.setCreatedOn(orderDTO.getCreatedOn());
+        order.setCreatedAt(orderDTO.getCreatedOn());
         order.setPaid(true);
 
         orderRepository.save(order);
@@ -86,7 +87,7 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public List<OrderDTO> getOrdersByUserId(String userId, int page, int size) {
+    public List<OrderDTO> getOrdersByUserId(UUID userId, int page, int size) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
@@ -121,26 +122,22 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + orderDTO.getUserEmail()));
         existingOrder.setUser(user);
 
-        Map<Long, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
+        Map<UUID, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
         Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
         Double totalCost = 0.0;
 
-        for (Map.Entry<Long, Integer> entry : menuItemQuantities.entrySet()) {
+        for (Map.Entry<UUID, Integer> entry : menuItemQuantities.entrySet()) {
             MenuItem menuItem = menuItemRepository.findById(entry.getKey())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + entry.getKey()));
-            int quantity = entry.getValue() != null ? entry.getValue() : 1; // Default to 1 if quantity is null
+            int quantity = entry.getValue() != null ? entry.getValue() : 1;
             menuItemsWithQuantity.put(menuItem, quantity);
             totalCost += menuItem.getPrice() * quantity;
         }
-        // Round the totalCost to 2 decimal places
         BigDecimal roundedTotalCost = BigDecimal.valueOf(totalCost).setScale(2, RoundingMode.HALF_UP);
-
         existingOrder.setMenuItemsWithQuantity(menuItemsWithQuantity);
-
-        // Update other fields
         existingOrder.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
         existingOrder.setTotalCost(roundedTotalCost.doubleValue());
-        existingOrder.setCreatedOn(orderDTO.getCreatedOn());
+        existingOrder.setCreatedAt(orderDTO.getCreatedOn());
         existingOrder.setPaid(orderDTO.getPaid());
 
         orderRepository.save(existingOrder);

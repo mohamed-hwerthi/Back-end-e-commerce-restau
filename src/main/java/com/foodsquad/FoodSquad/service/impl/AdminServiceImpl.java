@@ -14,6 +14,7 @@ import com.foodsquad.FoodSquad.service.declaration.AdminService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jfree.ui.UIUtilities;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DataSource dataSource  ;
 
     private static final String ADMIN_NOT_FOUND = "Admin not found with id: ";
 
@@ -59,7 +63,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminDTO findAdminById(String id) {
+    public AdminDTO findAdminById(UUID id) {
         log.info("Fetching admin by ID: {}", id);
         Admin admin = adminRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ADMIN_NOT_FOUND + id));
@@ -67,7 +71,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminDTO findAdminByAdminId(String adminId) {
+    public AdminDTO findAdminByAdminId(UUID adminId) {
         log.info("Fetching admin by Admin ID: {}", adminId);
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new EntityNotFoundException("Admin not found with admin ID: " + adminId));
@@ -76,7 +80,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public AdminDTO createAdmin(AdminDTO adminDTO) {
+    public AdminDTO  createAdmin(AdminDTO adminDTO) {
         log.info("Creating new admin: {}", adminDTO);
         if (adminDTO.getId() != null && adminRepository.existsById(adminDTO.getId())) {
             log.error("Admin with ID {} already exists", adminDTO.getId());
@@ -90,7 +94,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public AdminDTO updateAdmin(String id, AdminDTO adminDTO) {
+    public AdminDTO updateAdmin(UUID id, AdminDTO adminDTO) {
         log.info("Updating admin with ID: {}", id);
         Admin existingAdmin = adminRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ADMIN_NOT_FOUND + id));
@@ -102,7 +106,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public void deleteAdmin(String id) {
+    public void deleteAdmin(UUID id) {
         log.info("Deleting admin with ID: {}", id);
         if (!adminRepository.existsById(id)) {
             log.error("Cannot delete. Admin with ID {} not found", id);
@@ -113,7 +117,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Admin findAdmin(String id) {
+    public Admin findAdmin(UUID id) {
         log.info("Finding admin entity by ID: {}", id);
         return adminRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ADMIN_NOT_FOUND + id));
@@ -142,6 +146,14 @@ public class AdminServiceImpl implements AdminService {
         log.info("Successfully created store owner with ID: {}", savedUser.getId());
         return savedUser;
     }
+
+    @Override
+    public User findByEmail(String email) {
+        log.info("Finding user by email: {}", email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    }
+
 
     private void checkUserExists(String email) {
         if (userRepository.existsByEmail(email)) {

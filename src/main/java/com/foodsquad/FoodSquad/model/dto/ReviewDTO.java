@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -33,7 +34,7 @@ public class ReviewDTO {
 
     @NotNull(message = "Menu Item ID is required")
     @Schema(description = "ID of the menu item being reviewed", example = "5")
-    private Long menuItemId;
+    private UUID menuItemId;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Email of the user who wrote the review", example = "user@example.com")
@@ -59,11 +60,11 @@ public class ReviewDTO {
         this.rating = rating;
     }
 
-    public @NotNull(message = "Menu Item ID is required") Long getMenuItemId() {
+    public @NotNull(message = "Menu Item ID is required") UUID getMenuItemId() {
         return menuItemId;
     }
 
-    public void setMenuItemId(@NotNull(message = "Menu Item ID is required") Long menuItemId) {
+    public void setMenuItemId(@NotNull(message = "Menu Item ID is required") UUID menuItemId) {
         this.menuItemId = menuItemId;
     }
 }

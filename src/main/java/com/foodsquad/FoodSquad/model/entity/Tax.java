@@ -2,10 +2,13 @@ package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
-@Table(name = "tax")
+@Getter
+@Setter
+@Table(name = "taxes")
 public class Tax {
 
     @Id

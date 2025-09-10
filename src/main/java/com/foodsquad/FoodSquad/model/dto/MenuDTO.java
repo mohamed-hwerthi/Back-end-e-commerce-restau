@@ -2,10 +2,16 @@ package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+
+@Getter
+@Setter
 public class MenuDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String id    ;
@@ -14,68 +20,10 @@ public class MenuDTO {
     private String description  ;
     private String qrCode ;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<Long>menuItemsIds = new ArrayList<>() ;
+    private List<UUID>menuItemsIds = new ArrayList<>() ;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<MenuItemDTO> menuItems = new ArrayList<>() ;
 
-    public String getId() {
 
-        return id;
-    }
-
-    public void setId(String id) {
-
-        this.id = id;
-    }
-
-    public String getName() {
-
-        return name;
-    }
-
-    public void setName(String name) {
-
-        this.name = name;
-    }
-
-    public String getDescription() {
-
-        return description;
-    }
-
-    public void setDescription(String description) {
-
-        this.description = description;
-    }
-
-    public String getQrCode() {
-
-        return qrCode;
-    }
-
-    public void setQrCode(String qrCode) {
-
-        this.qrCode = qrCode;
-    }
-
-    public List<Long> getMenuItemsIds() {
-
-        return menuItemsIds;
-    }
-
-    public void setMenuItemsIds(List<Long> menuItemsIds) {
-
-        this.menuItemsIds = menuItemsIds;
-    }
-
-    public List<MenuItemDTO> getMenuItems() {
-
-        return menuItems;
-    }
-
-    public void setMenuItems(List<MenuItemDTO> menuItems) {
-
-        this.menuItems = menuItems;
-    }
 
 }

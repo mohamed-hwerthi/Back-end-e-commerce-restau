@@ -1,22 +1,19 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
-
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long id;
+    private UUID id;
 
     private String title;
 
@@ -40,8 +37,7 @@ public class MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double averageRating;
-
-    private List<CategoryDTO> categories = new ArrayList<>();
+        private List<CategoryDTO> categories = new ArrayList<>();
 
     private List<MediaDTO> medias = new ArrayList<>();
 
@@ -51,13 +47,7 @@ public class MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 
-
     private   Double discountedPrice  ;
-
-
-    private CurrencyDTO currency;
-
-
 
     private TaxDTO tax;
 

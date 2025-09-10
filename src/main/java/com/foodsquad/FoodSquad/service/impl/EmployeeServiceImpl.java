@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,14 +44,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO findEmployeeById(String id) {
+    public EmployeeDTO findEmployeeById(UUID id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id));
         return employeeMapper.toDto(employee);
     }
 
     @Override
-    public EmployeeDTO findEmployeeByEmployeeId(String employeeId) {
+    public EmployeeDTO findEmployeeByEmployeeId(UUID employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with employee ID: " + employeeId));
         return employeeMapper.toDto(employee);
@@ -69,7 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public EmployeeDTO updateEmployee(String id, EmployeeDTO employeeDTO) {
+    public EmployeeDTO updateEmployee(UUID id, EmployeeDTO employeeDTO) {
         Employee existingEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id));
         
@@ -80,7 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public void deleteEmployee(String id) {
+    public void deleteEmployee(UUID id) {
         if (!employeeRepository.existsById(id)) {
             throw new EntityNotFoundException("Employee not found with id: " + id);
         }
@@ -88,7 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee findEmployee(String id) {
+    public Employee findEmployee(UUID id) {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id));
     }

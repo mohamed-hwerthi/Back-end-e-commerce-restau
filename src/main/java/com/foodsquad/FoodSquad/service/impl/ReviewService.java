@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +58,7 @@ public class ReviewService {
         return modelMapper.map(savedReview, ReviewDTO.class);
     }
 
-    public List<ReviewDTO> getReviewsByMenuItemId(Long menuItemId) {
+    public List<ReviewDTO> getReviewsByMenuItemId(UUID menuItemId) {
         return reviewRepository.findByMenuItemId(menuItemId)
                 .stream()
                 .map(review -> modelMapper.map(review, ReviewDTO.class))
@@ -66,7 +67,7 @@ public class ReviewService {
 
     public List<ReviewDTO> getReviewsByUserId(String userId) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdOn"));
-        return reviewRepository.findByUserIdOrderByCreatedOnDesc(userId, pageable)
+        return reviewRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .stream()
                 .map(review -> modelMapper.map(review, ReviewDTO.class))
                 .collect(Collectors.toList());

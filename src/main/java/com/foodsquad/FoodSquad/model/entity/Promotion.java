@@ -1,18 +1,7 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -33,8 +23,8 @@ import java.util.List;
 public class Promotion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(nullable = true, name = "name")
     private String name;
 
@@ -47,8 +37,8 @@ public class Promotion {
     @Column(nullable = true, name = "active")
     private boolean active;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdOn;
+    @Column(nullable = false,  name ="created_at"  ,  updatable = false)
+    private LocalDateTime createdAt;
 
 
     private PromotionTarget promotionTarget;
@@ -61,12 +51,9 @@ public class Promotion {
 
     @PrePersist
     protected void onCreate() {
-        this.createdOn = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
 
 
 

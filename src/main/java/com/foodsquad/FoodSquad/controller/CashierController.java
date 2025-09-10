@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/cashiers")
@@ -35,12 +36,12 @@ public class CashierController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CashierDTO> getCashierById(@PathVariable String id) {
+    public ResponseEntity<CashierDTO> getCashierById(@PathVariable UUID id ) {
         return ResponseEntity.ok(cashierService.findCashierById(id));
     }
 
     @GetMapping("/cashier-id/{cashierId}")
-    public ResponseEntity<CashierDTO> getCashierByCashierId(@PathVariable String cashierId) {
+    public ResponseEntity<CashierDTO> getCashierByCashierId(@PathVariable UUID cashierId) {
         return ResponseEntity.ok(cashierService.findCashierByCashierId(cashierId));
     }
 
@@ -52,13 +53,13 @@ public class CashierController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CashierDTO> updateCashier(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Valid @RequestBody CashierDTO cashierDTO) {
         return ResponseEntity.ok(cashierService.updateCashier(id, cashierDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCashier(@PathVariable String id) {
+    public ResponseEntity<Void> deleteCashier(@PathVariable UUID id) {
         cashierService.deleteCashier(id);
         return ResponseEntity.noContent().build();
     }

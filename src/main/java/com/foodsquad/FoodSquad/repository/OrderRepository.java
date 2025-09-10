@@ -22,8 +22,8 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param menuItemId The ID of the menu item.
      * @return The total quantity of the menu item.
      */
-    @Query(value = "SELECT SUM(quantity) FROM order_menu_item WHERE menu_item_id = :menuItemId", nativeQuery = true)
-    Integer sumQuantityByMenuItemId(@Param("menuItemId") Long menuItemId);
+    @Query(value = "SELECT SUM(quantity) FROM order_menu_items WHERE menu_item_id = :menuItemId", nativeQuery = true)
+    Integer sumQuantityByMenuItemId(@Param("menuItemId") UUID menuItemId);
 
     /**
      * Finds all orders with their associated users and returns them in a pageable format.
@@ -51,16 +51,16 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @return A page of orders for the specified user.
      */
     @Query("SELECT o FROM Order o JOIN o.user u WHERE u.id = :userId")
-    Page<Order> findOrdersByUserId(@Param("userId") String userId, Pageable pageable);
+    Page<Order> findOrdersByUserId(@Param("userId") UUID userId, Pageable pageable);
 
     /**
-     * Removes references to a menu item from the order_menu_item table.
+     * Removes references to a menu item from the order_menu_items table.
      *
      * @param menuItemId The ID of the menu item to remove references to.
      */
     @Modifying
-    @Query(value = "DELETE FROM order_menu_item WHERE menu_item_id = :menuItemId", nativeQuery = true)
-    void removeMenuItemReferences(@Param("menuItemId") Long menuItemId);
+    @Query(value = "DELETE FROM order_menu_items WHERE menu_item_id = :menuItemId", nativeQuery = true)
+    void removeMenuItemReferences(@Param("menuItemId") UUID menuItemId);
 
 
     /**
@@ -74,9 +74,9 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     /**
      * Finds orders created before a specific date and with a specific status.
      *
-     * @param createdOn The date before which the orders were created.
+     * @param createdAt The date before which the orders were created.
      * @param status The status of the orders.
      * @return A list of orders matching the criteria.
      */
-    List<Order> findByCreatedOnBeforeAndStatus(LocalDateTime createdOn, OrderStatus status);
+    List<Order> findByCreatedAtBeforeAndStatus(LocalDateTime createdAt, OrderStatus status);
 }

@@ -3,7 +3,6 @@
     import jakarta.persistence.*;
     import jakarta.validation.constraints.Min;
     import jakarta.validation.constraints.Positive;
-    import lombok.Data;
     import lombok.Getter;
     import lombok.Setter;
 
@@ -11,6 +10,7 @@
     import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.UUID;
 
     @Entity
     @Table(name = "menu_items")
@@ -19,8 +19,9 @@
     public class MenuItem {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        @GeneratedValue(strategy = GenerationType.UUID)
+        @Column(name = "id", nullable = false, updatable = false)
+        private UUID id;
 
         @Column(nullable = false)
         private String title;
@@ -32,7 +33,7 @@
         @Column(nullable = false)
         private Double price = 1.0;
 
-        @Column(nullable = true, name = "codeBar", unique = true)
+        @Column(nullable = true, name = "code_bar" ,  unique = true)
         private String barCode;
 
        @Column (nullable = false  , name = "purchase_price")
@@ -43,23 +44,11 @@
        @Min(value = 0, message = "Quantity must be at least 0")
        private int quantity;
 
-
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id")
-        private User user;
-
-
         @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Review> reviews = new ArrayList<>();
 
-        @Column(nullable = false, updatable = false)
-        private LocalDateTime createdOn;
-
-        @ManyToMany(mappedBy = "menuItems")
-        private List<Menu> menus;
-        @ManyToOne
-        @JoinColumn(name = "currency_id", nullable = false)
-        private Currency currency;
+        @Column(nullable = false,  name = "created_at"  , updatable = false)
+        private LocalDateTime createdAt ;
 
         @OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "tax_id", referencedColumnName = "id")
@@ -75,7 +64,7 @@
 
         @ManyToMany
         @JoinTable(
-                name = "x",
+                name = " menu_item_medias",
                 joinColumns = @JoinColumn(name = "menu_item_id"),
                 inverseJoinColumns = @JoinColumn(name = "media_id")
         )
@@ -94,7 +83,7 @@
         @PrePersist
         protected void onCreate() {
 
-            this.createdOn = LocalDateTime.now();
+            this.createdAt = LocalDateTime.now();
         }
 
 

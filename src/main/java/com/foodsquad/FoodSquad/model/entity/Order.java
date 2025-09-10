@@ -1,14 +1,16 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Getter
+@Setter
 public class Order {
 
     @Id
@@ -23,14 +25,14 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.PENDING;
 
-    @Column(nullable = false)
-    private LocalDateTime createdOn;
+    @Column(nullable = false   , name = "created_at")
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private Boolean paid = false;
 
     @ElementCollection
-    @CollectionTable(name = "order_menu_item", joinColumns = @JoinColumn(name = "order_id"))
+    @CollectionTable(name = "order_menu_items", joinColumns = @JoinColumn(name = "order_id"))
     @MapKeyJoinColumn(name = "menu_item_id")
     @Column(name = "quantity")
     private Map<MenuItem, Integer> menuItemsWithQuantity;

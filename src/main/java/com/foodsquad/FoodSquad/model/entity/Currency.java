@@ -1,37 +1,30 @@
 package com.foodsquad.FoodSquad.model.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "currency")
+@Table(name = "currencies")
 public class Currency {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id;
 
     private String name;
 
     private String symbol;
 
     private int scale;
-
-    @OneToMany(mappedBy = "currency", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MenuItem> menuItems = new ArrayList<>();
 
     public Currency(String name, String symbol, int scale) {
 

@@ -12,13 +12,14 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class PromotionDTO {
 
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long id;
+    private UUID id;
 
     @Size(max = 100, message = "Title must be at most 100 characters")
     private String name;

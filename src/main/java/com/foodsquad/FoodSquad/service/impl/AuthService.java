@@ -1,7 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.config.EncryptionUtil;
-import com.foodsquad.FoodSquad.config.db.TenantContext;
 import com.foodsquad.FoodSquad.exception.InvalidCredentialsException;
 import com.foodsquad.FoodSquad.exception.UserAlreadyExistsException;
 import com.foodsquad.FoodSquad.model.dto.*;
@@ -33,9 +32,6 @@ public class AuthService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) {
-        // Force public schema for store owners
-        TenantContext.setCurrentTenant("public");
-
         User user = findUserByEmail(email);
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
@@ -74,7 +70,6 @@ public class AuthService implements UserDetailsService {
     @Transactional
     public StoreOwnerAuthResponse loginStoreOwner(UserLoginDTO loginDTO) {
         User user = getUserIfPasswordMatches(loginDTO);
-
         StoreDTO storeDto = storeService.findByOwner(user);
         String encryptedStoreId = encryptStoreId(storeDto.getId().toString());
 

@@ -10,8 +10,11 @@ import java.util.UUID;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, UUID> {
+
     boolean existsByName(String name);
 
-      Optional < Store> findByOwner(User owner);
+    Optional<Store> findByOwner(User owner);
+
+    boolean existsBySlug(String slug);
 }
     

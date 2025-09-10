@@ -65,7 +65,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> updateUser(
             @Parameter(description = "ID of the user to update", example = "1")
-            @PathVariable String id,
+            @PathVariable UUID id,
 
             @Parameter(description = "Updated user details", required = true)
             @Valid @RequestBody UserUpdateDTO updateUserDTO) {
@@ -76,7 +76,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteUser(
             @Parameter(description = "ID of the user to delete", example = "1")
-            @PathVariable String id) {
+            @PathVariable UUID id) {
         return userService.deleteUser(id);
     }
 }

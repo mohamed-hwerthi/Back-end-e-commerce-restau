@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PromotionDTO getPromotionById(Long id) {
+    public PromotionDTO getPromotionById(UUID id) {
 
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
@@ -64,7 +65,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PromotionDTO updatePromotion(Long id, PromotionDTO promotionDTO) {
+    public PromotionDTO updatePromotion(UUID id, PromotionDTO promotionDTO) {
 
         Promotion existingPromotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
@@ -79,7 +80,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     @Transactional
-    public void deletePromotion(Long id) {
+    public void deletePromotion(UUID id) {
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
         if(promotion.getPromotionTarget().equals(PromotionTarget.MENUITEMS)){
@@ -97,7 +98,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Promotion getPromotion(Long id) {
+    public Promotion getPromotion(UUID id) {
 
         return promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
@@ -110,7 +111,7 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public void changePromotionActivationStatus(Long promotionId) {
+    public void changePromotionActivationStatus(UUID promotionId) {
 
         Promotion promotion = promotionRepository.findById(promotionId)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + promotionId));
@@ -120,12 +121,12 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public   List<PromotionDTO> findAllPromotionForMenuItem(Long menuItemId) {
+    public   List<PromotionDTO> findAllPromotionForMenuItem(UUID menuItemId) {
         return  promotionRepository.findAllPromotionsForMenuItem(menuItemId).stream().map(promotionMapper::toDTO).toList();
     }
 
     @Override
-    public List<Promotion> findPromotionsForMenuItem(Long menuItemId) {
+    public List<Promotion> findPromotionsForMenuItem(UUID menuItemId) {
         return  promotionRepository.findAllPromotionsForMenuItem(menuItemId) ;
     }
 }

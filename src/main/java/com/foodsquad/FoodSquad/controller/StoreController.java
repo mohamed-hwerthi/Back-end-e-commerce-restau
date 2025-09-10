@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.controller;
 
+import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.service.declaration.StoreService;
@@ -7,7 +8,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,7 @@ import java.util.UUID;
 @RequestMapping("/api/stores")
 @RequiredArgsConstructor
 @Tag(name = "Store Management", description = "APIs for managing stores")
+@Slf4j
 public class StoreController {
 
     private static final Logger logger = LoggerFactory.getLogger(StoreController.class);
@@ -34,7 +39,7 @@ public class StoreController {
     @Operation(summary = "Create a new store")
     @ApiResponse(responseCode = "200", description = "Store created successfully")
     @PostMapping
-    public ResponseEntity<StoreDTO> create(@RequestBody  @Valid StoreDTO storeDTO) {
+    public ResponseEntity<StoreDTO> create(@RequestBody @Valid StoreDTO storeDTO) {
         logger.info("Received request to create Store: {}", storeDTO);
         if (storeDTO.getId() != null && StringUtils.hasText(storeDTO.getId().toString())) {
             throw new IllegalArgumentException("ID must not be sent when creating a new store.");
@@ -47,7 +52,7 @@ public class StoreController {
                 .path("/{id}")
                 .buildAndExpand(saved.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(saved) ;
+        return ResponseEntity.created(location).body(saved);
 
 
     }
@@ -107,6 +112,24 @@ public class StoreController {
         storeService.delete(id);
         logger.info("Deleted Store with id: {}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/by-owner-email")
+    @Operation(
+            summary = "Find store by owner's email",
+            description = "Retrieves the store information for a store owner by their email"
+    )
+    public ResponseEntity<StoreBasicDataDTO> getStoreByOwnerEmail(
+            @RequestParam
+            @NotBlank(message = "Email is required")
+            @Email(message = "Invalid email format") String email) {
+
+        log.info("Received request to get store by owner's email: {}", email);
+
+        StoreBasicDataDTO storeDTO = storeService.findByEmail(email);
+
+        log.info("Found store with ID: {}", storeDTO.getStoreId());
+        return ResponseEntity.ok(storeDTO);
     }
 
 

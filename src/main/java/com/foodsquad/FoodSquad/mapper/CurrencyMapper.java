@@ -13,7 +13,6 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = {MediaMapper.class})
 public interface CurrencyMapper {
-    @Mapping(target = "menuItems", ignore = true)
     Currency toEntity(CurrencyDTO currencyDto);
 
     CurrencyDTO toDto(Currency currency);

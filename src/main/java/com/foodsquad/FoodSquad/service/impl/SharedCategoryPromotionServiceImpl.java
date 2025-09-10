@@ -41,7 +41,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     }
 
     @Override
-    public void addPromotionToCategory(UUID categoryId, Long promotionId) {
+    public void addPromotionToCategory(UUID categoryId, UUID promotionId) {
         Category category = categoryService.findCategory(categoryId);
         Promotion promotion = promotionService.getPromotion(promotionId);
 
@@ -55,7 +55,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     }
 
     @Override
-    public void deactivatePromotionForCategory(UUID categoryId, Long promotionId) {
+    public void deactivatePromotionForCategory(UUID categoryId, UUID promotionId) {
         Category category = categoryService.findCategory(categoryId);
 
         category.getPromotions().removeIf(promotion -> promotion.getId().equals(promotionId));
@@ -79,7 +79,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     }
 
     @Override
-    public List<CategoryDTO> findCategoriesRelatedToPromotion(Long promotionId) {
+    public List<CategoryDTO> findCategoriesRelatedToPromotion(UUID promotionId) {
         Promotion promotion = promotionService.getPromotion(promotionId);
         return categoryMapper.toDTOList(promotion.getCategories());
     }

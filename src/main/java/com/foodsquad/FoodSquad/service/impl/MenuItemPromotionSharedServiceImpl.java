@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
+import java.util.UUID;
 
 
 @Service
@@ -35,7 +35,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
 
     @Override
-    public PromotionDTO createPromotionForMenuItems(List<Long> menuItemsIds, PromotionDTO promotionDTO) {
+    public PromotionDTO createPromotionForMenuItems(List<UUID> menuItemsIds, PromotionDTO promotionDTO) {
 
         List<MenuItemDTO> menuItems = getMenuItems(menuItemsIds);
 
@@ -47,7 +47,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     }
 
     @Override
-    public List<MenuItemDTO> findMenuItemsRelatedToPromotion(Long promotionId) {
+    public List<MenuItemDTO> findMenuItemsRelatedToPromotion(UUID promotionId) {
 
         Promotion promotion = promotionService.getPromotion(promotionId) ;
 
@@ -69,7 +69,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
 
     @Override
-    public boolean hasActivePromotionOverlappingPeriod(Long menuItemId, LocalDate startDate, LocalDate endDate) {
+    public boolean hasActivePromotionOverlappingPeriod(UUID menuItemId, LocalDate startDate, LocalDate endDate) {
         MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
 
         return menuItem.getPromotions().stream()
@@ -85,7 +85,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     }
 
     @Override
-    public void deactivatePromotionForMenuItem(Long menuItemId, Long promotionId) {
+    public void deactivatePromotionForMenuItem(UUID menuItemId, UUID promotionId) {
 
         MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
 
@@ -97,7 +97,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
 
     @Override
-    public void addPromotionToMenuItem(Long menuItemId, Long promotionId) {
+    public void addPromotionToMenuItem(UUID menuItemId, UUID promotionId) {
 
         MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
 
@@ -114,16 +114,9 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
     }
 
-    private List<MenuItemDTO> getMenuItems(List<Long> menuItemsIds) {
-
-
-        return menuItemsIds.stream().map(menuItemService::getMenuItemById).toList();
-
-    }
-
 
     @Override
-    public boolean isMenuItemHasActivePromotionInCurrentDay(Long menuItemId) {
+    public boolean isMenuItemHasActivePromotionInCurrentDay(UUID menuItemId) {
         List<PromotionDTO>promotionDTOS = promotionService.findAllPromotionForMenuItem(menuItemId);
         LocalDate today = LocalDate.now();
         return promotionDTOS.stream()
@@ -133,6 +126,36 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
                                 ( !today.isAfter(promotionDTO.getEndDate()) )
                 );
     }
+
+
+
+    /*
+   todo  : we have to add some  logic here  for getting the  last created promotion  :
+    our metier is to apply the last created  promotion for the  same type
+
+     **  getting related categories promotions to display them
+     */
+
+    @Override
+    public PercentageDiscountPromotion getMenuItemActivePromotionInCurrentDay(UUID menuItemId) {
+        List<Promotion> menuItemPromotions = promotionService.findPromotionsForMenuItem(menuItemId);
+        LocalDate today = LocalDate.now();
+
+        return menuItemPromotions.stream()
+                .filter(Promotion::isActive)
+                .filter(promotion ->
+                        promotion.getStartDate() != null && promotion.getEndDate() != null &&
+                                !today.isBefore(promotion.getStartDate()) && !today.isAfter(promotion.getEndDate())
+                )
+                .filter(promotion -> promotion instanceof PercentageDiscountPromotion)
+                .map(promotion -> (PercentageDiscountPromotion) promotion).max((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .orElse(null);
+    }
+
+
+
+
+
 
 
     private void associatePromotionWithMenuItems(Promotion promotion, List<MenuItemDTO> menuItemDTOS) {
@@ -151,31 +174,6 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     }
 
 
-    /*
-   todo  : we have to add some  logic here  for getting the  last created promotion  :
-    our metier is to apply the last created  promotion for the  same type
-
-     **  getting related categories promotions to display them
-     */
-
-    @Override
-    public PercentageDiscountPromotion getMenuItemActivePromotionInCurrentDay(Long menuItemId) {
-        List<Promotion> menuItemPromotions = promotionService.findPromotionsForMenuItem(menuItemId);
-        LocalDate today = LocalDate.now();
-
-        return menuItemPromotions.stream()
-                .filter(Promotion::isActive)
-                .filter(promotion ->
-                        promotion.getStartDate() != null && promotion.getEndDate() != null &&
-                                !today.isBefore(promotion.getStartDate()) && !today.isAfter(promotion.getEndDate())
-                )
-                .filter(promotion -> promotion instanceof PercentageDiscountPromotion)
-                .map(promotion -> (PercentageDiscountPromotion) promotion).max((p1, p2) -> p2.getCreatedOn().compareTo(p1.getCreatedOn()))
-                .orElse(null);
-    }
-
-
-
 
 
     /**
@@ -185,10 +183,12 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
                 return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
     }
 
+    private List<MenuItemDTO> getMenuItems(List<UUID> menuItemsIds) {
 
 
+        return menuItemsIds.stream().map(menuItemService::getMenuItemById).toList();
 
-
+    }
 
 
 }

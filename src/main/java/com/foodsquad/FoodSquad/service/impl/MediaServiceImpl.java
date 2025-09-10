@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,6 +110,28 @@ public class MediaServiceImpl implements MediaService {
         }
         mediaRepository.deleteById(id);
     }
+
+
+    @Override
+    public List<MediaDTO> uploadMultipleFiles(MultipartFile[] files) throws Exception {
+        if (files == null || files.length == 0) {
+            throw new FileUploadingException("No files provided for upload");
+        }
+
+        logger.info("Uploading {} files", files.length);
+
+        return Arrays.stream(files)
+                .map(file -> {
+                    try {
+                        return uploadFile(file);
+                    } catch (Exception e) {
+                        logger.error("Error uploading file: {}", file.getOriginalFilename(), e);
+                        throw new RuntimeException("Failed to upload file: " + file.getOriginalFilename(), e);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public MediaDTO uploadFile(MultipartFile file) {

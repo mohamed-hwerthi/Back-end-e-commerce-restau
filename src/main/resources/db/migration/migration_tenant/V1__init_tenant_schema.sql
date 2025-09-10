@@ -1,12 +1,6 @@
 -- Migration for tenant schema initialization
 
--- Currencies
-CREATE TABLE currencies (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    symbol VARCHAR(10),
-    scale INT
-);
+
 
 -- Taxes
 CREATE TABLE taxes (
@@ -49,7 +43,7 @@ CREATE TABLE tokens (
 );
 
 -- Timbres
-CREATE TABLE timbres (
+CREATE TABLE timbre(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     amount DOUBLE PRECISION NOT NULL
 );
@@ -70,19 +64,15 @@ CREATE TABLE orders (
 
 -- Menu Items
 CREATE TABLE menu_items (
-    id BIGSERIAL PRIMARY KEY,
+     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,
-    purchase_price NUMERIC CHECK (purchase_price > 0) NOT NULL,
+    purchase_price NUMERIC CHECK (purchase_price > 0) ,
     quantity INT CHECK (quantity >= 0) NOT NULL,
-    user_id UUID,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    currency_id BIGINT NOT NULL,
     tax_id BIGINT,
-    CONSTRAINT fk_menu_items_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL,
-    CONSTRAINT fk_menu_items_currency FOREIGN KEY(currency_id) REFERENCES currencies(id),
     CONSTRAINT fk_menu_items_tax FOREIGN KEY(tax_id) REFERENCES taxes(id)
 );
 
@@ -93,7 +83,7 @@ CREATE TABLE reviews (
     rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     user_id UUID NOT NULL,
-    menu_item_id BIGINT NOT NULL,
+    menu_item_id UUID NOT NULL,
     CONSTRAINT fk_reviews_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_reviews_menu_item FOREIGN KEY(menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
 );
@@ -121,7 +111,7 @@ CREATE TABLE categories (
 -- Many-to-many tables
 CREATE TABLE menu_menu_items (
     menu_id BIGINT NOT NULL,
-    menu_item_id BIGINT NOT NULL,
+    menu_item_id UUID NOT NULL,
     PRIMARY KEY (menu_id, menu_item_id),
     CONSTRAINT fk_menu_menu_items_menu FOREIGN KEY(menu_id) REFERENCES menus(id) ON DELETE CASCADE,
     CONSTRAINT fk_menu_menu_items_menu_item FOREIGN KEY(menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
@@ -136,7 +126,7 @@ CREATE TABLE categories_medias (
 );
 
 CREATE TABLE menu_item_categories (
-    menu_item_id BIGINT NOT NULL,
+    menu_item_id UUID NOT NULL,
     category_id UUID NOT NULL,
     PRIMARY KEY (menu_item_id, category_id),
     CONSTRAINT fk_menu_item_categories_menu_item FOREIGN KEY(menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE,
@@ -144,7 +134,7 @@ CREATE TABLE menu_item_categories (
 );
 
 CREATE TABLE menu_item_promotions (
-    menu_item_id BIGINT NOT NULL,
+    menu_item_id UUID NOT NULL,
     promotion_id BIGINT NOT NULL,
     PRIMARY KEY (menu_item_id, promotion_id)
 );
@@ -156,7 +146,7 @@ CREATE TABLE category_promotions (
 );
 
 CREATE TABLE menu_item_medias (
-    menu_item_id BIGINT NOT NULL,
+    menu_item_id UUID NOT NULL,
     media_id UUID NOT NULL,
     PRIMARY KEY (menu_item_id, media_id),
     CONSTRAINT fk_menu_item_medias_menu_item FOREIGN KEY(menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE,
@@ -166,9 +156,48 @@ CREATE TABLE menu_item_medias (
 -- Order menu items mapping
 CREATE TABLE order_menu_items (
     order_id UUID NOT NULL,
-    menu_item_id BIGINT NOT NULL,
+    menu_item_id UUID NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (order_id, menu_item_id),
     CONSTRAINT fk_order_menu_items_order FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
     CONSTRAINT fk_order_menu_items_menu_item FOREIGN KEY(menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
 );
+-- Promotion base table
+CREATE TABLE promotions (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255),
+    start_date DATE,
+    end_date DATE,
+    active BOOLEAN,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    promotion_type VARCHAR(31) NOT NULL,
+    promotion_target VARCHAR(50)
+);
+
+-- Percentage discount promotion (inherits from promotions)
+CREATE TABLE percentage_discount_promotion (
+    id UUID PRIMARY KEY,
+    discount_percentage INT,
+    discount_type VARCHAR(50),
+    promotional_price DOUBLE PRECISION,
+    CONSTRAINT fk_percentage_promotion FOREIGN KEY(id) REFERENCES promotions(id) ON DELETE CASCADE
+);
+
+-- Join table between menu_items and promotions (already exists but validate)
+CREATE TABLE IF NOT EXISTS menu_item_promotions (
+    menu_item_id UUID NOT NULL,
+    promotion_id UUID NOT NULL,
+    PRIMARY KEY (menu_item_id, promotion_id),
+    CONSTRAINT fk_menu_item_promotions_menu_item FOREIGN KEY(menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE,
+    CONSTRAINT fk_menu_item_promotions_promotion FOREIGN KEY(promotion_id) REFERENCES promotions(id) ON DELETE CASCADE
+);
+
+-- Join table between categories and promotions (already exists but validate)
+CREATE TABLE IF NOT EXISTS category_promotions (
+    category_id UUID NOT NULL,
+    promotion_id BIGINT NOT NULL,
+    PRIMARY KEY (category_id, promotion_id),
+    CONSTRAINT fk_category_promotions_category FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    CONSTRAINT fk_category_promotions_promotion FOREIGN KEY(promotion_id) REFERENCES promotions(id) ON DELETE CASCADE
+);
+

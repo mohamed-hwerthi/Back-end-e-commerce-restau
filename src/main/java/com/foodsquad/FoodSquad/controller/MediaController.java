@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/media")
 @Tag(name = "10. Media Management", description = "Media Management API")
+@Slf4j
 public class MediaController {
 
     private final MediaService mediaService;
@@ -101,9 +103,63 @@ public class MediaController {
         mediaService.deleteMedia(id);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MediaDTO> uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        return   ResponseEntity.ok( mediaService.uploadFile(file));
+
+
+    @PostMapping(value = "/upload-multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Upload multiple media files",
+            description = "This endpoint allows uploading multiple media files (images, videos, etc.) at once."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Files uploaded successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid files or request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error while uploading files")
+    })
+    public ResponseEntity<List<MediaDTO>> uploadMultipleFiles(
+            @Parameter(description = "Files to be uploaded", required = true)
+            @RequestParam("files") MultipartFile[] files
+    ) throws Exception {
+        log.info("Received multiple files upload request: {} files", files.length);
+
+        try {
+            List<MediaDTO> uploadedMedia = mediaService.uploadMultipleFiles(files);
+            log.info("Files uploaded successfully: {} items", uploadedMedia.size());
+            return ResponseEntity.ok(uploadedMedia);
+        } catch (Exception ex) {
+            log.error("Error uploading multiple files", ex);
+            throw ex;
+        }
+    }
+
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Upload a media file",
+            description = "This endpoint allows you to upload a media file (image, video, etc.) and returns the created MediaDTO."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description
+                    = "File uploaded successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid file or request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error while uploading file")
+    })
+    public ResponseEntity<MediaDTO> uploadFile(
+            @Parameter(
+                    description = "File to be uploaded",
+                    required = true
+            )
+            @RequestParam("file") MultipartFile file
+    ) throws Exception {
+        log.info("Received file upload request: {}", file.getOriginalFilename());
+
+        try {
+            MediaDTO uploadedMedia = mediaService.uploadFile(file);
+            log.info("File uploaded successfully: {}", uploadedMedia.getId());
+            return ResponseEntity.ok(uploadedMedia);
+        } catch (Exception ex) {
+            log.error("Error uploading file: {}", file.getOriginalFilename(), ex);
+            throw ex;
+        }
     }
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Validated
 @RestController
@@ -38,11 +39,12 @@ public class OrderController {
         return orderService.getOrderById(id);
     }
 
+
     @Operation(summary = "Get orders by user ID", description = "Retrieve a list of orders for a specific user by their unique user ID.")
     @GetMapping("/user/{userId}")
     public List<OrderDTO> getOrdersByUserId(
             @Parameter(description = "ID of the user whose orders to retrieve", example = "1")
-            @PathVariable String userId,
+            @PathVariable UUID userId,
 
             @Parameter(description = "Page number, starting from 0", example = "0")
             @RequestParam(defaultValue = "0") int page,

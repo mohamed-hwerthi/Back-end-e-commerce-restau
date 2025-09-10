@@ -31,12 +31,12 @@ public interface UserService {
      * @param userUpdateDTO update data
      * @return ResponseEntity with updated UserResponseDTO
      */
-    ResponseEntity<UserResponseDTO> updateUser(String id, UserUpdateDTO userUpdateDTO);
+    ResponseEntity<UserResponseDTO> updateUser(UUID id, UserUpdateDTO userUpdateDTO);
 
     /**
      * Deletes a user by ID.
      * @param id user ID
      * @return ResponseEntity with success message
      */
-    ResponseEntity<Map<String, String>> deleteUser(String id);
+    ResponseEntity<Map<String, String>> deleteUser(UUID id);
 }

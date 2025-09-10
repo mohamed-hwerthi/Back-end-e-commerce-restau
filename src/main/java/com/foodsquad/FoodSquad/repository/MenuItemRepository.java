@@ -11,8 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
+public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
 
     @Query("SELECT m FROM MenuItem m JOIN m.categories c WHERE c.id = :categoryId")
     Page<MenuItem> findByCategoryId(@Param("categoryId") Long categoryId , Pageable pageable);
@@ -22,7 +23,7 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
             "AND c.id IN :categoryIds")
     Page<MenuItem> filterByQueryAndCategories(
             @Param("query") String query,
-            @Param("categoryIds") List<Long> categoryIds,
+            @Param("categoryIds") List<UUID> categoryIds,
             Pageable pageable
     );
     Optional<MenuItem> findByBarCode(String qrCode);

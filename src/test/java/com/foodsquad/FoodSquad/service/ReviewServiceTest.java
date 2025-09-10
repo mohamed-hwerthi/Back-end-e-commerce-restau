@@ -111,7 +111,7 @@ class ReviewServiceTest {
         review.setComment("Great food!");
         review.setRating(5);
 
-        when(reviewRepository.findByUserIdOrderByCreatedOnDesc(eq(userId), any(Pageable.class))).thenReturn(Arrays.asList(review));
+        when(reviewRepository.findByUserIdOrderByCreatedAtDesc(eq(userId), any(Pageable.class))).thenReturn(Arrays.asList(review));
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(new ReviewDTO());
 
         // Act

@@ -10,6 +10,7 @@ import com.foodsquad.FoodSquad.repository.CashierRepository;
 import com.foodsquad.FoodSquad.service.declaration.CashierService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.jfree.ui.UIUtilities;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public CashierDTO findCashierById(String id) {
+    public CashierDTO findCashierById(UUID id) {
 
         Cashier cashier = cashierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(CASHIER_NOT_FOUND_MESSAGE + id));
@@ -58,7 +60,7 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public CashierDTO findCashierByCashierId(String cashierId) {
+    public CashierDTO findCashierByCashierId(UUID cashierId) {
 
         Cashier cashier = cashierRepository.findById(cashierId)
                 .orElseThrow(() -> new EntityNotFoundException("Cashier not found with cashier ID: " + cashierId));
@@ -80,7 +82,7 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     @Transactional
-    public CashierDTO updateCashier(String id, CashierDTO cashierDTO) {
+    public CashierDTO updateCashier(UUID id, CashierDTO cashierDTO) {
 
         Cashier existingCashier = cashierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(CASHIER_NOT_FOUND_MESSAGE + id));
@@ -92,7 +94,7 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     @Transactional
-    public void deleteCashier(String id) {
+    public void deleteCashier(UUID id) {
 
         if (!cashierRepository.existsById(id)) {
             throw new EntityNotFoundException(CASHIER_NOT_FOUND_MESSAGE + id);
@@ -101,7 +103,7 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public Cashier findCashier(String id) {
+    public Cashier findCashier(UUID id) {
 
         return cashierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(CASHIER_NOT_FOUND_MESSAGE + id));

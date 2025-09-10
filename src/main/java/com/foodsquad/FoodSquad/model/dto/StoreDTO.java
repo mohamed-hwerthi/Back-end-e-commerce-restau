@@ -54,4 +54,6 @@ public class StoreDTO {
     @NotNull(message = "Activity sector is required")
     private ActivitySectorDTO activitySector;
     private MediaDTO logo;
+
+    private  String encryptedStoreId ;
 }

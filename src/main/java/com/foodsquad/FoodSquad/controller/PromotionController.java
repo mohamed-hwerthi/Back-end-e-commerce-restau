@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionType;
@@ -21,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.UUID;
 
 /**
  * Contrôleur REST pour gérer les promotions.
@@ -72,7 +71,7 @@ public class PromotionController {
     @GetMapping("/{id}")
     public ResponseEntity<PromotionDTO> getPromotionById(
             @Parameter(description = "ID de la promotion à récupérer", example = "1")
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
         PromotionDTO promotionDTO = promotionService.getPromotionById(id);
         return ResponseEntity.ok(promotionDTO);
     }
@@ -120,7 +119,7 @@ public class PromotionController {
     @PutMapping("/{id}")
     public ResponseEntity<PromotionDTO> updatePromotion(
             @Parameter(description = "ID de la promotion à mettre à jour", example = "1")
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody PromotionDTO promotionDTO) {
         PromotionDTO updated = promotionService.updatePromotion(id, promotionDTO);
         return ResponseEntity.ok(updated);
@@ -141,7 +140,7 @@ public class PromotionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePromotion(
             @Parameter(description = "ID de la promotion à supprimer", example = "1")
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
         promotionService.deletePromotion(id);
         return ResponseEntity.noContent().build();
     }
@@ -163,7 +162,7 @@ public class PromotionController {
     @PatchMapping("/{id}/activation")
     public ResponseEntity<Void> changePromotionActivationStatus(
             @Parameter(description = "ID de la promotion à activer/désactiver", example = "1")
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
         promotionService.changePromotionActivationStatus(id);
         return ResponseEntity.noContent().build();
     }

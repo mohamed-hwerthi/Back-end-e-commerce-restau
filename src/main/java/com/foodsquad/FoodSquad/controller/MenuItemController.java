@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Validated
 @RestController
 @RequestMapping("/api/menu-items")
+@Slf4j
 @Tag(name = "5. Menu Item Management", description = "Menu Item Management API")
 public class MenuItemController {
 
@@ -39,22 +42,28 @@ public class MenuItemController {
         this.menuItemService = menuItemService;
     }
 
-    @Operation(summary = "Create a new menu item", description = "Create a new menu item with the provided details.")
+    @Operation(
+            summary = "Create a new menu item",
+            description = "Creates a new menu item with the provided details."
+    )
     @PostMapping
     public ResponseEntity<MenuItemDTO> createMenuItem(@Valid @RequestBody MenuItemDTO menuItemDTO) {
-        if (menuItemDTO.getCurrency() == null || menuItemDTO.getCurrency().getId() == null) {
-            throw new IllegalArgumentException("Currency ID is required");
-        }
-         return menuItemService.createMenuItem(menuItemDTO);
+        log.info("Request to create menu item: {}", menuItemDTO);
+
+        MenuItemDTO createdMenuItem = menuItemService.createMenuItem(menuItemDTO);
+
+        log.info("Menu item created successfully: {}", createdMenuItem.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMenuItem);
     }
 
     @Operation(summary = "Get a menu item by ID", description = "Retrieve a menu item by its unique ID.")
     @GetMapping("/{id}")
     public ResponseEntity<MenuItemDTO> getMenuItemById(
             @Parameter(description = "ID of the menu item to retrieve", example = "1")
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
 
-        return  ResponseEntity.status(HttpStatus.OK)    .body(  menuItemService.getMenuItemById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(menuItemService.getMenuItemById(id));
     }
 
     @Operation(summary = "Get all menu items", description = "Retrieve a list of menu items with optional filters and sorting.")
@@ -81,10 +90,8 @@ public class MenuItemController {
             @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
 
             @RequestParam(required = false) String priceSortDirection
-             )
-
-    {
-        PaginatedResponseDTO<MenuItemDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection );
+    ) {
+        PaginatedResponseDTO<MenuItemDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
         return ResponseEntity.ok(response);
     }
 
@@ -92,7 +99,7 @@ public class MenuItemController {
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemDTO> updateMenuItem(
             @Parameter(description = "ID of the menu item to update", example = "1")
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody MenuItemDTO menuItemDTO) {
 
         return menuItemService.updateMenuItem(id, menuItemDTO);
@@ -102,7 +109,7 @@ public class MenuItemController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteMenuItem(
             @Parameter(description = "ID of the menu item to delete", example = "1")
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
 
         return menuItemService.deleteMenuItem(id);
     }
@@ -111,7 +118,7 @@ public class MenuItemController {
     @GetMapping("/batch")
     public ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(
             @Parameter(description = "List of IDs of the menu items to retrieve", example = "[1, 2, 3]")
-            @RequestParam List<Long> ids) {
+            @RequestParam List<UUID> ids) {
 
         return menuItemService.getMenuItemsByIds(ids);
     }
@@ -120,7 +127,7 @@ public class MenuItemController {
     @DeleteMapping("/batch")
     public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(
             @Parameter(description = "List of IDs of the menu items to delete", example = "[1, 2, 3]")
-            @RequestParam List<Long> ids) {
+            @RequestParam List<UUID> ids) {
 
         return menuItemService.deleteMenuItemsByIds(ids);
     }

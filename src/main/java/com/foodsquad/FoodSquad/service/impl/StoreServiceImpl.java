@@ -1,10 +1,13 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.config.EncryptionUtil;
 import com.foodsquad.FoodSquad.mapper.StoreMapper;
+import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.StoreRepository;
+import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.AdminService;
 import com.foodsquad.FoodSquad.service.declaration.StoreService;
 import com.foodsquad.FoodSquad.service.declaration.TenantService;
@@ -36,14 +39,18 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     @Transactional
-    public StoreDTO save(  @Valid StoreDTO storeDTO) {
+    public StoreDTO save(@Valid StoreDTO storeDTO) {
         logger.info("Saving new Store: {}", storeDTO);
         Store store = storeMapper.toEntity(storeDTO);
-        User savedOwner =  adminService.createStoreOwner(storeDTO.getEmail(), storeDTO.getPhoneNumber(), storeDTO.getPassword()) ;
+        User savedOwner = adminService.createStoreOwner(storeDTO.getEmail(), storeDTO.getPhoneNumber(), storeDTO.getPassword());
         store.setOwner(savedOwner);
+        String slug = generateUniqueSlug(storeDTO.getName());
+        store.setSlug(slug);
         Store saved = storeRepository.save(store);
-        tenantService.createTenant(saved.getId().toString() , savedOwner);
+        tenantService.createTenant(saved.getId().toString(), savedOwner);
+        String encryptedStoreId = encryptStoreId(saved.getId().toString());
         StoreDTO result = storeMapper.toDto(saved);
+        result.setEncryptedStoreId(encryptedStoreId);
         logger.info("Saved Store with id: {}", result.getId());
         return result;
     }
@@ -92,7 +99,59 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public StoreDTO findByOwner(User owner) {
         logger.info("   Request to Fetch  Store by owner: {}", owner);
-        return storeRepository.findByOwner(owner).map(storeMapper::toDto).orElseThrow(() -> new EntityNotFoundException("Store not found for owner with email " +  owner.getEmail()));
+        return storeRepository.findByOwner(owner).map(storeMapper::toDto).orElseThrow(() -> new EntityNotFoundException("Store not found for owner with email " + owner.getEmail()));
 
     }
+
+
+    @Override
+    public StoreBasicDataDTO findByEmail(String email) {
+        logger.debug("Fetching store for owner with email: {}", email);
+        User user = adminService.findByEmail(email);
+        Store store = storeRepository.findByOwner(user)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Store not found for user with email %s", email))
+                );
+        return StoreBasicDataDTO.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .storeSlug(store.getSlug())
+                .build();
+    }
+
+
+    /** Encrypt store ID */
+    private String encryptStoreId(String storeId) {
+        try {
+            return EncryptionUtil.encrypt(storeId);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to encrypt store ID", e);
+        }
+    }
+
+
+    private String generateUniqueSlug(String name) {
+        String baseSlug = generateSlug(name);
+        String slug = baseSlug;
+        int counter = 1;
+
+        while (storeRepository.existsBySlug(slug)) {
+            slug = baseSlug + "-" + counter;
+            counter++;
+        }
+
+        return slug;
+    }
+
+
+    private String generateSlug(String name) {
+       return name.toLowerCase()
+                .replaceAll("[^a-z0-9\\s]", "")
+                .replaceAll("\\s+", "-");
+    }
+
+
+
 }
+
+

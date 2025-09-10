@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/items-promotions")
@@ -37,7 +38,7 @@ public class SharedMenuItemPromotionController {
      * Récupère la liste des items de menu liés à une promotion donnée.
      */
     @GetMapping("/{promotionId}/menu-items")
-    public ResponseEntity<List<MenuItemDTO>> findMenuItemsRelatedToPromotion(@PathVariable Long promotionId) {
+    public ResponseEntity<List<MenuItemDTO>> findMenuItemsRelatedToPromotion(@PathVariable UUID promotionId) {
         List<MenuItemDTO> menuItems = promotionSharedService.findMenuItemsRelatedToPromotion(promotionId);
         return ResponseEntity.ok(menuItems);
     }
@@ -47,7 +48,7 @@ public class SharedMenuItemPromotionController {
      */
     @GetMapping("/{menuItemId}/active-promotion-overlap")
     public ResponseEntity<Boolean> hasActivePromotionOverlappingPeriod(
-            @PathVariable Long menuItemId,
+            @PathVariable UUID menuItemId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
@@ -60,8 +61,8 @@ public class SharedMenuItemPromotionController {
      */
     @DeleteMapping("/{menuItemId}/promotions/{promotionId}/deactivate")
     public ResponseEntity<Void> desactivatePromotionForMenuItem(
-            @PathVariable Long menuItemId,
-            @PathVariable Long promotionId) {
+            @PathVariable UUID menuItemId,
+            @PathVariable UUID promotionId) {
 
         promotionSharedService.deactivatePromotionForMenuItem(menuItemId, promotionId);
         return ResponseEntity.noContent().build();
@@ -69,8 +70,8 @@ public class SharedMenuItemPromotionController {
 
     @PostMapping("/{menuItemId}/promotions/{promotionId}/add")
     public ResponseEntity<Void> addPromotionToMenuItem(
-            @PathVariable Long menuItemId,
-            @PathVariable Long promotionId) {
+            @PathVariable UUID menuItemId,
+            @PathVariable UUID promotionId) {
 
         promotionSharedService.addPromotionToMenuItem(menuItemId, promotionId);
         return ResponseEntity.ok().build();

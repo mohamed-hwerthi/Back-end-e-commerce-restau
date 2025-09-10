@@ -5,6 +5,7 @@ import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.Employee;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface EmployeeService {
 
@@ -12,17 +13,17 @@ public interface EmployeeService {
 
     List<EmployeeDTO> findAllEmployees();
 
-    EmployeeDTO findEmployeeById(String id);
+    EmployeeDTO findEmployeeById(UUID id);
 
-    EmployeeDTO findEmployeeByEmployeeId(String employeeId);
+    EmployeeDTO findEmployeeByEmployeeId(UUID employeeId);
 
     EmployeeDTO createEmployee(EmployeeDTO employeeDTO);
 
-    EmployeeDTO updateEmployee(String id, EmployeeDTO employeeDTO);
+    EmployeeDTO updateEmployee(UUID id, EmployeeDTO employeeDTO);
 
-    void deleteEmployee(String id);
+    void deleteEmployee(UUID id);
 
-    Employee findEmployee(String id);
+    Employee findEmployee(UUID id);
 
     Employee saveEmployee(Employee employee);
 

@@ -2,11 +2,19 @@ package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.AdminDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
+import com.foodsquad.FoodSquad.model.dto.UserDTO;
+import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.service.declaration.AdminService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.UserDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admins")
+@Slf4j
 public class AdminController {
 
     private final AdminService adminService;
@@ -43,12 +53,12 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdminDTO> getAdminById(@PathVariable String id) {
+    public ResponseEntity<AdminDTO> getAdminById(@PathVariable UUID id) {
         return ResponseEntity.ok(adminService.findAdminById(id));
     }
 
     @GetMapping("/admin-id/{adminId}")
-    public ResponseEntity<AdminDTO> getAdminByAdminId(@PathVariable String adminId) {
+    public ResponseEntity<AdminDTO> getAdminByAdminId(@PathVariable UUID adminId) {
         return ResponseEntity.ok(adminService.findAdminByAdminId(adminId));
     }
 
@@ -60,14 +70,52 @@ public class AdminController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AdminDTO> updateAdmin(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Valid @RequestBody AdminDTO adminDTO) {
         return ResponseEntity.ok(adminService.updateAdmin(id, adminDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAdmin(@PathVariable String id) {
+    public ResponseEntity<Void> deleteAdmin(@PathVariable UUID id) {
         adminService.deleteAdmin(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/store-owner")
+    @Operation(
+            summary = "Create a new store owner",
+            description = "Creates a new store owner with email and phone number"
+    )
+    public ResponseEntity<User> createStoreOwner( @RequestBody UserDTO userDto) {
+        log.info("Received request to create store owner for email: {}", userDto.getEmail());
+
+        User createdUser = adminService.createStoreOwner(userDto.getEmail(),
+                userDto.getPhoneNumber(),
+                userDto.getPhoneNumber());
+        log.info("Store owner created with id: {}", createdUser.getId());
+
+        return ResponseEntity.ok(createdUser);
+    }
+
+    @GetMapping("/by-email")
+    @Operation(
+            summary = "Find user by email",
+            description = "Retrieves a user by their email address"
+    )
+    public ResponseEntity<UserDTO> findByEmail(@RequestParam String email) {
+        log.info("Received request to find user by email: {}", email);
+
+        User user = adminService.findByEmail(email);
+        UserDTO userDTO = UserDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole())
+                .build();
+
+        log.info("Found user with ID: {}", user.getId());
+        return ResponseEntity.ok(userDTO);
+    }
+
 }

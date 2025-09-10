@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config.db;
+    package com.foodsquad.FoodSquad.config.db;
 
 import com.foodsquad.FoodSquad.config.EncryptionUtil;
 import jakarta.servlet.Filter;
@@ -75,7 +75,7 @@ public class TenantFilter implements Filter {
         }
     }
 
-    /**
+    /** 
      * Attempts to decrypt the store ID from the request header and set the tenant context.
      *
      * @param encryptedStoreId the encrypted store ID from the request header

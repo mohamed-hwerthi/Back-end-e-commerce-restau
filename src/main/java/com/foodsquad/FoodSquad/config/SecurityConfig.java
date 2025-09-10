@@ -96,6 +96,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/categories/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/categories/**").permitAll()
 
+
+                                .requestMatchers(HttpMethod.GET, "/api/admins/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/admins/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/admins/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/admins/**").permitAll()
+
                                 .requestMatchers(HttpMethod.POST, "/api/items-promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/api/items-promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/items-promotions/**").permitAll()

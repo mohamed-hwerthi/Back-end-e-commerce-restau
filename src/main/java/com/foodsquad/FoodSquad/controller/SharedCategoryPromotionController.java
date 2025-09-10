@@ -40,7 +40,7 @@ public class SharedCategoryPromotionController {
     @PostMapping("category/{categoryId}/promotions/{promotionId}")
     public ResponseEntity<Void> addPromotionToCategory(
             @PathVariable UUID categoryId,
-            @PathVariable Long promotionId) {
+            @PathVariable UUID promotionId) {
 
         categoryPromotionService.addPromotionToCategory(categoryId, promotionId);
         return ResponseEntity.ok().build();
@@ -52,7 +52,7 @@ public class SharedCategoryPromotionController {
     @DeleteMapping("/{categoryId}/promotions/{promotionId}/deactivate")
     public ResponseEntity<Void> deactivatePromotionForCategory(
             @PathVariable UUID categoryId,
-            @PathVariable Long promotionId) {
+            @PathVariable UUID promotionId) {
 
         categoryPromotionService.deactivatePromotionForCategory(categoryId, promotionId);
         return ResponseEntity.noContent().build();
@@ -75,7 +75,7 @@ public class SharedCategoryPromotionController {
      * Get the list of categories related to a promotion.
      */
     @GetMapping("/{promotionId}/categories")
-    public ResponseEntity<List<CategoryDTO>> findCategoriesRelatedToPromotion(@PathVariable Long promotionId) {
+    public ResponseEntity<List<CategoryDTO>> findCategoriesRelatedToPromotion(@PathVariable UUID promotionId) {
         List<CategoryDTO> categories = categoryPromotionService.findCategoriesRelatedToPromotion(promotionId);
         return ResponseEntity.ok(categories);
     }

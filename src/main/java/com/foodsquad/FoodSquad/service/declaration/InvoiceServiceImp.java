@@ -115,7 +115,7 @@ public class InvoiceServiceImp implements InvoiceService {
         parameters.put("orderId", order.getId());
         parameters.put("totalHT", round(totalHT));
         parameters.put("totalTTC", round(totalTTC));
-        parameters.put("createdOn", order.getCreatedOn());
+        parameters.put("createdOn", order.getCreatedAt());
         parameters.put("taxDetails", new ArrayList<>(taxDetails.entrySet()));
         parameters.put("addTimbre", addTimbre);
         parameters.put("timbreAmount", timbreAmount);

@@ -6,6 +6,14 @@
 
     );
 
+    CREATE TABLE currencies (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        code  VARCHAR(255),
+        name VARCHAR(255),
+        symbol VARCHAR(10),
+        scale INT
+    );
+
     -- Create Media table
     CREATE TABLE IF NOT EXISTS medias (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -46,6 +54,7 @@
     CREATE TABLE IF NOT EXISTS stores (
            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
            name VARCHAR(255) NOT NULL,
+           slug VARCHAR(255) NOT NULL ,
            address VARCHAR(512),
            facebook_url VARCHAR(512),
            instagram_url VARCHAR(512),
@@ -60,15 +69,15 @@
            activity_sector_id UUID,
            logo_media_id UUID,
            owner_id UUID,
+           currency_id UUID,
 
 
 
-               CONSTRAINT fk_store_activity_sector
-                   FOREIGN KEY (activity_sector_id) REFERENCES activity_sectors(id) ,
-               CONSTRAINT fk_store_logo_media
-                       FOREIGN KEY (logo_media_id) REFERENCES medias(id) ,
-               CONSTRAINT fk_store_owner
-                       FOREIGN KEY (owner_id) REFERENCES "users"(id)
+               CONSTRAINT fk_store_activity_sector  FOREIGN KEY (activity_sector_id) REFERENCES activity_sectors(id) ,
+               CONSTRAINT fk_store_logo_media   FOREIGN KEY (logo_media_id) REFERENCES medias(id) ,
+               CONSTRAINT fk_store_owner FOREIGN KEY (owner_id) REFERENCES "users"(id) ,
+                CONSTRAINT fk_currency_id FOREIGN KEY (currency_id) REFERENCES currencies(id)
+
 
     )
 

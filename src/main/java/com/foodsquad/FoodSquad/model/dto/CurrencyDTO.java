@@ -1,12 +1,15 @@
 package com.foodsquad.FoodSquad.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import java.util.UUID;
+
+@Getter
+@Setter
 public class CurrencyDTO {
 
-    private Long id;
+    private UUID d;
     private String name;
     private String symbol;
     private int scale;

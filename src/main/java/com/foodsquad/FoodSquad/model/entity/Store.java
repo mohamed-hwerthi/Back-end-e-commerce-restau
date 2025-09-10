@@ -23,12 +23,16 @@ public class Store {
     @Column(name = "name", nullable = false, unique = false)
     private String name;
 
+    @Column(name = "slug", nullable = false, unique = true)
+    private String slug;
 
     @Column(name = "address", nullable = true)
     private String address;
 
     @Column(name = "facebook_url", nullable = true)
     private String facebookUrl;
+
+
 
     @Column(name = "instagram_url", nullable = true)
     private String instagramUrl;
@@ -67,6 +71,10 @@ public class Store {
     @OneToOne
     @JoinColumn(name = "logo_media_id")
     private Media logo;
+
+    @OneToOne
+    @JoinColumn(name = "currency_id")
+    private Currency currency  ;
 
     @OneToOne
     @JoinColumn(name = "owner_id")

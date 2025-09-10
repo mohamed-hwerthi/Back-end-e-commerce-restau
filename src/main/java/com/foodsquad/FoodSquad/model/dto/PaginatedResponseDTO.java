@@ -1,29 +1,18 @@
 package com.foodsquad.FoodSquad.model.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class PaginatedResponseDTO<T> {
     private List<T> items;
     private long totalCount;
 
-    public PaginatedResponseDTO(List<T> items, long totalCount) {
-        this.items = items;
-        this.totalCount = totalCount;
-    }
 
-    public List<T> getItems() {
-        return items;
-    }
-
-    public void setItems(List<T> items) {
-        this.items = items;
-    }
-
-    public long getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(long totalCount) {
-        this.totalCount = totalCount;
-    }
 }

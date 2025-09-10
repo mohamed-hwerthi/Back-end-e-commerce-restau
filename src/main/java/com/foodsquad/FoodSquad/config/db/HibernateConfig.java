@@ -103,13 +103,9 @@ public class HibernateConfig {
             final CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
 
         logger.info("Configuring LocalContainerEntityManagerFactoryBean");
-
-        // Merge JPA properties with multi-tenant configurations
         Map<String, Object> properties = new HashMap<>(jpaProperties.getProperties());
         properties.put(MultiTenancySettings.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProvider);
         properties.put(MultiTenancySettings.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolver);
-
-        // Create and configure the entity manager factory
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
         em.setPackagesToScan(ENTITY_PACKAGE);

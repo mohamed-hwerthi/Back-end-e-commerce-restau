@@ -12,22 +12,23 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface MenuItemService {
 
-    ResponseEntity<MenuItemDTO> createMenuItem(MenuItemDTO menuItemDTO);
+    MenuItemDTO  createMenuItem(MenuItemDTO menuItemDTO);
 
-    MenuItemDTO getMenuItemById(Long id);
+    MenuItemDTO getMenuItemById(UUID id);
 
     PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, Long catgoryId, String isDefault, String priceSortDirection );
 
-    ResponseEntity<MenuItemDTO> updateMenuItem(Long id, MenuItemDTO menuItemDTO);
+    ResponseEntity<MenuItemDTO> updateMenuItem(UUID id, MenuItemDTO menuItemDTO);
 
-    ResponseEntity<Map<String, String>> deleteMenuItem(Long id);
+    ResponseEntity<Map<String, String>> deleteMenuItem(UUID id);
 
-    ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(List<Long> ids);
+    ResponseEntity<List<MenuItemDTO>> getMenuItemsByIds(List<UUID> ids);
 
-    ResponseEntity<Map<String, String>> deleteMenuItemsByIds(List<Long> ids);
+    ResponseEntity<Map<String, String>> deleteMenuItemsByIds(List<UUID> ids);
 
     PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable);
 
@@ -39,11 +40,11 @@ public interface MenuItemService {
 
     MenuItemDTO save(MenuItem  menuItem) ;
 
-    MenuItem   findMenuItemById(Long id) ;
+    MenuItem   findMenuItemById(UUID id) ;
 
-    MenuItemDTO decrementMenuItemQuantity(Long menuItemId  , int quantity);
+    MenuItemDTO decrementMenuItemQuantity(UUID menuItemId  , int quantity);
 
-    Double findMenuItemDiscountedPrice(Long menuItemId);
+    Double findMenuItemDiscountedPrice(UUID menuItemId);
 
      List<MenuItem> findByPromotion(Promotion promotion) ;
 

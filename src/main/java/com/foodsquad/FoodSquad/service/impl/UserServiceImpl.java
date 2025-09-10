@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<UserResponseDTO> getUserById(UUID id) {
 
-        User user = userRepository.findById(id.toString())
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
         long ordersCount = orderRepository.countByUserId(id);
         UserResponseDTO userDTO = modelMapper.map(user, UserResponseDTO.class);
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public ResponseEntity<UserResponseDTO> updateUser(String id, UserUpdateDTO userUpdateDTO) {
+    public ResponseEntity<UserResponseDTO> updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
 
         User currentUser = getCurrentUser();
         checkOwnership(id);
@@ -99,14 +99,14 @@ public class UserServiceImpl implements UserService {
         user.setImageUrl(userUpdateDTO.getImageUrl());
         user.setPhoneNumber(userUpdateDTO.getPhoneNumber());
         userRepository.save(user);
-        long ordersCount = orderRepository.countByUserId(UUID.fromString(id));
+        long ordersCount = orderRepository.countByUserId(id);
         UserResponseDTO updatedUserDTO = modelMapper.map(user, UserResponseDTO.class);
         updatedUserDTO.setOrdersCount(ordersCount);
         return ResponseEntity.ok(updatedUserDTO);
     }
 
     @Transactional
-    public ResponseEntity<Map<String, String>> deleteUser(String id) {
+    public ResponseEntity<Map<String, String>> deleteUser(UUID id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found for ID: " + id));
@@ -114,16 +114,12 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Admin users cannot be deleted.");
         }
 
-        user.getMenuItems().forEach(menuItem -> {
-            orderRepository.removeMenuItemReferences(menuItem.getId());
-        });
-
         userRepository.delete(user);
         return ResponseEntity.ok(Map.of("message", "User successfully deleted."));
     }
 
 
-    private void checkOwnership(String userId) {
+    private void checkOwnership(UUID userId) {
 
         User currentUser = getCurrentUser();
         if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(UserRole.ADMIN) && !currentUser.getRole().equals(UserRole.EMPLOYEE)) {

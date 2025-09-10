@@ -8,6 +8,8 @@ import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedServic
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class MenuItemDiscountPriceCalculator {
 
@@ -19,7 +21,7 @@ public class MenuItemDiscountPriceCalculator {
     }
 
     public double calculateDiscountedPrice(MenuItem menuItem) {
-        Long menuItemId = menuItem.getId();
+        UUID menuItemId = menuItem.getId();
         if (!promotionService.isMenuItemHasActivePromotionInCurrentDay(menuItemId)) {
             return menuItem.getPrice();
         }
