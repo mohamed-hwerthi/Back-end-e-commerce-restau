@@ -21,7 +21,7 @@ public interface StoreService {
 
     StoreDTO findByOwner(User owner);
 
-    StoreBasicDataDTO  findByEmail(String email ) ;
+    StoreBasicDataDTO  findByEmail() ;
 
 
 

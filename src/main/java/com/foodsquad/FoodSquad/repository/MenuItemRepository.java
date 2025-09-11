@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
 
     @Query("SELECT m FROM MenuItem m JOIN m.categories c WHERE c.id = :categoryId")
-    Page<MenuItem> findByCategoryId(@Param("categoryId") Long categoryId , Pageable pageable);
+    Page<MenuItem> findByCategoryId(@Param("categoryId") UUID categoryId , Pageable pageable);
 
     @Query("SELECT DISTINCT m FROM MenuItem m JOIN m.categories c " +
             "WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) " +

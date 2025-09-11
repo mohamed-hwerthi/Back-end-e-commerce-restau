@@ -16,9 +16,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,6 +41,9 @@ public class StoreServiceImpl implements StoreService {
     private final TenantService tenantService;
 
     private final AdminService adminService;
+
+    private final DataSource dataSource;
+
 
     @Override
     @Transactional
@@ -105,8 +113,11 @@ public class StoreServiceImpl implements StoreService {
 
 
     @Override
-    public StoreBasicDataDTO findByEmail(String email) {
-        logger.debug("Fetching store for owner with email: {}", email);
+    public StoreBasicDataDTO findByEmail() {
+        logger.debug("Fetching store for owner with email");
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName() ;
         User user = adminService.findByEmail(email);
         Store store = storeRepository.findByOwner(user)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -149,6 +160,21 @@ public class StoreServiceImpl implements StoreService {
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", "-");
     }
+
+    private void logCurrentSchema() {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery("SHOW search_path")) {
+
+            if (rs.next()) {
+                String schema = rs.getString(1);
+                logger.info("Current database schema (search_path): {}", schema);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to get current schema", e);
+        }
+    }
+
 
 
 

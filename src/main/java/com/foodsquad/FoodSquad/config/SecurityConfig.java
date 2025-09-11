@@ -111,11 +111,11 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/category-promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/category-promotions/**").permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/stores/**").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/api/stores/**").permitAll()
-                                .requestMatchers(HttpMethod.DELETE, "/api/stores/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/stores/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/stores/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/stores/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/stores/**").authenticated()
+                                .anyRequest().permitAll()
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling

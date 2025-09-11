@@ -21,10 +21,10 @@ public class MenuItemDTO {
 
     private String barCode;
     @Positive(message = "Quantity must be positive")
-    private int  quantity  ;
+    private int quantity;
 
     @Positive(message = "Purchase price must be positive")
-    private BigDecimal purchasePrice  ;
+    private BigDecimal purchasePrice;
 
     @Positive(message = "Price must be positive")
     private Double price;
@@ -37,17 +37,17 @@ public class MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double averageRating;
-        private List<CategoryDTO> categories = new ArrayList<>();
+    private List<CategoryDTO> categories = new ArrayList<>();
 
     private List<MediaDTO> medias = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 
-    private boolean isPromoted  ;
+    private boolean isPromoted;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 
-    private   Double discountedPrice  ;
+    private Double discountedPrice;
 
     private TaxDTO tax;
 
@@ -55,7 +55,6 @@ public class MenuItemDTO {
     public MenuItemDTO() {
 
     }
-
 
 
 }

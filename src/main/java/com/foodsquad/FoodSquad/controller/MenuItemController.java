@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -82,7 +81,7 @@ public class MenuItemController {
             @RequestParam(required = false) boolean desc,
 
             @Parameter(description = "Filter by categoryId , params is named categoryFilter but it contains the category Id '", required = false)
-            @RequestParam(required = false) Long categoryFilter,
+            @RequestParam(required = false) UUID  categoryFilter,
 
             @Parameter(description = "Filter by default status: 'true' for default items, 'false' for non-default items", required = false)
             @RequestParam(required = false) String isDefault,

@@ -119,15 +119,10 @@ public class StoreController {
             summary = "Find store by owner's email",
             description = "Retrieves the store information for a store owner by their email"
     )
-    public ResponseEntity<StoreBasicDataDTO> getStoreByOwnerEmail(
-            @RequestParam
-            @NotBlank(message = "Email is required")
-            @Email(message = "Invalid email format") String email) {
+    public ResponseEntity<StoreBasicDataDTO> getStoreByOwnerEmail() {
 
-        log.info("Received request to get store by owner's email: {}", email);
-
-        StoreBasicDataDTO storeDTO = storeService.findByEmail(email);
-
+        log.info("Received request to get store by owner's email");
+            StoreBasicDataDTO storeDTO = storeService.findByEmail();
         log.info("Found store with ID: {}", storeDTO.getStoreId());
         return ResponseEntity.ok(storeDTO);
     }

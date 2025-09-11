@@ -171,7 +171,7 @@ public class MenuItemServiceImp implements MenuItemService {
             int limit,
             String sortBy,
             boolean desc,
-            Long categoryId,
+            UUID categoryId,
             String isDefault,
             String priceSortDirection
     ) {

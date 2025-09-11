@@ -1,5 +1,6 @@
-    package com.foodsquad.FoodSquad.config.db;
+package com.foodsquad.FoodSquad.config.db;
 
+import com.foodsquad.FoodSquad.config.StoreSlugResolver;
 import com.foodsquad.FoodSquad.config.EncryptionUtil;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -8,88 +9,104 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
 /**
- * A servlet filter responsible for extracting the tenant identifier (store ID) from the request header,
- * decrypting it, and setting it into the {@link TenantContext}.
- *
- * <p>This enables multi-tenancy by dynamically switching tenants based on the
- * {@code X-Store-ID} header sent with the request.</p>
- *
- * <p>The tenant context is cleared after processing the request to avoid leaking tenant information
- * across threads or requests.</p>
- *
- * <h3>Usage:</h3>
- * Clients must include the {@code X-Store-ID} header (encrypted store ID) in requests:
- * <pre>{@code
- * X-Store-ID: <encrypted-store-id>
- * }</pre>
- *
- * <p>If no header is present, the default tenant will be used.</p>
+ * TenantFilter is a servlet filter responsible for dynamically resolving the tenant (database schema)
+ * for each incoming request. It determines the tenant either by:
+ * <ul>
+ *   <li>Decrypting an encrypted tenant identifier from the request header (for admin panel usage)</li>
+ *   <li>Extracting a store slug from the query parameter {@code storeSlug} (for storefront usage)</li>
+ *   <li>Falling back to a default tenant if no tenant information is found</li>
+ * </ul>
  */
 @Slf4j
+@Component
 public class TenantFilter implements Filter {
 
     /**
-     * The header key used to pass the encrypted tenant/store identifier.
+     * Header name used to pass encrypted tenant (store) ID for admin panel APIs.
      */
     public static final String TENANT_HEADER = "X-Store-ID";
 
     /**
-     * Filters incoming requests to resolve tenant information.
-     *
-     * <p>Steps:</p>
-     * <ol>
-     *   <li>Extracts the {@code X-Store-ID} header from the request.</li>
-     *   <li>Decrypts the header value using {@link EncryptionUtil}.</li>
-     *   <li>Sets the decrypted tenant identifier in {@link TenantContext}.</li>
-     *   <li>Proceeds with the request filter chain.</li>
-     *   <li>Clears the tenant context after the request completes.</li>
-     * </ol>
-     *
-     * @param request  the incoming HTTP servlet request
-     * @param response the HTTP servlet response
-     * @param chain    the filter chain to continue processing
-     * @throws IOException      if an input or output exception occurs
-     * @throws ServletException if the filter chain cannot be executed
+     * Query parameter name for the store slug.
      */
+    public static final String STORE_SLUG_PARAM = "storeSlug";
+
+    private final StoreSlugResolver storeSlugResolver;
+
+    @Autowired
+    public TenantFilter(StoreSlugResolver storeSlugResolver) {
+        this.storeSlugResolver = storeSlugResolver;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
-            String encryptedStoreId = httpRequest.getHeader(TENANT_HEADER);
+            String path = httpRequest.getRequestURI();
 
-            if (encryptedStoreId == null || encryptedStoreId.isBlank()) {
-                log.debug("No '{}' header found. Using default tenant context.", TENANT_HEADER);
-            } else {
-                setTenantContextFromHeader(encryptedStoreId);
+            if (shouldSkipTenantFilter(path)) {
+                TenantContext.setCurrentTenant(TenantContext.DEFAULT_TENANT);
+                chain.doFilter(request, response);
+                return;
             }
-            chain.doFilter(request, response);
 
+            String encryptedStoreId = httpRequest.getHeader(TENANT_HEADER);
+            if (StringUtils.hasText(encryptedStoreId)) {
+                setTenantContextFromHeader(encryptedStoreId);
+            } else {
+                String slug = httpRequest.getParameter(STORE_SLUG_PARAM);
+                if (StringUtils.hasText(slug)) {
+                    setTenantContextFromSlug(slug);
+                } else {
+                    log.debug("No tenant info found; using default.");
+                    TenantContext.setCurrentTenant(TenantContext.DEFAULT_TENANT);
+                }
+            }
+
+            chain.doFilter(request, response);
         } finally {
             TenantContext.clear();
         }
     }
 
-    /** 
-     * Attempts to decrypt the store ID from the request header and set the tenant context.
-     *
-     * @param encryptedStoreId the encrypted store ID from the request header
-     */
     private void setTenantContextFromHeader(String encryptedStoreId) {
         try {
-            String storeId = EncryptionUtil.decrypt(encryptedStoreId);
-            storeId = storeId.replace("-", "_");
-            String tenantIdentifier = "tenant_" + storeId;
-            TenantContext.setCurrentTenant(tenantIdentifier);
-            log.debug("Tenant successfully resolved and set to: {}", tenantIdentifier);
+            String storeId = EncryptionUtil.decrypt(encryptedStoreId).replace("-", "_");
+            TenantContext.setCurrentTenant("tenant_" + storeId);
+            log.debug("Tenant resolved from header: tenant_{}", storeId);
         } catch (Exception e) {
-            log.error("Failed to decrypt or resolve tenant from store ID: {}", encryptedStoreId, e);
-            throw new RuntimeException("Failed to decrypt or resolve tenant from store ID: " + encryptedStoreId, e);
+            log.error("Failed to decrypt tenant from header", e);
+            throw new RuntimeException("Tenant resolution failed", e);
         }
+    }
+
+    private void setTenantContextFromSlug(String slug) {
+        try {
+            String tenant = storeSlugResolver.resolveTenantFromSlug(slug);
+            if (!ObjectUtils.isEmpty(tenant)) {
+                TenantContext.setCurrentTenant(tenant);
+                log.debug("Tenant resolved from slug: {}", tenant);
+            } else {
+                log.warn("No tenant found for slug: {}", slug);
+                TenantContext.setCurrentTenant(TenantContext.DEFAULT_TENANT);
+            }
+        } catch (Exception e) {
+            log.error("Failed to resolve tenant from slug {}", slug, e);
+            TenantContext.setCurrentTenant(TenantContext.DEFAULT_TENANT);
+        }
+    }
+
+    private boolean shouldSkipTenantFilter(String path) {
+        return StringUtils.hasText(path) && path.startsWith("/api/stores");
     }
 }
