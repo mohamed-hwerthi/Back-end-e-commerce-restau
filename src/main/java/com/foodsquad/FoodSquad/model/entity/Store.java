@@ -23,6 +23,12 @@ public class Store {
     @Column(name = "name", nullable = false, unique = false)
     private String name;
 
+
+    @Column(name = "description", nullable = true, unique = false)
+    private String description;
+
+
+
     @Column(name = "slug", nullable = false, unique = true)
         private String slug;
 
@@ -45,7 +51,7 @@ public class Store {
 
     @Column(name = "about", length = 2048, nullable = true)
     private String about;
-    
+
     @Column(name = "background_color", length = 10, nullable = true)
     private String backgroundColor;
 
