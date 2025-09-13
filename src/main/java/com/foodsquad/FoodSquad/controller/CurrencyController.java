@@ -22,7 +22,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/currency")
+@RequestMapping("/api/currencies")
 
     @Tag(name = "11. Currency Management", description = "Currency Management API")
 public class CurrencyController {

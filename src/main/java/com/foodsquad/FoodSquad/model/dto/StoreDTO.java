@@ -55,5 +55,8 @@ public class StoreDTO {
     private ActivitySectorDTO activitySector;
     private MediaDTO logo;
 
+    @NotNull(message = "Currency is required")
+    private CurrencyDTO currency;
+
     private  String encryptedStoreId ;
 }

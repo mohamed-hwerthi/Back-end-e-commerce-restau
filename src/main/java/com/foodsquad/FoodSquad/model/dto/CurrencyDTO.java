@@ -9,7 +9,7 @@ import java.util.UUID;
 @Setter
 public class CurrencyDTO {
 
-    private UUID d;
+    private UUID id;
     private String name;
     private String symbol;
     private int scale;

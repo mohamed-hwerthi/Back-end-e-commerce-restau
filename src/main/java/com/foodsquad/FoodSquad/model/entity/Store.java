@@ -24,7 +24,7 @@ public class Store {
     private String name;
 
     @Column(name = "slug", nullable = false, unique = true)
-    private String slug;
+        private String slug;
 
     @Column(name = "address", nullable = true)
     private String address;
@@ -45,7 +45,7 @@ public class Store {
 
     @Column(name = "about", length = 2048, nullable = true)
     private String about;
-
+    
     @Column(name = "background_color", length = 10, nullable = true)
     private String backgroundColor;
 

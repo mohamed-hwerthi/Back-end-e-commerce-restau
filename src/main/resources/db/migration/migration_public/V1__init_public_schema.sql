@@ -6,13 +6,14 @@
 
     );
 
-    CREATE TABLE currencies (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        code  VARCHAR(255),
-        name VARCHAR(255),
-        symbol VARCHAR(10),
-        scale INT
-    );
+  CREATE TABLE currencies (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      code VARCHAR(255) UNIQUE,
+      name VARCHAR(255),
+      symbol VARCHAR(10),
+      scale INT
+  );
+
 
     -- Create Media table
     CREATE TABLE IF NOT EXISTS medias (
