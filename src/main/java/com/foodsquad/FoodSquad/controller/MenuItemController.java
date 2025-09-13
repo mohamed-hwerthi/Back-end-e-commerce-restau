@@ -81,7 +81,7 @@ public class MenuItemController {
             @RequestParam(required = false) boolean desc,
 
             @Parameter(description = "Filter by categoryId , params is named categoryFilter but it contains the category Id '", required = false)
-            @RequestParam(required = false) UUID  categoryFilter,
+            @RequestParam(required = false) UUID categoryFilter,
 
             @Parameter(description = "Filter by default status: 'true' for default items, 'false' for non-default items", required = false)
             @RequestParam(required = false) String isDefault,
@@ -154,5 +154,24 @@ public class MenuItemController {
 
         return ResponseEntity.ok(menuItemService.findByBarCode(barCode));
     }
+
+    @Operation(
+            summary = "Delete a media from a menu item",
+            description = "Deletes a specific media associated with a menu item. This will also delete the related file from storage."
+    )
+    @DeleteMapping("/{menuItemId}/media/{mediaId}")
+    public ResponseEntity<Map<String, String>> deleteMediaFromMenuItem(
+            @Parameter(description = "ID of the menu item", example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID menuItemId,
+
+            @Parameter(description = "ID of the media to delete", example = "1")
+            @PathVariable UUID mediaId) {
+
+        log.info("Request to delete media {} from menu item {}", mediaId, menuItemId);
+        menuItemService.deleteMediaForMenuItem(menuItemId, mediaId);
+
+        return ResponseEntity.ok(Map.of("message", "Media " + mediaId + " deleted successfully from menu item " + menuItemId));
+    }
+
 
 }

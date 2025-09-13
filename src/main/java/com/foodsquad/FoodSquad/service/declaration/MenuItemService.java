@@ -50,6 +50,8 @@ public interface MenuItemService {
 
      List<MenuItem>findByCategory(Category  category) ;
 
+     void deleteMediaForMenuItem(UUID menuItemId  ,   UUID mediaId) ;
+
 
 
 

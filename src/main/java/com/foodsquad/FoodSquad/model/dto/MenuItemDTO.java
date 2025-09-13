@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -20,13 +21,13 @@ public class MenuItemDTO {
     private String description;
 
     private String barCode;
-    @Positive(message = "Quantity must be positive")
+    @PositiveOrZero(message = "La quantité doit être positive ou zéro")
     private int quantity;
 
     @Positive(message = "Purchase price must be positive")
     private BigDecimal purchasePrice;
 
-    @Positive(message = "Price must be positive")
+    @PositiveOrZero(message = "Le prix  doit être positive ou zéro")
     private Double price;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

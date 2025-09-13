@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller for managing media resources.
@@ -67,7 +68,7 @@ public class MediaController {
             @ApiResponse(responseCode = "404", description = "Media not found")
     })
     public ResponseEntity<MediaDTO> findMedia(
-            @Parameter(description = "ID of the media item", required = true) @PathVariable Long id) {
+            @Parameter(description = "ID of the media item", required = true) @PathVariable UUID id) {
         return ResponseEntity.ok(mediaService.findMediaById(id));
     }
 
@@ -99,7 +100,7 @@ public class MediaController {
             @ApiResponse(responseCode = "404", description = "Media not found")
     })
     public ResponseEntity<Void> deleteMedia(
-            @Parameter(description = "ID of the media item to delete", required = true) @PathVariable Long id) {
+            @Parameter(description = "ID of the media item to delete", required = true) @PathVariable UUID id) {
         mediaService.deleteMedia(id);
         return ResponseEntity.noContent().build();
     }

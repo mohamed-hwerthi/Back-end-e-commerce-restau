@@ -8,10 +8,7 @@ import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequest
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.*;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
-import com.foodsquad.FoodSquad.service.declaration.PromotionService;
-import com.foodsquad.FoodSquad.service.declaration.TaxService;
+import com.foodsquad.FoodSquad.service.declaration.*;
 import com.foodsquad.FoodSquad.service.helpers.MenuItemDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -61,8 +58,10 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator;
 
+    private final MediaService mediaService ;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator) {
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator, MediaService mediaService) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -73,6 +72,7 @@ public class MenuItemServiceImp implements MenuItemService {
         this.menuItemMapper = menuItemMapper;
         this.taxService = taxService;
         this.menuItemDiscountPriceCalculator = menuItemDiscountPriceCalculator;
+        this.mediaService = mediaService;
     }
 
 
@@ -400,5 +400,20 @@ public class MenuItemServiceImp implements MenuItemService {
         return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
     }
 
+    @Override
+    public void deleteMediaForMenuItem(UUID menuItemId, UUID mediaId) {
+        logger.debug("Deleting media {} for menu item {}", mediaId, menuItemId);
+
+        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+                .orElseThrow(() -> new EntityNotFoundException("MenuItem with id " + menuItemId + " not found"));
+
+        menuItem.getMedias().removeIf(media -> media.getId().equals(mediaId));
+
+        menuItemRepository.save(menuItem);
+
+        mediaService.deleteMedia(mediaId);
+
+        logger.info("Successfully deleted media {} for menu item {}", mediaId, menuItemId);
+    }
 
 }

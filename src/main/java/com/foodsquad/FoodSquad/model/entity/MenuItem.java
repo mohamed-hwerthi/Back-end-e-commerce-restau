@@ -31,7 +31,8 @@
 
 
         @Column(nullable = false)
-        private Double price = 1.0;
+        @Min(value = 0, message = "Quantity must be at least 0")
+        private Double price ;
 
         @Column(nullable = true, name = "code_bar" ,  unique = true)
         private String barCode;

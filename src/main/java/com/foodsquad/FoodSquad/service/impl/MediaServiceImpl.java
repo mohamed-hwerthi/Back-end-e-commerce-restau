@@ -22,6 +22,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +77,7 @@ public class MediaServiceImpl implements MediaService {
      * @throws EntityNotFoundException if the media item is not found
      */
     @Override
-    public MediaDTO findMediaById(Long id) {
+    public MediaDTO findMediaById(UUID id) {
 
         logger.debug("Fetching media with id: {}", id);
         return mediaRepository.findById(id).map(mediaMapper::toDto).orElseThrow(() -> {
@@ -102,13 +103,26 @@ public class MediaServiceImpl implements MediaService {
      * @throws EntityNotFoundException if the media item with the given ID does not exist
      */
     @Override
-    public void deleteMedia(Long id) {
-
+    public void deleteMedia(UUID id) {
         logger.debug("Deleting media with id: {}", id);
-        if (!mediaRepository.existsById(id)) {
-            throw new EntityNotFoundException("Media with id " + id + " not found");
+
+        Media media = mediaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Media with id " + id + " not found"));
+
+        try {
+            Path filePath = Paths.get(media.getPath());
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+                logger.info("Deleted file from disk: {}", filePath);
+            } else {
+                logger.warn("File not found on disk: {}", filePath);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to delete file for media id {}: {}", id, e.getMessage(), e);
+            throw new RuntimeException("Could not delete file from disk", e);
         }
-        mediaRepository.deleteById(id);
+
+        mediaRepository.delete(media);
     }
 
 
