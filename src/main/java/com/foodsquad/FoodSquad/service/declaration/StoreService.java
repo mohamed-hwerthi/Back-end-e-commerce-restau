@@ -25,6 +25,8 @@ public interface StoreService {
 
     StoreBasicDataDTO  findByEmail() ;
 
+    StoreBasicDataDTO findByStoreSlug(String SToreSlug) ;
+
     CurrencyDTO findCurrencyOfStore(UUID storeId);
 
 

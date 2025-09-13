@@ -17,7 +17,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id  ;
+    private UUID id;
     @Column(nullable = false, name = "name")
     private String name;
     @Column(nullable = false, name = "description")
@@ -40,8 +40,6 @@ public class Category {
             inverseJoinColumns = @JoinColumn(name = "promotion_id")
     )
     private List<Promotion> promotions = new ArrayList<>();
-
-
 
 
 }

@@ -16,6 +16,7 @@ import com.foodsquad.FoodSquad.service.declaration.TenantService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,9 +33,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StoreServiceImpl implements StoreService {
 
-    private static final Logger logger = LoggerFactory.getLogger(StoreServiceImpl.class);
 
     private final StoreRepository storeRepository;
 
@@ -52,7 +53,7 @@ public class StoreServiceImpl implements StoreService {
     @Override
     @Transactional
     public StoreDTO save(@Valid StoreDTO storeDTO) {
-        logger.info("Saving new Store: {}", storeDTO);
+        log.info("Saving new Store: {}", storeDTO);
         Store store = storeMapper.toEntity(storeDTO);
         User savedOwner = adminService.createStoreOwner(storeDTO.getEmail(), storeDTO.getPhoneNumber(), storeDTO.getPassword());
         store.setOwner(savedOwner);
@@ -63,30 +64,30 @@ public class StoreServiceImpl implements StoreService {
         String encryptedStoreId = encryptStoreId(saved.getId().toString());
         StoreDTO result = storeMapper.toDto(saved);
         result.setEncryptedStoreId(encryptedStoreId);
-        logger.info("Saved Store with id: {}", result.getId());
+        log.info("Saved Store with id: {}", result.getId());
         return result;
     }
 
     @Override
     public StoreDTO update(UUID storeId, StoreDTO storeDTO) {
-        logger.info("Updating Store with id: {}", storeId);
+        log.info("Updating Store with id: {}", storeId);
         return storeRepository.findById(storeId)
                 .map(existing -> {
                     Store updated = storeMapper.toEntity(storeDTO);
                     updated.setId(existing.getId());
                     Store saved = storeRepository.save(updated);
-                    logger.info("Updated Store with id: {}", storeId);
+                    log.info("Updated Store with id: {}", storeId);
                     return storeMapper.toDto(saved);
                 })
                 .orElseGet(() -> {
-                    logger.warn("Cannot update, Store not found with id: {}", storeId);
+                    log.warn("Cannot update, Store not found with id: {}", storeId);
                     return null;
                 });
     }
 
     @Override
     public List<StoreDTO> findAll() {
-        logger.info("Fetching all Stores");
+        log.info("Fetching all Stores");
         return storeRepository.findAll().stream()
                 .map(storeMapper::toDto)
                 .collect(Collectors.toList());
@@ -94,7 +95,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public StoreDTO findById(UUID id) {
-        logger.info("Fetching Store with id: {}", id);
+        log.info("Fetching Store with id: {}", id);
         return storeRepository.findById(id)
                 .map(storeMapper::toDto)
                 .orElse(null);
@@ -102,15 +103,15 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public void delete(UUID id) {
-        logger.info("Deleting Store with id: {}", id);
+        log.info("Deleting Store with id: {}", id);
         storeRepository.deleteById(id);
-        logger.info("Deleted Store with id: {}", id);
+        log.info("Deleted Store with id: {}", id);
     }
 
 
     @Override
     public StoreDTO findByOwner(User owner) {
-        logger.info("   Request to Fetch  Store by owner: {}", owner);
+        log.info("   Request to Fetch  Store by owner: {}", owner);
         return storeRepository.findByOwner(owner).map(storeMapper::toDto).orElseThrow(() -> new EntityNotFoundException("Store not found for owner with email " + owner.getEmail()));
 
     }
@@ -118,7 +119,7 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public StoreBasicDataDTO findByEmail() {
-        logger.debug("Fetching store for owner with email");
+        log.debug("Fetching store for owner with email");
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName() ;
@@ -136,12 +137,28 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public CurrencyDTO findCurrencyOfStore(UUID storeId) {
-        logger.debug("Request to find currency of the store   :{}" , storeId);
+        log.debug("Request to find currency of the store   :{}" , storeId);
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new EntityNotFoundException("Store not found with id " + storeId));
         return currencyMapper.toDto(store.getCurrency()) ;
 
     }
+
+    @Override
+    public StoreBasicDataDTO findByStoreSlug(String slug) {
+        log.debug("Fetching store with slug: {}", slug);
+        Store store = storeRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Store not found for slug %s", slug))
+                );
+        return StoreBasicDataDTO.builder()
+                .storeId(store.getId())
+                .storeName(store.getName())
+                .storeSlug(store.getSlug())
+                .build();
+    }
+
+
     /** Encrypt store ID */
     private String encryptStoreId(String storeId) {
         try {
@@ -179,10 +196,10 @@ public class StoreServiceImpl implements StoreService {
 
             if (rs.next()) {
                 String schema = rs.getString(1);
-                logger.info("Current database schema (search_path): {}", schema);
+                log.info("Current database schema (search_path): {}", schema);
             }
         } catch (Exception e) {
-            logger.error("Failed to get current schema", e);
+            log.error("Failed to get current schema", e);
         }
     }
 

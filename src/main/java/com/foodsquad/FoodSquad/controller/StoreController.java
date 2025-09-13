@@ -145,6 +145,19 @@ public class StoreController {
         return ResponseEntity.ok(currency);
     }
 
+    @GetMapping("/by-slug/{slug}")
+    @Operation(
+            summary = "Find store by slug",
+            description = "Retrieves the store information by store slug"
+    )
+    public ResponseEntity<StoreBasicDataDTO> getStoreBySlug(@PathVariable String slug) {
+        log.info("Received request to get store by slug: {}", slug);
+        StoreBasicDataDTO storeDTO = storeService.findByStoreSlug(slug);
+        log.info("Found store with ID: {}", storeDTO.getStoreId());
+        return ResponseEntity.ok(storeDTO);
+    }
+
+
 
 
 }
