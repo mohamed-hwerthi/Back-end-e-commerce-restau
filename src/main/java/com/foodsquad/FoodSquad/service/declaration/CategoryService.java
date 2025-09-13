@@ -93,4 +93,15 @@ public interface CategoryService {
      * @return List of saved Category entities.
      */
     List<Category> saveCategories(List<Category> categories);
+
+    /**
+     * Retrieve a paginated list of categories with optional search/filter.
+     *
+     * @param page       The page number (starting from 0 or 1 based on implementation)
+     * @param limit      The number of categories per page
+     * @param searchTerm Optional search term to filter categories by name or description
+     * @return PaginatedResponseDTO containing CategoryDTOs
+     */
+    PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(int page, int limit, String searchTerm);
+
 }

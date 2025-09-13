@@ -1,8 +1,9 @@
 package com.foodsquad.FoodSquad.repository;
 
 import com.foodsquad.FoodSquad.model.entity.Category;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +16,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     List<Category> findAllByPromotionsContaining(Promotion promotion);
 
 
+    Page<Category> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String name, String description, Pageable pageable
+    );
 }

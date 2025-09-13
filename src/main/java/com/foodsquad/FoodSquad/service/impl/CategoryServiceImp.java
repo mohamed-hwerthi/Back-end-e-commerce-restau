@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -20,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -125,4 +128,28 @@ public class CategoryServiceImp implements CategoryService {
         log.info("Saving {} categories", categories.size());
         return categoryRepository.saveAll(categories);
     }
+
+
+    @Override
+    public PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(int page, int limit, String searchTerm) {
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("name").ascending());
+
+        Page<Category> categoryPage;
+        if (StringUtils.hasText(searchTerm)) {
+            categoryPage = categoryRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchTerm, searchTerm, pageable);
+        } else {
+            categoryPage = categoryRepository.findAll(pageable);
+        }
+
+        List<CategoryDTO> categoryDTOs = categoryPage.getContent().stream()
+                .map(categoryMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PaginatedResponseDTO<>(
+                categoryDTOs,
+                categoryPage.getTotalPages()
+        );
+    }
+
+
 }
