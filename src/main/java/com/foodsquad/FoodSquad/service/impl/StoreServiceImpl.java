@@ -1,7 +1,9 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.config.EncryptionUtil;
+import com.foodsquad.FoodSquad.mapper.CurrencyMapper;
 import com.foodsquad.FoodSquad.mapper.StoreMapper;
+import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
@@ -43,6 +45,8 @@ public class StoreServiceImpl implements StoreService {
     private final AdminService adminService;
 
     private final DataSource dataSource;
+
+    private final CurrencyMapper currencyMapper;
 
 
     @Override
@@ -130,7 +134,14 @@ public class StoreServiceImpl implements StoreService {
                 .build();
     }
 
+    @Override
+    public CurrencyDTO findCurrencyOfStore(UUID storeId) {
+        logger.debug("Request to find currency of the store   :{}" , storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException("Store not found with id " + storeId));
+        return currencyMapper.toDto(store.getCurrency()) ;
 
+    }
     /** Encrypt store ID */
     private String encryptStoreId(String storeId) {
         try {
@@ -174,6 +185,8 @@ public class StoreServiceImpl implements StoreService {
             logger.error("Failed to get current schema", e);
         }
     }
+
+
 
 
 

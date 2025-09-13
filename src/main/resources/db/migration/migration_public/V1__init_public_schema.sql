@@ -21,7 +21,9 @@
         name VARCHAR(255) NOT NULL,
         path VARCHAR(1024) NOT NULL,
         url VARCHAR(1024) NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT now()
+        created_at TIMESTAMP NOT NULL DEFAULT now(),
+        type VARCHAR(50) NOT NULL
+
     );
 
     -- Create User table

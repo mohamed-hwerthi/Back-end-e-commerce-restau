@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.controller;
 
+import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
@@ -126,6 +127,24 @@ public class StoreController {
         log.info("Found store with ID: {}", storeDTO.getStoreId());
         return ResponseEntity.ok(storeDTO);
     }
+
+
+    /**
+     * Get the currency of a specific store.
+     *
+     * @param storeId UUID of the store
+     * @return ResponseEntity containing the CurrencyDTO
+     */
+    @GetMapping("/{storeId}/currency")
+    @Operation(summary = "Get store currency", description = "Retrieve the currency associated with a store")
+    public ResponseEntity<CurrencyDTO> getCurrencyOfStore(@PathVariable UUID storeId) {
+        CurrencyDTO currency = storeService.findCurrencyOfStore(storeId);
+        if (currency == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(currency);
+    }
+
 
 
 }
