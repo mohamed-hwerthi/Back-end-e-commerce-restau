@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.foodsquad.FoodSquad.config.Constant.EN_LOCALE;
+import static com.foodsquad.FoodSquad.config.utils.Constant.EN_LOCALE;
 
 @Data
 @Builder

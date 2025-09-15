@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.db;
 
 public interface StoreSlugResolver {
     /**

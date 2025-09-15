@@ -1,7 +1,8 @@
-package com.foodsquad.FoodSquad.config.db;
+package com.foodsquad.FoodSquad.config.web;
 
-import com.foodsquad.FoodSquad.config.EncryptionUtil;
-import com.foodsquad.FoodSquad.config.StoreSlugResolver;
+import com.foodsquad.FoodSquad.config.security.EncryptionUtil;
+import com.foodsquad.FoodSquad.config.db.StoreSlugResolver;
+import com.foodsquad.FoodSquad.config.context.TenantContext;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

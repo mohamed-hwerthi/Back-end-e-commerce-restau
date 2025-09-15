@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.config.db;
 
+import com.foodsquad.FoodSquad.config.context.TenantContext;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

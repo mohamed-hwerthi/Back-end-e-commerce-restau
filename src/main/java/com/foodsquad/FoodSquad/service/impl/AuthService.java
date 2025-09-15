@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.config.EncryptionUtil;
+import com.foodsquad.FoodSquad.config.security.EncryptionUtil;
 import com.foodsquad.FoodSquad.exception.InvalidCredentialsException;
 import com.foodsquad.FoodSquad.exception.UserAlreadyExistsException;
 import com.foodsquad.FoodSquad.model.dto.*;

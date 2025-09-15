@@ -1,6 +1,6 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.docs;
 
-import com.foodsquad.FoodSquad.config.db.TenantFilter;
+import com.foodsquad.FoodSquad.config.web.TenantFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

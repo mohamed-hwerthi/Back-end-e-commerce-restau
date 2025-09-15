@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.mapper;
 
 import com.foodsquad.FoodSquad.model.dto.OrderDTO;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;

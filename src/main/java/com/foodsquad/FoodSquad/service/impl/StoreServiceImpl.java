@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.config.EncryptionUtil;
+import com.foodsquad.FoodSquad.config.security.EncryptionUtil;
 import com.foodsquad.FoodSquad.mapper.CurrencyMapper;
 import com.foodsquad.FoodSquad.mapper.StoreMapper;
 import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;

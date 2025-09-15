@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config.db;
+package com.foodsquad.FoodSquad.config.context;
 
 import lombok.extern.slf4j.Slf4j;
 

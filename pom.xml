@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.foodsquad</groupId>
-    <artifactId>FoodSquad</artifactId>
+    <groupId>com.easyShop</groupId>
+    <artifactId>EasyShop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>FoodSquad</name>
-    <description>REST API for food delivery app</description>
+    <name>EasyShop</name>
+    <description>REST API for Easy Shop app</description>
 
     <properties>
         <java.version>17</java.version>

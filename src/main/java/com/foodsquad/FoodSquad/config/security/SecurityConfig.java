@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.security;
 
 import com.foodsquad.FoodSquad.exception.CustomAccessDeniedHandler;
 import com.foodsquad.FoodSquad.exception.CustomAuthenticationEntryPoint;

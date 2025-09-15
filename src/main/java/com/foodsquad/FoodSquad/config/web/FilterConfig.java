@@ -1,6 +1,5 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.web;
 
-import com.foodsquad.FoodSquad.config.db.TenantFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.config;
+package com.foodsquad.FoodSquad.config.db;
 
 import com.foodsquad.FoodSquad.model.entity.Store;
 import com.foodsquad.FoodSquad.repository.StoreRepository;
