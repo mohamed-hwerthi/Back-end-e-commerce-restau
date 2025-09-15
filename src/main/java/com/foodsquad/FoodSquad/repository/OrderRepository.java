@@ -46,7 +46,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     /**
      * Finds orders by the user ID and returns them in a pageable format.
      *
-     * @param userId The ID of the user.
+     * @param userId   The ID of the user.
      * @param pageable The pageable object containing pagination information.
      * @return A page of orders for the specified user.
      */
@@ -75,7 +75,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * Finds orders created before a specific date and with a specific status.
      *
      * @param createdAt The date before which the orders were created.
-     * @param status The status of the orders.
+     * @param status    The status of the orders.
      * @return A list of orders matching the criteria.
      */
     List<Order> findByCreatedAtBeforeAndStatus(LocalDateTime createdAt, OrderStatus status);

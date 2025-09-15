@@ -80,7 +80,7 @@ public class TimbreServiceImpl implements TimbreService {
     public TimbreDTO update(UUID timberId, TimbreDTO timbreDTO) {
 
         logger.info("Updating Timbre with id: {}", timberId);
-      return timbreRepository.findById(timberId)
+        return timbreRepository.findById(timberId)
                 .map(existing -> {
                     Timbre updated = timbreMapper.toEntity(timbreDTO);
                     updated.setId(existing.getId());

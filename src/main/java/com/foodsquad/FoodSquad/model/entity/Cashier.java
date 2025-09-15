@@ -11,6 +11,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 public class Cashier extends Employee {
-    
+
 
 }

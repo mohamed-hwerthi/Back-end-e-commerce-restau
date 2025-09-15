@@ -9,7 +9,6 @@ import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.StoreRepository;
-import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.AdminService;
 import com.foodsquad.FoodSquad.service.declaration.StoreService;
 import com.foodsquad.FoodSquad.service.declaration.TenantService;
@@ -17,8 +16,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,7 +119,7 @@ public class StoreServiceImpl implements StoreService {
         log.debug("Fetching store for owner with email");
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
-                .getName() ;
+                .getName();
         User user = adminService.findByEmail(email);
         Store store = storeRepository.findByOwner(user)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -137,10 +134,10 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public CurrencyDTO findCurrencyOfStore(UUID storeId) {
-        log.debug("Request to find currency of the store   :{}" , storeId);
+        log.debug("Request to find currency of the store   :{}", storeId);
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new EntityNotFoundException("Store not found with id " + storeId));
-        return currencyMapper.toDto(store.getCurrency()) ;
+        return currencyMapper.toDto(store.getCurrency());
 
     }
 
@@ -159,7 +156,9 @@ public class StoreServiceImpl implements StoreService {
     }
 
 
-    /** Encrypt store ID */
+    /**
+     * Encrypt store ID
+     */
     private String encryptStoreId(String storeId) {
         try {
             return EncryptionUtil.encrypt(storeId);
@@ -184,7 +183,7 @@ public class StoreServiceImpl implements StoreService {
 
 
     private String generateSlug(String name) {
-       return name.toLowerCase()
+        return name.toLowerCase()
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", "-");
     }
@@ -202,10 +201,6 @@ public class StoreServiceImpl implements StoreService {
             log.error("Failed to get current schema", e);
         }
     }
-
-
-
-
 
 
 }

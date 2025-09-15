@@ -48,8 +48,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/token/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/media/**").permitAll()
-                                .requestMatchers(HttpMethod.GET , "/uploads/**").permitAll()
-                                .requestMatchers(HttpMethod.GET , "/images/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
 
 
                                 .requestMatchers(HttpMethod.GET, "/api/invoice/**").permitAll()
@@ -111,10 +111,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/category-promotions/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/category-promotions/**").permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/api/stores/**"). permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/stores/**"). permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/api/stores/**"). permitAll()
-                                .requestMatchers(HttpMethod.DELETE, "/api/stores/**"). permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/stores/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/stores/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/stores/**").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .exceptionHandling(exceptionHandling ->

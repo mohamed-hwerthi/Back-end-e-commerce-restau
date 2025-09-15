@@ -10,7 +10,6 @@ import com.foodsquad.FoodSquad.repository.CashierRepository;
 import com.foodsquad.FoodSquad.service.declaration.CashierService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.jfree.ui.UIUtilities;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +23,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CashierServiceImpl implements CashierService {
 
-    private final CashierRepository cashierRepository;
-
-    private final CashierMapper cashierMapper;
-
     public static final String CASHIER_NOT_FOUND_MESSAGE = "Cashier not found with id:";
+    private final CashierRepository cashierRepository;
+    private final CashierMapper cashierMapper;
 
     @Override
     public PaginatedResponseDTO<CashierDTO> findAllCashiers(int page, int limit) {

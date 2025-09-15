@@ -20,6 +20,5 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
     Optional<Store> findBySlug(String slug);
 
 
-
 }
     

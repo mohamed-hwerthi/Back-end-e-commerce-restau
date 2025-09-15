@@ -101,7 +101,7 @@ public class AuthController {
      * Authenticate a user and generate JWT tokens.
      *
      * @param userLoginDTO login credentials
-     * @param response HTTP servlet response to set refresh token cookie
+     * @param response     HTTP servlet response to set refresh token cookie
      * @return access token or error
      */
     @Operation(summary = "User login", description = "Authenticate a user with the provided login credentials.")
@@ -125,7 +125,7 @@ public class AuthController {
      * Authenticate a cashier or admin user and issue JWT tokens.
      *
      * @param userLoginDTO login credentials
-     * @param response HTTP servlet response
+     * @param response     HTTP servlet response
      * @return access token or error
      */
     @Operation(summary = "Cashier login", description = "Authenticate a cashier or admin user and issue JWT tokens.")
@@ -147,6 +147,7 @@ public class AuthController {
 
     /**
      * Authenticate a store owner and issue JWT tokens.
+     *
      * @return access token or error
      */
     @Operation(
@@ -168,7 +169,8 @@ public class AuthController {
         logger.info("Store owner login successful: {}", storeOwner.getEmail());
         Map<String, Object> claims = buildClaims(storeOwner);
         String accessToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), accessTokenExpiration);
-        String refreshToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), refreshTokenExpiration);tokenService.saveTokens(storeOwner.getEmail(), accessToken, refreshToken);
+        String refreshToken = jwtUtil.generateToken(claims, storeOwner.getEmail(), refreshTokenExpiration);
+        tokenService.saveTokens(storeOwner.getEmail(), accessToken, refreshToken);
         logger.debug("Access & refresh tokens generated for store owner: {}", storeOwner.getEmail());
         return ResponseEntity.ok(Map.of(
                 "accessToken", accessToken,
@@ -184,8 +186,8 @@ public class AuthController {
      * Logout the authenticated user and invalidate tokens.
      *
      * @param authorizationHeader access token from header
-     * @param refreshToken refresh token from cookie
-     * @param response HTTP servlet response
+     * @param refreshToken        refresh token from cookie
+     * @param response            HTTP servlet response
      * @return success message or error
      */
     @Operation(summary = "Logout user", description = "Invalidate the refresh token and logout the user.")
@@ -275,7 +277,7 @@ public class AuthController {
 
         tokenService.saveTokens(storeOwner.getEmail(), accessToken, refreshToken);
         logger.debug("Generated access token for store owner: {}", storeOwner.getEmail());
-        return   Map.of("accessToken", accessToken)  ;
+        return Map.of("accessToken", accessToken);
     }
 
     private Map<String, Object> buildClaims(UserResponseDTO user) {

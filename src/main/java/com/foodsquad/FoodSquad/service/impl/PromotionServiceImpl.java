@@ -1,5 +1,3 @@
-
-
 package com.foodsquad.FoodSquad.service.impl;
 
 
@@ -29,9 +27,9 @@ public class PromotionServiceImpl implements PromotionService {
 
     private final PromotionMapper promotionMapper;
 
-    private final MenuItemService menuItemService ;
+    private final MenuItemService menuItemService;
 
-    private  final CategoryService categoryService  ;
+    private final CategoryService categoryService;
 
 
     @Override
@@ -69,12 +67,12 @@ public class PromotionServiceImpl implements PromotionService {
 
         Promotion existingPromotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
-        if(existingPromotion instanceof  PercentageDiscountPromotion percentageDiscountPromotion ){
-            promotionMapper.updatePercentageDiscountPromotionWithNewPromotion(promotionDTO , percentageDiscountPromotion);
+        if (existingPromotion instanceof PercentageDiscountPromotion percentageDiscountPromotion) {
+            promotionMapper.updatePercentageDiscountPromotionWithNewPromotion(promotionDTO, percentageDiscountPromotion);
             return promotionMapper.toDTO(promotionRepository.save(percentageDiscountPromotion));
         }
 
-        return null  ;
+        return null;
 
     }
 
@@ -83,15 +81,15 @@ public class PromotionServiceImpl implements PromotionService {
     public void deletePromotion(UUID id) {
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
-        if(promotion.getPromotionTarget().equals(PromotionTarget.MENUITEMS)){
+        if (promotion.getPromotionTarget().equals(PromotionTarget.MENUITEMS)) {
             List<MenuItem> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
             menuItemsWithPromotion.forEach(menuItem -> menuItem.getPromotions().remove(promotion));
 
         }
-        if (promotion.getPromotionTarget().equals(PromotionTarget.CATEGORIES)){
-              List<Category>categories =categoryService.findCategoriesWithPromotions(promotion) ;
-                categories.forEach(category -> category.getPromotions().remove(promotion)
-              );
+        if (promotion.getPromotionTarget().equals(PromotionTarget.CATEGORIES)) {
+            List<Category> categories = categoryService.findCategoriesWithPromotions(promotion);
+            categories.forEach(category -> category.getPromotions().remove(promotion)
+            );
 
         }
         promotionRepository.delete(promotion);
@@ -121,13 +119,13 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public   List<PromotionDTO> findAllPromotionForMenuItem(UUID menuItemId) {
-        return  promotionRepository.findAllPromotionsForMenuItem(menuItemId).stream().map(promotionMapper::toDTO).toList();
+    public List<PromotionDTO> findAllPromotionForMenuItem(UUID menuItemId) {
+        return promotionRepository.findAllPromotionsForMenuItem(menuItemId).stream().map(promotionMapper::toDTO).toList();
     }
 
     @Override
     public List<Promotion> findPromotionsForMenuItem(UUID menuItemId) {
-        return  promotionRepository.findAllPromotionsForMenuItem(menuItemId) ;
+        return promotionRepository.findAllPromotionsForMenuItem(menuItemId);
     }
 }
 

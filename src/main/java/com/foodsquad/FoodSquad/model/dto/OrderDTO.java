@@ -37,13 +37,13 @@ public class OrderDTO {
     @Schema(defaultValue = "false")
     private Boolean paid = false;
 
-    @Schema(example = "admin@example.com" )
+    @Schema(example = "admin@example.com")
     private String userEmail;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(String id, String userEmail, Map<UUID ,  Integer> menuItemQuantities, OrderStatus status, Double totalCost, LocalDateTime createdOn, Boolean paid) {
+    public OrderDTO(String id, String userEmail, Map<UUID, Integer> menuItemQuantities, OrderStatus status, Double totalCost, LocalDateTime createdOn, Boolean paid) {
         this.id = id;
         this.userEmail = userEmail;
         this.menuItemQuantities = menuItemQuantities;

@@ -21,6 +21,4 @@ public interface MediaService {
     List<MediaDTO> uploadMultipleFiles(MultipartFile[] files) throws Exception;
 
 
-
-
 }

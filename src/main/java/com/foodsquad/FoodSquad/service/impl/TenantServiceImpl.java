@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.config.db.TenantContext;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.declaration.TenantService;
@@ -14,8 +13,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.List;
 
 @Service
@@ -23,12 +20,10 @@ import java.util.List;
 @Slf4j
 public class TenantServiceImpl implements TenantService {
 
+    private final DataSource dataSource;
+    private final UserRepository userRepository;
     @PersistenceContext
     private EntityManager entityManager;
-
-    private final DataSource dataSource;
-
-    private final UserRepository userRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -54,7 +49,6 @@ public class TenantServiceImpl implements TenantService {
                 .getResultList();
         return !result.isEmpty();
     }
-
 
 
 }

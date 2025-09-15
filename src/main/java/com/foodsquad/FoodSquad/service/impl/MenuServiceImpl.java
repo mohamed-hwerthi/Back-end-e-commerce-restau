@@ -2,9 +2,9 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.mapper.MenuMapper;
-import com.foodsquad.FoodSquad.model.entity.Menu;
 import com.foodsquad.FoodSquad.model.dto.MenuDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.entity.Menu;
 import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.repository.MenuRepository;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
@@ -21,9 +21,8 @@ public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
-    private final MenuItemService menuItemService ;
-    private final MenuItemMapper    menuItemMapper;
-
+    private final MenuItemService menuItemService;
+    private final MenuItemMapper menuItemMapper;
 
 
     public MenuServiceImpl(MenuRepository menuRepository, MenuMapper menuMapper, MenuItemService menuItemService, MenuItemMapper menuItemMapper) {
@@ -44,16 +43,16 @@ public class MenuServiceImpl implements MenuService {
         List<Menu> menus = menuRepository.findAll();
         return menus.stream()
                 .map(menuMapper::toDto)
-                .toList()  ;
+                .toList();
     }
 
     @Override
     public MenuDTO createMenu(MenuDTO menuDTO) {
         Menu menu = menuMapper.toEntity(menuDTO);
-        if (!ObjectUtils.isEmpty(menuDTO.getMenuItemsIds())){
+        if (!ObjectUtils.isEmpty(menuDTO.getMenuItemsIds())) {
             menuDTO.getMenuItemsIds().forEach(
-                    menuItemId-> {
-                        MenuItemDTO foundedMenuItem = menuItemService.getMenuItemById(menuItemId) ;
+                    menuItemId -> {
+                        MenuItemDTO foundedMenuItem = menuItemService.getMenuItemById(menuItemId);
                         MenuItem menuItem = menuItemMapper.toEntity(foundedMenuItem);
                         menu.getMenuItems().add(menuItem);
                     }

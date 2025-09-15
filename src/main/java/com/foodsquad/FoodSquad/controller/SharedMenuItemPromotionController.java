@@ -26,7 +26,7 @@ public class SharedMenuItemPromotionController {
     @PostMapping("")
     public ResponseEntity<PromotionDTO> createPromotionForMenuItems(
             @RequestBody PromotionWithMenuItemsRequestDTO promotionWithMenuItemsRequestDTO
-            ) {
+    ) {
         PromotionDTO createdPromotion = promotionSharedService.createPromotionForMenuItems(promotionWithMenuItemsRequestDTO.getMenuItemsIds(), promotionWithMenuItemsRequestDTO.getPromotion());
         if (createdPromotion == null) {
             return ResponseEntity.badRequest().build();
@@ -76,7 +76,6 @@ public class SharedMenuItemPromotionController {
         promotionSharedService.addPromotionToMenuItem(menuItemId, promotionId);
         return ResponseEntity.ok().build();
     }
-
 
 
 }

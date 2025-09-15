@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
 
     @Query("SELECT m FROM MenuItem m JOIN m.categories c WHERE c.id = :categoryId")
-    Page<MenuItem> findByCategoryId(@Param("categoryId") UUID categoryId , Pageable pageable);
+    Page<MenuItem> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
     @Query("SELECT DISTINCT m FROM MenuItem m JOIN m.categories c " +
             "WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
@@ -26,7 +26,9 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
             @Param("categoryIds") List<UUID> categoryIds,
             Pageable pageable
     );
+
     Optional<MenuItem> findByBarCode(String qrCode);
+
     @Query("SELECT m FROM MenuItem m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<MenuItem> findByQuery(
             @Param("query") String query,
@@ -36,9 +38,6 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
     List<MenuItem> findAllByPromotionsContaining(Promotion promotion);
 
     List<MenuItem> findAllByCategoriesContaining(Category category);
-
-
-
 
 
 }

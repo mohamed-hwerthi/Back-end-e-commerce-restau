@@ -3,8 +3,6 @@ package com.foodsquad.FoodSquad.service.declaration;
 import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
-import com.foodsquad.FoodSquad.model.entity.Promotion;
-import org.jfree.ui.UIUtilities;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,20 +12,17 @@ public interface MenuItemPromotionSharedService {
 
     PromotionDTO createPromotionForMenuItems(List<UUID> menuItemsIds, PromotionDTO promotionDTO);
 
-    List<MenuItemDTO>findMenuItemsRelatedToPromotion(UUID promotionId) ;
+    List<MenuItemDTO> findMenuItemsRelatedToPromotion(UUID promotionId);
 
-    boolean hasActivePromotionOverlappingPeriod(UUID menuItemId , LocalDate startDate , LocalDate endDate) ;
+    boolean hasActivePromotionOverlappingPeriod(UUID menuItemId, LocalDate startDate, LocalDate endDate);
 
-    void deactivatePromotionForMenuItem(UUID menuItemId , UUID promotionId) ;
+    void deactivatePromotionForMenuItem(UUID menuItemId, UUID promotionId);
 
-    void addPromotionToMenuItem(UUID menuItemId , UUID promotionId) ;
+    void addPromotionToMenuItem(UUID menuItemId, UUID promotionId);
 
-    boolean  isMenuItemHasActivePromotionInCurrentDay(UUID menuItemId) ;
+    boolean isMenuItemHasActivePromotionInCurrentDay(UUID menuItemId);
 
-    PercentageDiscountPromotion getMenuItemActivePromotionInCurrentDay(UUID menuItemId) ;
-
-
-
+    PercentageDiscountPromotion getMenuItemActivePromotionInCurrentDay(UUID menuItemId);
 
 
 }

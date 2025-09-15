@@ -1,4 +1,3 @@
-
 package com.foodsquad.FoodSquad.mapper;
 
 import com.foodsquad.FoodSquad.model.dto.CashierDTO;

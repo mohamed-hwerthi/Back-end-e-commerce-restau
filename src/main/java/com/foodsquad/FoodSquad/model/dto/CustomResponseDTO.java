@@ -9,13 +9,9 @@ import lombok.Data;
 @Data
 public class CustomResponseDTO {
     @NotBlank(message = "Message cannot be blank")
-    private String    message   ;
+    private String message;
     @NotBlank(message = "Status cannot be blank")
-    private  int     statusCode;
-
-
-
-
+    private int statusCode;
 
 
 }

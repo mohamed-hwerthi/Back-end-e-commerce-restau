@@ -12,6 +12,7 @@ public interface UserService {
 
     /**
      * Returns a paginated list of users with their order counts.
+     *
      * @param page the page number (0-based)
      * @param size the number of items per page
      * @return list of UserResponseDTO
@@ -20,6 +21,7 @@ public interface UserService {
 
     /**
      * Returns a user by ID, including order count.
+     *
      * @param id user ID
      * @return ResponseEntity with UserResponseDTO
      */
@@ -27,7 +29,8 @@ public interface UserService {
 
     /**
      * Updates a user's details.
-     * @param id user ID
+     *
+     * @param id            user ID
      * @param userUpdateDTO update data
      * @return ResponseEntity with updated UserResponseDTO
      */
@@ -35,6 +38,7 @@ public interface UserService {
 
     /**
      * Deletes a user by ID.
+     *
      * @param id user ID
      * @return ResponseEntity with success message
      */

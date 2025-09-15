@@ -6,24 +6,12 @@ import com.foodsquad.FoodSquad.model.dto.UserDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.service.declaration.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.UserDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -87,7 +75,7 @@ public class AdminController {
             summary = "Create a new store owner",
             description = "Creates a new store owner with email and phone number"
     )
-    public ResponseEntity<User> createStoreOwner( @RequestBody UserDTO userDto) {
+    public ResponseEntity<User> createStoreOwner(@RequestBody UserDTO userDto) {
         log.info("Received request to create store owner for email: {}", userDto.getEmail());
 
         User createdUser = adminService.createStoreOwner(userDto.getEmail(),

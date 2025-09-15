@@ -12,8 +12,4 @@ import lombok.experimental.SuperBuilder;
 public class Employee extends User {
 
 
-
-
-    
-
 }

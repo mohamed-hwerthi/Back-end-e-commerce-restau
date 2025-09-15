@@ -36,7 +36,7 @@ public class CashierController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CashierDTO> getCashierById(@PathVariable UUID id ) {
+    public ResponseEntity<CashierDTO> getCashierById(@PathVariable UUID id) {
         return ResponseEntity.ok(cashierService.findCashierById(id));
     }
 

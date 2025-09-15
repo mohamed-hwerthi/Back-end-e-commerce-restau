@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.model.dto.CustomResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.MediaDTO;
 import com.foodsquad.FoodSquad.service.declaration.MediaService;
 import io.swagger.v3.oas.annotations.Operation;

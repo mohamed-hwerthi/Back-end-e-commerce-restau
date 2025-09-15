@@ -7,8 +7,14 @@ import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
 import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
-import com.foodsquad.FoodSquad.repository.*;
-import com.foodsquad.FoodSquad.service.declaration.*;
+import com.foodsquad.FoodSquad.repository.MenuItemRepository;
+import com.foodsquad.FoodSquad.repository.OrderRepository;
+import com.foodsquad.FoodSquad.repository.ReviewRepository;
+import com.foodsquad.FoodSquad.repository.TaxRepository;
+import com.foodsquad.FoodSquad.service.declaration.MediaService;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
+import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.TaxService;
 import com.foodsquad.FoodSquad.service.helpers.MenuItemDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -20,10 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -31,7 +34,6 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class MenuItemServiceImp implements MenuItemService {
@@ -58,7 +60,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator;
 
-    private final MediaService mediaService ;
+    private final MediaService mediaService;
 
 
     public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator, MediaService mediaService) {
@@ -161,8 +163,8 @@ public class MenuItemServiceImp implements MenuItemService {
 
         MenuItemDTO menuItemDTO = menuItemMapper.toMenuItemDtoWithMoreInformation(menuItem, salesCount, reviewCount, averageRating);
 
-      //  return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem, menuItemDTO);
-        return menuItemDTO  ;
+        //  return verifyMenuItemIsPromotedForCurrentDayAndCalculateDiscountedPrice(menuItem, menuItemDTO);
+        return menuItemDTO;
 
     }
 
@@ -185,7 +187,7 @@ public class MenuItemServiceImp implements MenuItemService {
         if (categoryId != null) {
             menuItemPage = menuItemRepository.findByCategoryId(categoryId, pageable);
         } else {
-                    menuItemPage = menuItemRepository.findAll(pageable);
+            menuItemPage = menuItemRepository.findAll(pageable);
         }
 //        List<MenuItemDTO> menuItems = menuItemPage.stream()
 //                .map(menuItem -> {

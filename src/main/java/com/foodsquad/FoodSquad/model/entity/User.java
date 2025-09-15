@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String name ;
+    private String name;
 
     @Column(nullable = true, unique = true)
     private String email;

@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSharedService {
+public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionSharedService {
 
     private final MenuItemService menuItemService;
 
@@ -31,7 +31,6 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     private final PromotionService promotionService;
 
     private final MenuItemMapper menuItemMapper;
-
 
 
     @Override
@@ -49,7 +48,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     @Override
     public List<MenuItemDTO> findMenuItemsRelatedToPromotion(UUID promotionId) {
 
-        Promotion promotion = promotionService.getPromotion(promotionId) ;
+        Promotion promotion = promotionService.getPromotion(promotionId);
 
         return menuItemMapper.toDtoList(promotion.getMenuItems());
     }
@@ -62,7 +61,7 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
 
         associatePromotionWithMenuItems(savePromotion, menuItems);
 
-        Promotion   savedPromotion = promotionService.savePromotion(promotion);
+        Promotion savedPromotion = promotionService.savePromotion(promotion);
 
         return promotionMapper.toDTO(savedPromotion);
     }
@@ -104,26 +103,26 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
         Promotion promotion = promotionService.getPromotion(promotionId);
 
         if (hasActivePromotionOverlappingPeriod(menuItemId, promotion.getStartDate(), promotion.getEndDate())) {
-            throw  new MenuItemHasActivePromotionInAPeriodException("MenuItem has active promotion in this  period");
+            throw new MenuItemHasActivePromotionInAPeriodException("MenuItem has active promotion in this  period");
 
         }
 
         menuItem.getPromotions().add(promotionService.getPromotion(promotionId));
 
-        menuItemService.save(menuItem) ;
+        menuItemService.save(menuItem);
 
     }
 
 
     @Override
     public boolean isMenuItemHasActivePromotionInCurrentDay(UUID menuItemId) {
-        List<PromotionDTO>promotionDTOS = promotionService.findAllPromotionForMenuItem(menuItemId);
+        List<PromotionDTO> promotionDTOS = promotionService.findAllPromotionForMenuItem(menuItemId);
         LocalDate today = LocalDate.now();
         return promotionDTOS.stream()
                 .filter(PromotionDTO::isActive)
                 .anyMatch(promotionDTO ->
-                        ( !today.isBefore(promotionDTO.getStartDate()) ) &&
-                                ( !today.isAfter(promotionDTO.getEndDate()) )
+                        (!today.isBefore(promotionDTO.getStartDate())) &&
+                                (!today.isAfter(promotionDTO.getEndDate()))
                 );
     }
 
@@ -153,11 +152,6 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     }
 
 
-
-
-
-
-
     private void associatePromotionWithMenuItems(Promotion promotion, List<MenuItemDTO> menuItemDTOS) {
 
         List<MenuItem> menuItems = menuItemDTOS.stream().map(
@@ -174,13 +168,11 @@ public class MenuItemPromotionSharedServiceImpl  implements MenuItemPromotionSha
     }
 
 
-
-
     /**
      * Vérifie si deux périodes se chevauchent (au moins un jour en commun).
      */
     private boolean arePeriodsOverlapping(LocalDate period1Start, LocalDate period1End, LocalDate period2Start, LocalDate period2End) {
-                return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
+        return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
     }
 
     private List<MenuItemDTO> getMenuItems(List<UUID> menuItemsIds) {

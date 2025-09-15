@@ -35,8 +35,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleProductOutOfStockException(OutOfStockException ex) {
         Map<String, String> errors = new HashMap<>();
-        errors.put("error", ex.getMenuItemName()+ex.getMessage());
-        errors.put("status"  , "409");
+        errors.put("error", ex.getMenuItemName() + ex.getMessage());
+        errors.put("status", "409");
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -55,10 +55,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FileUploadingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public  ResponseEntity<Map<String, String>> handleFileUploadingException(FileUploadingException ex) {
+    public ResponseEntity<Map<String, String>> handleFileUploadingException(FileUploadingException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
-        errors.put("status"  , "500");
+        errors.put("status", "500");
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -156,7 +156,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
     @ExceptionHandler(CategoryActivePromotionInAPeriodException.class)
     public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(CategoryActivePromotionInAPeriodException ex) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -177,8 +176,6 @@ public class GlobalExceptionHandler {
         errors.put("error", ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.UNAUTHORIZED);
     }
-
-
 
 
 }

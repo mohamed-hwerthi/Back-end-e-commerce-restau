@@ -3,14 +3,11 @@ package com.foodsquad.FoodSquad.controller;
 import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
-import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.service.declaration.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -123,7 +120,7 @@ public class StoreController {
     public ResponseEntity<StoreBasicDataDTO> getStoreByOwnerEmail() {
 
         log.info("Received request to get store by owner's email");
-            StoreBasicDataDTO storeDTO = storeService.findByEmail();
+        StoreBasicDataDTO storeDTO = storeService.findByEmail();
         log.info("Found store with ID: {}", storeDTO.getStoreId());
         return ResponseEntity.ok(storeDTO);
     }
@@ -156,8 +153,6 @@ public class StoreController {
         log.info("Found store with ID: {}", storeDTO.getStoreId());
         return ResponseEntity.ok(storeDTO);
     }
-
-
 
 
 }

@@ -5,7 +5,6 @@ import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.UserUpdateDTO;
 import com.foodsquad.FoodSquad.service.declaration.UserService;
 import com.foodsquad.FoodSquad.service.impl.AuthService;
-import com.foodsquad.FoodSquad.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,9 +22,9 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 @Tag(name = "3. User Management", description = "User Management API")
 public class UserController {
-    private  final UserService userService;
+    private final UserService userService;
 
-    private   final  AuthService authService;
+    private final AuthService authService;
 
     public UserController(UserService userService, AuthService authService) {
 

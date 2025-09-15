@@ -40,12 +40,16 @@ public class AuthService implements UserDetailsService {
                 .build();
     }
 
-    /** Load the actual User entity by email */
+    /**
+     * Load the actual User entity by email
+     */
     public User loadUserEntityByUsername(String email) {
         return findUserByEmail(email);
     }
 
-    /** Register a new employee */
+    /**
+     * Register a new employee
+     */
     @Transactional
     public UserResponseDTO registerUser(UserRegistrationDTO registrationDTO) {
         checkUserExists(registrationDTO.getEmail());
@@ -59,14 +63,18 @@ public class AuthService implements UserDetailsService {
         return modelMapper.map(userRepository.save(newUser), UserResponseDTO.class);
     }
 
-    /** Login for general users (employees) */
+    /**
+     * Login for general users (employees)
+     */
     @Transactional
     public UserResponseDTO loginUser(UserLoginDTO loginDTO) {
         User user = getUserIfPasswordMatches(loginDTO);
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    /** Login for store owners */
+    /**
+     * Login for store owners
+     */
     @Transactional
     public StoreOwnerAuthResponse loginStoreOwner(UserLoginDTO loginDTO) {
         User user = getUserIfPasswordMatches(loginDTO);
@@ -80,7 +88,9 @@ public class AuthService implements UserDetailsService {
                 .build();
     }
 
-    /** Login for admin or cashier users */
+    /**
+     * Login for admin or cashier users
+     */
     @Transactional
     public UserResponseDTO loginCashier(UserLoginDTO loginDTO) {
         User user = getUserIfPasswordMatches(loginDTO);
@@ -94,20 +104,26 @@ public class AuthService implements UserDetailsService {
 
     // ------------------- PRIVATE HELPERS -------------------
 
-    /** Find user by email or throw exception */
+    /**
+     * Find user by email or throw exception
+     */
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
-    /** Check if user email already exists */
+    /**
+     * Check if user email already exists
+     */
     private void checkUserExists(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("Email already exists");
         }
     }
 
-    /** Verify password matches or throw exception */
+    /**
+     * Verify password matches or throw exception
+     */
     private User getUserIfPasswordMatches(UserLoginDTO loginDTO) {
         User user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -119,13 +135,17 @@ public class AuthService implements UserDetailsService {
         return user;
     }
 
-    /** Check if the user role is ADMIN or CASHIER */
+    /**
+     * Check if the user role is ADMIN or CASHIER
+     */
     private boolean isAdminOrCashier(User user) {
         UserRole role = user.getRole();
         return role == UserRole.ADMIN || role == UserRole.CASHIER;
     }
 
-    /** Encrypt store ID */
+    /**
+     * Encrypt store ID
+     */
     private String encryptStoreId(String storeId) {
         try {
             return EncryptionUtil.encrypt(storeId);

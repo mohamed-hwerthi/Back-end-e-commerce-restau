@@ -37,7 +37,7 @@ public class Promotion {
     @Column(nullable = true, name = "active")
     private boolean active;
 
-    @Column(nullable = false,  name ="created_at"  ,  updatable = false)
+    @Column(nullable = false, name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
 
@@ -53,9 +53,6 @@ public class Promotion {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
-
-
 
 
 }

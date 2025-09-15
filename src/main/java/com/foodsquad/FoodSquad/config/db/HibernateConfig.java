@@ -27,15 +27,13 @@ import java.util.Map;
 public class HibernateConfig {
 
     /**
-     * Logger for HibernateConfig class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(HibernateConfig.class);
-
-    /**
      * The package name where JPA entities are located.
      */
     public static final String ENTITY_PACKAGE = "com.foodsquad.FoodSquad.model";
-
+    /**
+     * Logger for HibernateConfig class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(HibernateConfig.class);
     /**
      * JPA properties loaded from application configuration.
      */
@@ -91,9 +89,9 @@ public class HibernateConfig {
      * and Hibernate JPA vendor adapter.
      * </p>
      *
-     * @param dataSource                       the primary data source.
-     * @param multiTenantConnectionProvider    the multi-tenant connection provider.
-     * @param currentTenantIdentifierResolver  the current tenant identifier resolver.
+     * @param dataSource                      the primary data source.
+     * @param multiTenantConnectionProvider   the multi-tenant connection provider.
+     * @param currentTenantIdentifierResolver the current tenant identifier resolver.
      * @return a configured {@link LocalContainerEntityManagerFactoryBean}.
      */
     @Bean

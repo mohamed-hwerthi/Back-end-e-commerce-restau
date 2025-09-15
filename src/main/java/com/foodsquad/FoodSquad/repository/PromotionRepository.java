@@ -13,15 +13,13 @@ import java.util.UUID;
 public interface PromotionRepository extends JpaRepository<Promotion, UUID> {
 
     @Query("""
-        SELECT DISTINCT p FROM Promotion p
-        LEFT JOIN p.menuItems mi
-        LEFT JOIN p.categories c
-        LEFT JOIN c.menuItems cmi
-        WHERE mi.id = :menuItemId OR cmi.id = :menuItemId
-    """)
+                SELECT DISTINCT p FROM Promotion p
+                LEFT JOIN p.menuItems mi
+                LEFT JOIN p.categories c
+                LEFT JOIN c.menuItems cmi
+                WHERE mi.id = :menuItemId OR cmi.id = :menuItemId
+            """)
     List<Promotion> findAllPromotionsForMenuItem(@Param("menuItemId") UUID menuItemId);
-
-
 
 
 }

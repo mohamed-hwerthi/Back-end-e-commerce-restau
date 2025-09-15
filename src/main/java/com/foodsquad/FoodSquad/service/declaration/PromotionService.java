@@ -3,8 +3,6 @@ package com.foodsquad.FoodSquad.service.declaration;
 
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
-import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Pageable;
 
@@ -22,13 +20,13 @@ public interface PromotionService {
 
     PromotionDTO updatePromotion(UUID id, PromotionDTO promotionDTO);
 
-    void  deletePromotion(UUID id);
+    void deletePromotion(UUID id);
 
-    Promotion getPromotion(UUID id );
+    Promotion getPromotion(UUID id);
 
     Promotion savePromotion(Promotion promotion);
 
-    void   changePromotionActivationStatus(UUID promotionId);
+    void changePromotionActivationStatus(UUID promotionId);
 
     /**
      * Returns all promotions associated with a given menu item.
@@ -39,14 +37,9 @@ public interface PromotionService {
      * @param menuItemId the ID of the menu item for which to retrieve promotions
      * @return a {@code PromotionDTO} containing all relevant promotions
      */
-     List<PromotionDTO>findAllPromotionForMenuItem(UUID menuItemId);
+    List<PromotionDTO> findAllPromotionForMenuItem(UUID menuItemId);
 
-    List<Promotion>findPromotionsForMenuItem(UUID menuItemId);
-
-
-
-
-
+    List<Promotion> findPromotionsForMenuItem(UUID menuItemId);
 
 
 }

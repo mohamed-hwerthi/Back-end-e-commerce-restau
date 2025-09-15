@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 public class TaxServiceImpl implements TaxService {
     @Override
     public Tax createTax(MenuItemDTO menuItemDTO) {
-            Tax tax = new Tax();
-            tax.setRate(menuItemDTO.getTax().getRate());
-            tax.setName(menuItemDTO.getTax().getName() != null ?
-                    menuItemDTO.getTax().getName() : "TVA");
-           return tax;
+        Tax tax = new Tax();
+        tax.setRate(menuItemDTO.getTax().getRate());
+        tax.setName(menuItemDTO.getTax().getName() != null ?
+                menuItemDTO.getTax().getName() : "TVA");
+        return tax;
 
     }
 }

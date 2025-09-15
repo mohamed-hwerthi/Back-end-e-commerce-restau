@@ -25,7 +25,7 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
 
     private final ActivitySectorRepository activitySectorRepository;
     private final ActivitySectorMapper activitySectorMapper;
-    private final DataSource dataSource  ;
+    private final DataSource dataSource;
 
     @Override
     @Transactional

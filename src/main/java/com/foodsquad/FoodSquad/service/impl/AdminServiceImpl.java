@@ -14,7 +14,6 @@ import com.foodsquad.FoodSquad.service.declaration.AdminService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jfree.ui.UIUtilities;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +30,13 @@ import java.util.UUID;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private static final String ADMIN_NOT_FOUND = "Admin not found with id: ";
     private final AdminRepository adminRepository;
     private final AdminMapper adminMapper;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DataSource dataSource  ;
-
-    private static final String ADMIN_NOT_FOUND = "Admin not found with id: ";
+    private final DataSource dataSource;
 
     @Override
     public PaginatedResponseDTO<AdminDTO> findAllAdmins(int page, int limit) {
@@ -80,7 +78,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public AdminDTO  createAdmin(AdminDTO adminDTO) {
+    public AdminDTO createAdmin(AdminDTO adminDTO) {
         log.info("Creating new admin: {}", adminDTO);
         if (adminDTO.getId() != null && adminRepository.existsById(adminDTO.getId())) {
             log.error("Admin with ID {} already exists", adminDTO.getId());
@@ -128,7 +126,6 @@ public class AdminServiceImpl implements AdminService {
         log.info("Saving admin entity: {}", admin);
         return adminRepository.save(admin);
     }
-
 
 
     @Override

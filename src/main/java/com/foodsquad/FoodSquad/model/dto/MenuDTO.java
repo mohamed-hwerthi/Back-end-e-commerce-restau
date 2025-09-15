@@ -14,16 +14,15 @@ import java.util.UUID;
 @Setter
 public class MenuDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String id    ;
+    private String id;
     @NotBlank(message = "  menu  name  cannot be blank")
-    private String  name  ;
-    private String description  ;
-    private String qrCode ;
+    private String name;
+    private String description;
+    private String qrCode;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<UUID>menuItemsIds = new ArrayList<>() ;
+    private List<UUID> menuItemsIds = new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<MenuItemDTO> menuItems = new ArrayList<>() ;
-
+    private List<MenuItemDTO> menuItems = new ArrayList<>();
 
 
 }

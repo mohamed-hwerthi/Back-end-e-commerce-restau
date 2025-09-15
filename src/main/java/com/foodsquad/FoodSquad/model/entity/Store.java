@@ -28,16 +28,14 @@ public class Store {
     private String description;
 
 
-
     @Column(name = "slug", nullable = false, unique = true)
-        private String slug;
+    private String slug;
 
     @Column(name = "address", nullable = true)
     private String address;
 
     @Column(name = "facebook_url", nullable = true)
     private String facebookUrl;
-
 
 
     @Column(name = "instagram_url", nullable = true)
@@ -62,7 +60,6 @@ public class Store {
     private String accentColor;
 
 
-
     @Column(name = "active", nullable = false)
     private boolean active;
 
@@ -80,7 +77,7 @@ public class Store {
 
     @OneToOne
     @JoinColumn(name = "currency_id")
-    private Currency currency  ;
+    private Currency currency;
 
     @OneToOne
     @JoinColumn(name = "owner_id")

@@ -42,7 +42,6 @@ public class OrderService {
     private final ModelMapper modelMapper;
 
 
-
     public ResponseEntity<OrderDTO> createOrder(OrderDTO orderDTO) {
 
         if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {

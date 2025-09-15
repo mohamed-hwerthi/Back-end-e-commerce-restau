@@ -2,12 +2,10 @@ package com.foodsquad.FoodSquad.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public class UserUpdateDTO {
 
-//    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
+    //    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     @Schema(description = "Name of the user", example = "John Doe")
     private String name;
 
@@ -18,7 +16,7 @@ public class UserUpdateDTO {
     @Schema(description = "URL of the user's profile image", example = "http://example.com/image.jpg", required = true)
     private String imageUrl;
 
-//    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
+    //    @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid")
     @Schema(description = "Phone number of the user", example = "+359 899 78 7878")
     private String phoneNumber;
 

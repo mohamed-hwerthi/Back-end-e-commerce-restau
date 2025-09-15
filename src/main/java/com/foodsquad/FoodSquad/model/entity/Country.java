@@ -1,27 +1,22 @@
 package com.foodsquad.FoodSquad.model.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Table(name = "countries")
 @Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "countries")
+@TypeDef(name = "json", typeClass = JsonType.class)
 public class Country {
     @Id
     @Column(name = "code", length = 2, nullable = false, unique = true)
     private String code;
-    
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
-    
+
+    @Type(type = "json")
+    @Column(name = "name", columnDefinition = "json")
+    private LocalizedString name;
+
     @Column(name = "flag_url")
     private String flagUrl;
 }

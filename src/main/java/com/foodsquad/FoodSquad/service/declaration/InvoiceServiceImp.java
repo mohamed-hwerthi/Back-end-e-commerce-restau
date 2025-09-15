@@ -7,12 +7,7 @@ import com.foodsquad.FoodSquad.model.entity.Timbre;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.TimbreRepository;
 import lombok.RequiredArgsConstructor;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,22 +27,16 @@ import java.util.Map;
 public class InvoiceServiceImp implements InvoiceService {
 
 
+    private static final Logger log = LoggerFactory.getLogger(InvoiceServiceImp.class);
     private final OrderRepository orderRepository;
-
     private final TimbreRepository timbreRepository;
+    private final MenuItemService menuItemService;
 
-    private final MenuItemService menuItemService ;
-
-
-    private static final  Logger log = LoggerFactory.getLogger(InvoiceServiceImp.class);
-
-
-
-@Override
+    @Override
     public byte[] generateInvoice(String orderId) throws Exception {
 
-    String INVOICE_TEMPLATE_PATH = "/jasper/invoice.jrxml";
-    InputStream reportStream = getClass().getResourceAsStream(INVOICE_TEMPLATE_PATH);
+        String INVOICE_TEMPLATE_PATH = "/jasper/invoice.jrxml";
+        InputStream reportStream = getClass().getResourceAsStream(INVOICE_TEMPLATE_PATH);
         JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
         Order order = orderRepository.findById(orderId)
@@ -55,7 +44,7 @@ public class InvoiceServiceImp implements InvoiceService {
         if (order.getMenuItemsWithQuantity() != null) {
             for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
                 MenuItem menuItem = entry.getKey();
-                if (menuItem != null ) {
+                if (menuItem != null) {
                     menuItem.setPrice(menuItemService.findMenuItemDiscountedPrice(menuItem.getId()));
 
                 }

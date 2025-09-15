@@ -39,23 +39,20 @@ public class PromotionDTO {
     private Integer discountPercentage;
 
     @Min(value = 1, message = "Discount must be at least 1")
-    private  Double      promotionalPrice ;
+    private Double promotionalPrice;
 
 
-    private  DiscountType discountType  ;
+    private DiscountType discountType;
 
     @NotNull
-    private PromotionTarget promotionTarget ;
+    private PromotionTarget promotionTarget;
 
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<MenuItemDTO > menuItems  = new ArrayList<>();
+    private List<MenuItemDTO> menuItems = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<CategoryDTO> categories  = new ArrayList<>();
-
-
-
+    private List<CategoryDTO> categories = new ArrayList<>();
 
 
 }

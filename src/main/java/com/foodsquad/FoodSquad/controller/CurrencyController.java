@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/currencies")
 
-    @Tag(name = "11. Currency Management", description = "Currency Management API")
+@Tag(name = "11. Currency Management", description = "Currency Management API")
 public class CurrencyController {
 
 
@@ -37,6 +37,6 @@ public class CurrencyController {
     })
     @GetMapping()
     public ResponseEntity<List<CurrencyDTO>> findAllCategories() {
-        return  ResponseEntity.ok().body( currencyService.findAllCurrency());
+        return ResponseEntity.ok().body(currencyService.findAllCurrency());
     }
 }

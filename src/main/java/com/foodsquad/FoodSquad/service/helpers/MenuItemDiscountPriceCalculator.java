@@ -15,7 +15,7 @@ public class MenuItemDiscountPriceCalculator {
 
     private final MenuItemPromotionSharedService promotionService;
 
-    public MenuItemDiscountPriceCalculator( @Lazy MenuItemPromotionSharedService promotionService) {
+    public MenuItemDiscountPriceCalculator(@Lazy MenuItemPromotionSharedService promotionService) {
 
         this.promotionService = promotionService;
     }
@@ -29,12 +29,12 @@ public class MenuItemDiscountPriceCalculator {
         PercentageDiscountPromotion promotion = promotionService.getMenuItemActivePromotionInCurrentDay(menuItemId);
 
 
-        if(promotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE)){
+        if (promotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE)) {
             return applyDiscount(menuItem.getPrice(), promotion.getDiscountPercentage());
 
         }
-        if(promotion.getDiscountType().equals(DiscountType.BY_AMOUNT)){
-            return  promotion.getPromotionalPrice();
+        if (promotion.getDiscountType().equals(DiscountType.BY_AMOUNT)) {
+            return promotion.getPromotionalPrice();
 
         }
         return menuItem.getPrice();

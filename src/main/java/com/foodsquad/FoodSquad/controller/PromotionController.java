@@ -79,7 +79,7 @@ public class PromotionController {
     /**
      * Récupère toutes les promotions avec pagination.
      *
-     * @param page numéro de la page (commence à 0)
+     * @param page  numéro de la page (commence à 0)
      * @param limit nombre d'éléments par page
      * @return une page de promotions
      */
@@ -104,7 +104,7 @@ public class PromotionController {
     /**
      * Met à jour une promotion existante.
      *
-     * @param id l'identifiant de la promotion à mettre à jour
+     * @param id           l'identifiant de la promotion à mettre à jour
      * @param promotionDTO les nouvelles données de la promotion
      * @return la promotion mise à jour
      */
@@ -146,7 +146,6 @@ public class PromotionController {
     }
 
 
-
     /**
      * Change le statut d'activation d'une promotion (active/désactive).
      *
@@ -167,25 +166,17 @@ public class PromotionController {
         return ResponseEntity.noContent().build();
     }
 
-     @GetMapping("/types")
-    ResponseEntity  <PromotionType[]> getAllPromotionTypes() {
-        PromotionType[] promotionTypes =  PromotionType.values();
+    @GetMapping("/types")
+    ResponseEntity<PromotionType[]> getAllPromotionTypes() {
+        PromotionType[] promotionTypes = PromotionType.values();
         return ResponseEntity.ok(promotionTypes);
     }
 
     @GetMapping("/targets")
-    ResponseEntity  <PromotionTarget[]> getAllPromotionTargets() {
-        PromotionTarget[] promotionTargets =  PromotionTarget.values();
+    ResponseEntity<PromotionTarget[]> getAllPromotionTargets() {
+        PromotionTarget[] promotionTargets = PromotionTarget.values();
         return ResponseEntity.ok(promotionTargets);
     }
-
-
-
-
-
-
-
-
 
 
 }

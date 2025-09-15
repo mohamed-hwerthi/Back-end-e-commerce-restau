@@ -18,16 +18,15 @@ public interface PromotionMapper {
 
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "active" , ignore = true)
+    @Mapping(target = "active", ignore = true)
     void updatePercentageDiscountPromotionWithNewPromotion(PromotionDTO dto, @MappingTarget PercentageDiscountPromotion entity);
 
 
     PercentageDiscountPromotion mapPromotionDTOToPercentageDiscountPromotion(PromotionDTO promotionDTO);
 
     @Mapping(target = "promotionType", constant = "DISCOUNT")
-    @Mapping(target = "menuItems" , source = "menuItems")
-    @Mapping(target = "categories" , source = "categories   ")
-
+    @Mapping(target = "menuItems", source = "menuItems")
+    @Mapping(target = "categories", source = "categories   ")
     PromotionDTO mapPromotionPercentageDiscountPromotionToPromotionDTO(PercentageDiscountPromotion promotion);
 
 

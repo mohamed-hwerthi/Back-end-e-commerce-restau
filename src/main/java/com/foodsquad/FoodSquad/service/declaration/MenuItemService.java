@@ -9,18 +9,17 @@ import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface MenuItemService {
 
-    MenuItemDTO  createMenuItem(MenuItemDTO menuItemDTO);
+    MenuItemDTO createMenuItem(MenuItemDTO menuItemDTO);
 
     MenuItemDTO getMenuItemById(UUID id);
 
-    PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, UUID catgoryId, String isDefault, String priceSortDirection );
+    PaginatedResponseDTO<MenuItemDTO> getAllMenuItems(int page, int limit, String sortBy, boolean desc, UUID catgoryId, String isDefault, String priceSortDirection);
 
     ResponseEntity<MenuItemDTO> updateMenuItem(UUID id, MenuItemDTO menuItemDTO);
 
@@ -36,26 +35,21 @@ public interface MenuItemService {
 
     PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable);
 
-    List<MenuItemDTO>saveMenuItems(List<MenuItem> menuItems);
+    List<MenuItemDTO> saveMenuItems(List<MenuItem> menuItems);
 
-    MenuItemDTO save(MenuItem  menuItem) ;
+    MenuItemDTO save(MenuItem menuItem);
 
-    MenuItem   findMenuItemById(UUID id) ;
+    MenuItem findMenuItemById(UUID id);
 
-    MenuItemDTO decrementMenuItemQuantity(UUID menuItemId  , int quantity);
+    MenuItemDTO decrementMenuItemQuantity(UUID menuItemId, int quantity);
 
     Double findMenuItemDiscountedPrice(UUID menuItemId);
 
-     List<MenuItem> findByPromotion(Promotion promotion) ;
+    List<MenuItem> findByPromotion(Promotion promotion);
 
-     List<MenuItem>findByCategory(Category  category) ;
+    List<MenuItem> findByCategory(Category category);
 
-     void deleteMediaForMenuItem(UUID menuItemId  ,   UUID mediaId) ;
-
-
-
-
-
+    void deleteMediaForMenuItem(UUID menuItemId, UUID mediaId);
 
 
 }

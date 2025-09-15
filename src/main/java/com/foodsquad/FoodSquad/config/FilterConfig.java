@@ -17,7 +17,7 @@ public class FilterConfig {
         FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(tenantFilter);
         registration.addUrlPatterns("/api/*");
-        registration.setName("tenantFilter");   
+        registration.setName("tenantFilter");
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;
     }

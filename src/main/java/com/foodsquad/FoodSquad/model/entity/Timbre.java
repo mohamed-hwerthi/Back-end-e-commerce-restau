@@ -1,12 +1,8 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 
 import java.util.UUID;
 
@@ -20,7 +16,7 @@ public class Timbre {
     private UUID id;
 
     @Column(nullable = false)
-    private Double  amount ;
+    private Double amount;
 
 
 }

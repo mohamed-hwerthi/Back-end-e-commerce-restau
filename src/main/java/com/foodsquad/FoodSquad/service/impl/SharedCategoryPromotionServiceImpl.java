@@ -27,8 +27,8 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     private final PromotionService promotionService;
     private final CategoryMapper categoryMapper;
     private final PromotionMapper promotionMapper;
-    private  final MenuItemService menuItemService ;
-    private   final MenuItemPromotionSharedService menuItemPromotionSharedService ;
+    private final MenuItemService menuItemService;
+    private final MenuItemPromotionSharedService menuItemPromotionSharedService;
 
     @Override
     public PromotionDTO createPromotionForCategories(List<UUID> categoriesIds, PromotionDTO promotionDTO) {
@@ -67,8 +67,8 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     public boolean hasActivePromotionOverlappingPeriod(UUID categoryId, LocalDate startDate, LocalDate endDate) {
 
         Category category = categoryService.findCategory(categoryId);
-        List<MenuItem> menuItems= menuItemService.findByCategory(category) ;
-        checkIfMenuItemsOfThePromotionHasActivePromotion(menuItems  , startDate , endDate);
+        List<MenuItem> menuItems = menuItemService.findByCategory(category);
+        checkIfMenuItemsOfThePromotionHasActivePromotion(menuItems, startDate, endDate);
         return category.getPromotions().stream()
                 .filter(Promotion::isActive)
                 .anyMatch(promotion -> arePeriodsOverlapping(
@@ -84,14 +84,14 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
         return categoryMapper.toDTOList(promotion.getCategories());
     }
 
-    private  void checkIfMenuItemsOfThePromotionHasActivePromotion(List<MenuItem>menuItems  , LocalDate startDate  , LocalDate endDate){
+    private void checkIfMenuItemsOfThePromotionHasActivePromotion(List<MenuItem> menuItems, LocalDate startDate, LocalDate endDate) {
         menuItems.forEach(
                 menuItem -> {
-                    if ( menuItemPromotionSharedService.hasActivePromotionOverlappingPeriod(menuItem.getId() ,startDate , endDate)) {
-                        throw  new   MenuItemHasActivePromotionInAPeriodException("menu item has active promotion ") ;
+                    if (menuItemPromotionSharedService.hasActivePromotionOverlappingPeriod(menuItem.getId(), startDate, endDate)) {
+                        throw new MenuItemHasActivePromotionInAPeriodException("menu item has active promotion ");
                     }
                 }
-        ) ;
+        );
     }
 
     private List<CategoryDTO> getCategories(List<UUID> categoriesIds) {
@@ -121,6 +121,7 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
 
         categoryService.saveCategories(categories);
     }
+
     /**
      * Checks if two date periods overlap (at least one day in common).
      */

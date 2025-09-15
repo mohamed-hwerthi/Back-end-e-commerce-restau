@@ -3,8 +3,8 @@ package com.foodsquad.FoodSquad.config;
 import com.foodsquad.FoodSquad.model.entity.Store;
 import com.foodsquad.FoodSquad.repository.StoreRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class StoreSlugResolverImpl implements StoreSlugResolver {
@@ -18,7 +18,7 @@ public class StoreSlugResolverImpl implements StoreSlugResolver {
 
     @Override
     public String resolveTenantFromSlug(String storeSlug) {
-        Store store = storeRepository.findBySlug(storeSlug).orElseThrow(()->new EntityNotFoundException("Store not  found with this  slug "+storeSlug)) ;
+        Store store = storeRepository.findBySlug(storeSlug).orElseThrow(() -> new EntityNotFoundException("Store not  found with this  slug " + storeSlug));
         if (store == null) {
             return null;
         }

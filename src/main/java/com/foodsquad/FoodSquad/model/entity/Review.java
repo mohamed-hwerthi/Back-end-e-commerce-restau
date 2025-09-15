@@ -26,7 +26,7 @@ public class Review {
     @Max(5)
     private int rating;
 
-    @Column(nullable = false , name = "created_at")
+    @Column(nullable = false, name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)

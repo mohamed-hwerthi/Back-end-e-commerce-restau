@@ -25,7 +25,7 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.PENDING;
 
-    @Column(nullable = false   , name = "created_at")
+    @Column(nullable = false, name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -40,10 +40,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-
-
-
 
 
 }

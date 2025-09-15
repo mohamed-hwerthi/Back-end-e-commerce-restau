@@ -1,19 +1,11 @@
 package com.foodsquad.FoodSquad.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity

@@ -2,7 +2,6 @@ package com.foodsquad.FoodSquad.service.declaration;
 
 import com.foodsquad.FoodSquad.model.dto.AdminDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
-import com.foodsquad.FoodSquad.model.dto.UserDTO;
 import com.foodsquad.FoodSquad.model.entity.Admin;
 import com.foodsquad.FoodSquad.model.entity.User;
 
@@ -21,7 +20,7 @@ public interface AdminService {
 
     AdminDTO createAdmin(AdminDTO adminDTO);
 
-    AdminDTO updateAdmin(UUID  id, AdminDTO adminDTO);
+    AdminDTO updateAdmin(UUID id, AdminDTO adminDTO);
 
     void deleteAdmin(UUID id);
 
@@ -29,7 +28,7 @@ public interface AdminService {
 
     Admin saveAdmin(Admin admin);
 
-    User createStoreOwner(String email, String phoneNumber, String password) ;
+    User createStoreOwner(String email, String phoneNumber, String password);
 
-    User findByEmail(String email ) ;
+    User findByEmail(String email);
 }

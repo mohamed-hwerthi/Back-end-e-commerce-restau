@@ -4,7 +4,6 @@ import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
-import org.hibernate.validator.cfg.defs.CurrencyDef;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,13 +22,11 @@ public interface StoreService {
 
     StoreDTO findByOwner(User owner);
 
-    StoreBasicDataDTO  findByEmail() ;
+    StoreBasicDataDTO findByEmail();
 
-    StoreBasicDataDTO findByStoreSlug(String SToreSlug) ;
+    StoreBasicDataDTO findByStoreSlug(String SToreSlug);
 
     CurrencyDTO findCurrencyOfStore(UUID storeId);
-
-
 
 
 }

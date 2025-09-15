@@ -29,7 +29,7 @@ public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentif
      * Called by Hibernate to determine which tenant schema to use for the current session.
      *
      * @return A string representing the current tenant schema identifier.
-     *         Returns a default tenant identifier if none is set.
+     * Returns a default tenant identifier if none is set.
      */
     @Override
     public String resolveCurrentTenantIdentifier() {

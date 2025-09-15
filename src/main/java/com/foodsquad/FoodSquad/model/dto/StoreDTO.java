@@ -59,5 +59,5 @@ public class StoreDTO {
     @NotNull(message = "Currency is required")
     private CurrencyDTO currency;
 
-    private  String encryptedStoreId ;
+    private String encryptedStoreId;
 }

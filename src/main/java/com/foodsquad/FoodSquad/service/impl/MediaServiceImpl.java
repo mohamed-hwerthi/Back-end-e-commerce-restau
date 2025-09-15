@@ -32,12 +32,9 @@ import java.util.stream.Collectors;
 @Service
 public class MediaServiceImpl implements MediaService {
 
-    private final MediaRepository mediaRepository;
-
-    private final MediaMapper mediaMapper;
-
     private static final Logger logger = LoggerFactory.getLogger(MediaServiceImpl.class);
-
+    private final MediaRepository mediaRepository;
+    private final MediaMapper mediaMapper;
     @Value("${file.images-folder-path}")
     private String imagesFolderPath;
 
@@ -93,7 +90,7 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public List<MediaDTO> findAllMedia() {
         logger.debug("Fetching all media items");
-       return mediaRepository.findAll().stream().map(mediaMapper::toDto).toList();
+        return mediaRepository.findAll().stream().map(mediaMapper::toDto).toList();
     }
 
     /**
@@ -166,14 +163,14 @@ public class MediaServiceImpl implements MediaService {
 
     }
 
-    private String saveFile(  @NotBlank(message = "file cannot be blank") MultipartFile file) throws IOException {
+    private String saveFile(@NotBlank(message = "file cannot be blank") MultipartFile file) throws IOException {
 
         Path uploadPath = Paths.get(imagesFolderPath);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
         String fileName = file.getOriginalFilename();
-        Path filePath = Optional.ofNullable(fileName).map(f -> uploadPath.resolve(fileName)).orElseThrow(()->new FileUploadingException("file name cannot be null"));
+        Path filePath = Optional.ofNullable(fileName).map(f -> uploadPath.resolve(fileName)).orElseThrow(() -> new FileUploadingException("file name cannot be null"));
 
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 

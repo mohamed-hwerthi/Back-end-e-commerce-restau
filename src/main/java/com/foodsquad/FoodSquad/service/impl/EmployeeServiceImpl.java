@@ -28,11 +28,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public PaginatedResponseDTO<EmployeeDTO> findAllEmployees(int page, int limit) {
         Pageable pageable = PageRequest.of(page, limit);
         Page<Employee> employeesPage = employeeRepository.findAll(pageable);
-        
+
         List<EmployeeDTO> employeeDTOs = employeesPage.getContent().stream()
                 .map(employeeMapper::toDto)
                 .toList();
-                
+
         return new PaginatedResponseDTO<>(employeeDTOs, employeesPage.getTotalElements());
     }
 
@@ -73,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeDTO updateEmployee(UUID id, EmployeeDTO employeeDTO) {
         Employee existingEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id));
-        
+
         employeeMapper.updateEmployeeFromDto(employeeDTO, existingEmployee);
         Employee updatedEmployee = employeeRepository.save(existingEmployee);
         return employeeMapper.toDto(updatedEmployee);
