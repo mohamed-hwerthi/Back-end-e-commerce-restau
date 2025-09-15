@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.model.dto;
 
-import com.foodsquad.FoodSquad.model.entity.ActivitySector;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
