@@ -1,20 +1,20 @@
 package com.foodsquad.FoodSquad.service;
 
 import com.foodsquad.FoodSquad.model.dto.CountryDTO;
-import com.foodsquad.FoodSquad.model.entity.Country;
+import com.foodsquad.FoodSquad.model.dto.CountryLocalizedDTO;
 
 import java.util.List;
 
 public interface CountryService {
-    Country save(CountryDTO countryDTO);
+    CountryDTO save(CountryLocalizedDTO countryDTO);
 
-    List<Country> findAll();
+    List<CountryDTO> findAll();
 
-    Country update(String code, CountryDTO countryDTO);
+    CountryDTO update(String code, CountryDTO countryDTO);
 
     void delete(String id);
 
-    Country findByCode(String code);
+    CountryDTO findByCode(String code);
 
     boolean existsByCode(String code);
 }

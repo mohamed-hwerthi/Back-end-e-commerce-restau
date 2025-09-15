@@ -1,7 +1,10 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.CountryMapper;
+import com.foodsquad.FoodSquad.mapper.LocalizedStringMapper;
 import com.foodsquad.FoodSquad.model.dto.CountryDTO;
+import com.foodsquad.FoodSquad.model.dto.CountryLocalizedDTO;
 import com.foodsquad.FoodSquad.model.entity.Country;
 import com.foodsquad.FoodSquad.repository.CountryRepository;
 import com.foodsquad.FoodSquad.service.CountryService;
@@ -12,77 +15,110 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CountryServiceImpl implements CountryService {
 
     private static final Logger logger = LoggerFactory.getLogger(CountryServiceImpl.class);
+
     private final CountryRepository countryRepository;
     private final CountryMapper countryMapper;
+    private final LocalizedStringMapper localizedStringMapper;
+    private final LocaleContext localeContext;
 
     @Override
     @Transactional
-    public Country save(CountryDTO countryDTO) {
-        logger.info("Saving new country: {}", countryDTO.getName());
+    public CountryDTO save(CountryLocalizedDTO countryDTO) {
+        logger.info("Saving new country with code: {}, name: {}", countryDTO.getCode(), countryDTO.getName());
+
         if (countryRepository.existsByCode(countryDTO.getCode())) {
-            throw new IllegalArgumentException("Country with code " + countryDTO.getCode() + " already exists");
+            String msg = "Country with code " + countryDTO.getCode() + " already exists";
+            logger.error(msg);
+            throw new IllegalArgumentException(msg);
         }
-        if (countryRepository.existsByName(countryDTO.getName())) {
-            throw new IllegalArgumentException("Country with name " + countryDTO.getName() + " already exists");
-        }
-        // Update fields
 
         Country country = countryMapper.toEntity(countryDTO);
-        return countryRepository.save(country);
+        Country savedCountry = countryRepository.save(country);
+
+        logger.info("Country saved successfully with code: {}", savedCountry.getCode());
+        return countryMapper.toDto(country , localizedStringMapper) ;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Country> findAll() {
+    public List<CountryDTO> findAll() {
         logger.info("Fetching all countries");
-        return countryRepository.findAll();
+        List<Country> countries = countryRepository.findAll();
+
+        List<CountryDTO> dtos = countries.stream()
+                .map(country -> countryMapper.toDto(country , localizedStringMapper))
+                .collect(Collectors.toList());
+
+        logger.info("Found {} countries", dtos.size());
+        return dtos;
     }
 
     @Override
     @Transactional
-    public Country update(String code, CountryDTO countryDTO) {
+    public CountryDTO update(String code, CountryDTO countryDTO) {
         logger.info("Updating country with code: {}", code);
+
         Country existingCountry = countryRepository.findByCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("Country not found with code: " + code));
+                .orElseThrow(() -> {
+                    String msg = "Country not found with code: " + code;
+                    logger.error(msg);
+                    return new IllegalArgumentException(msg);
+                });
 
-        if (!existingCountry.getName().equals(countryDTO.getName()) &&
-                countryRepository.existsByName(countryDTO.getName())) {
-            throw new IllegalArgumentException("Country with name " + countryDTO.getName() + " already exists");
-        }
+        String currentLocale = localeContext.getLocale();
+        existingCountry.getName().getTranslations().put(currentLocale, countryDTO.getName());
 
-        existingCountry.setName(countryDTO.getName());
         existingCountry.setFlagUrl(countryDTO.getFlagUrl());
 
-        return countryRepository.save(existingCountry);
+        Country updatedCountry = countryRepository.save(existingCountry);
+        logger.info("Country updated successfully with code: {}", updatedCountry.getCode());
+        return  countryMapper.toDto(updatedCountry , localizedStringMapper) ;
     }
 
     @Override
     @Transactional
-    public void delete(String id) {
-        logger.info("Deleting country with code: {}", id);
-        if (!countryRepository.existsByCode(id)) {
-            throw new IllegalArgumentException("Country not found with id: " + id);
+    public void delete(String code) {
+        logger.info("Deleting country with code: {}", code);
+
+        if (!countryRepository.existsByCode(code)) {
+            String msg = "Country not found with code: " + code;
+            logger.error(msg);
+            throw new IllegalArgumentException(msg);
         }
-        countryRepository.deleteById(id);
+
+        countryRepository.deleteById(code);
+        logger.info("Country deleted successfully with code: {}", code);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Country findByCode(String code) {
+    public CountryDTO findByCode(String code) {
         logger.info("Fetching country with code: {}", code);
-        return countryRepository.findByCode(code)
-                .orElseThrow(() -> new IllegalArgumentException("Country not found with code: " + code));
+        Country country = countryRepository.findByCode(code)
+                .orElseThrow(() -> {
+                    String msg = "Country not found with code: " + code;
+                    logger.error(msg);
+                    return new IllegalArgumentException(msg);
+                });
+
+        String currentLocale = localeContext.getLocale();
+        CountryDTO dto = countryMapper.toDto(country , localizedStringMapper);
+        logger.info("Country fetched successfully with code: {}", code);
+        return dto;
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean existsByCode(String code) {
-        return countryRepository.existsByCode(code);
+        boolean exists = countryRepository.existsByCode(code);
+        logger.info("Country with code {} exists: {}", code, exists);
+        return exists;
     }
 }

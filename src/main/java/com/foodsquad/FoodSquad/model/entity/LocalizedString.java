@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static com.foodsquad.FoodSquad.config.utils.Constant.EN_LOCALE;
 
+
 @Data
 @Builder
 @NoArgsConstructor

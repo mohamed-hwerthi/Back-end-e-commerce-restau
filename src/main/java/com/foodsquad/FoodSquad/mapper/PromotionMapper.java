@@ -26,7 +26,7 @@ public interface PromotionMapper {
 
     @Mapping(target = "promotionType", constant = "DISCOUNT")
     @Mapping(target = "menuItems", source = "menuItems")
-    @Mapping(target = "categories", source = "categories   ")
+    @Mapping(target = "categories", source = "categories")
     PromotionDTO mapPromotionPercentageDiscountPromotionToPromotionDTO(PercentageDiscountPromotion promotion);
 
 

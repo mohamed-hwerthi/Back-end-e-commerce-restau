@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.CountryDTO;
-import com.foodsquad.FoodSquad.model.entity.Country;
+import com.foodsquad.FoodSquad.model.dto.CountryLocalizedDTO;
 import com.foodsquad.FoodSquad.service.CountryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,18 +28,18 @@ public class CountryController {
     @ApiResponse(responseCode = "200", description = "Country created successfully")
     @ApiResponse(responseCode = "400", description = "Invalid input")
     @PostMapping
-    public ResponseEntity<Country> createCountry(@RequestBody CountryDTO countryDTO) {
+    public ResponseEntity<CountryDTO> createCountry(@RequestBody CountryLocalizedDTO countryDTO) {
         logger.info("Received request to create country: {}", countryDTO.getName());
-        Country created = countryService.save(countryDTO);
+        CountryDTO created = countryService.save(countryDTO);
         logger.info("Created country with code: {}", created.getCode());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @Operation(summary = "Get all countries")
     @GetMapping
-    public ResponseEntity<List<Country>> getAllCountries() {
+    public ResponseEntity<List<CountryDTO>> getAllCountries() {
         logger.info("Received request to get all countries");
-        List<Country> countries = countryService.findAll();
+        List<CountryDTO> countries = countryService.findAll();
         logger.info("Returning {} countries", countries.size());
         return ResponseEntity.ok(countries);
     }
@@ -48,9 +48,9 @@ public class CountryController {
     @ApiResponse(responseCode = "200", description = "Country found")
     @ApiResponse(responseCode = "404", description = "Country not found")
     @GetMapping("/{code}")
-    public ResponseEntity<Country> getCountryByCode(@PathVariable String code) {
+    public ResponseEntity<CountryDTO> getCountryByCode(@PathVariable String code) {
         logger.info("Received request to get country with code: {}", code);
-        Country country = countryService.findByCode(code);
+        CountryDTO country = countryService.findByCode(code);
         return ResponseEntity.ok(country);
     }
 
@@ -59,11 +59,11 @@ public class CountryController {
     @ApiResponse(responseCode = "400", description = "Invalid input")
     @ApiResponse(responseCode = "404", description = "Country not found")
     @PutMapping("/{code}")
-    public ResponseEntity<Country> updateCountry(
+    public ResponseEntity<CountryDTO> updateCountry(
             @PathVariable String code,
             @RequestBody CountryDTO countryDTO) {
         logger.info("Received request to update country with code: {}", code);
-        Country updated = countryService.update(code, countryDTO);
+        CountryDTO updated = countryService.update(code, countryDTO);
         logger.info("Updated country with code: {}", code);
         return ResponseEntity.ok(updated);
     }
