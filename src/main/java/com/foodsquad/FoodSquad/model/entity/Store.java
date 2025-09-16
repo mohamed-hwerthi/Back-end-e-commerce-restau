@@ -2,6 +2,8 @@ package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,8 +26,9 @@ public class Store {
     private String name;
 
 
-//    @Column(name = "description", nullable = true, unique = false)
-//    private String description;
+      @Column(name = "description", nullable = true, unique = false)
+      @JdbcTypeCode(SqlTypes.JSON)
+      private String description;
 
 
     @Column(name = "slug", nullable = false, unique = true)

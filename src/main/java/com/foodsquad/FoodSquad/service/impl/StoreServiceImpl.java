@@ -199,7 +199,6 @@ public class StoreServiceImpl implements StoreService {
             slug = baseSlug + "-" + counter;
             counter++;
         }
-
         return slug;
     }
 

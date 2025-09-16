@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS countries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(2) NOT NULL UNIQUE,
     name JSON NOT NULL,
-    flag_url VARCHAR(1024)
+    flag_url VARCHAR(10000)
 );
 
 -- ========================================
@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS tokens (
 CREATE TABLE IF NOT EXISTS stores (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
+    description JSON  ,
     slug VARCHAR(255) NOT NULL,
     address VARCHAR(512),
     facebook_url VARCHAR(512),
