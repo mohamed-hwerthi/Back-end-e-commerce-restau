@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS countries (
 CREATE TABLE IF NOT EXISTS languages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(5) NOT NULL,
+    name JSON NOT NULL,
     country_id UUID NOT NULL,
     CONSTRAINT fk_language_country FOREIGN KEY (country_id) REFERENCES countries(id)
 );
@@ -101,9 +102,13 @@ CREATE TABLE IF NOT EXISTS stores (
     owner_id UUID,
     currency_id UUID,
     country_id UUID,
+    default_language_id UUID,
+
     CONSTRAINT fk_store_activity_sector FOREIGN KEY (activity_sector_id) REFERENCES activity_sectors(id),
     CONSTRAINT fk_store_logo_media FOREIGN KEY (logo_media_id) REFERENCES medias(id),
     CONSTRAINT fk_store_owner FOREIGN KEY (owner_id) REFERENCES "users"(id),
     CONSTRAINT fk_currency_id FOREIGN KEY (currency_id) REFERENCES currencies(id),
-    CONSTRAINT fk_store_country FOREIGN KEY (country_id) REFERENCES countries(id)
+    CONSTRAINT fk_store_country FOREIGN KEY (country_id) REFERENCES countries(id) ,
+    CONSTRAINT fk_store_default_language FOREIGN KEY (default_language_id) REFERENCES languages(id)
+
 );

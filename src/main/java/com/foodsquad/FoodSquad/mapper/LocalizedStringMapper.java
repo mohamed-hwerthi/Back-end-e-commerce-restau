@@ -4,7 +4,6 @@ import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

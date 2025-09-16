@@ -23,10 +23,11 @@ public class StoreDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
-    private String description;
+//    private String description;
 
     @NotBlank(message = "PhonePhone number  is required")
     @Size(min = 8, max = 15, message = "Phone number must be between 8 and 15 characters")
+    private String phoneNumber;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -36,7 +37,6 @@ public class StoreDTO {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    private String phoneNumber;
     private String address;
 
     private String facebookUrl;
@@ -60,4 +60,9 @@ public class StoreDTO {
     private CurrencyDTO currency;
 
     private String encryptedStoreId;
+
+    private LanguageDTO defaultLanguage ;
+
+
+
 }

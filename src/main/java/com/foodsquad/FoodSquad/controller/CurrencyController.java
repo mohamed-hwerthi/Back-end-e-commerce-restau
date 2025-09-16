@@ -36,7 +36,7 @@ public class CurrencyController {
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CategoryDTO.class))))
     })
     @GetMapping()
-    public ResponseEntity<List<CurrencyDTO>> findAllCategories() {
+    public ResponseEntity<List<CurrencyDTO>> findAllCurrencies() {
         return ResponseEntity.ok().body(currencyService.findAllCurrency());
     }
 }

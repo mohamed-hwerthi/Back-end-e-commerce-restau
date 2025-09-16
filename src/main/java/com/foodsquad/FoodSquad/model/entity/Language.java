@@ -1,26 +1,34 @@
 package com.foodsquad.FoodSquad.model.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.UUID;
 
-@Data
+@Entity
+@Table(name = "languages")
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Language {
+
     @Id
     @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @Column(name = "code", nullable = false, unique = true)
+    @Column(name = "code", length = 5, nullable = false, unique = true)
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id", nullable = false)
+    @Type(JsonType.class)
+    @Column(name = "name", columnDefinition = "json", nullable = false)
+    private LocalizedString name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
 }

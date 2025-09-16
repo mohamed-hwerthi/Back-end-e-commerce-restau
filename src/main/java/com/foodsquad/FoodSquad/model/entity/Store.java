@@ -24,8 +24,8 @@ public class Store {
     private String name;
 
 
-    @Column(name = "description", nullable = true, unique = false)
-    private String description;
+//    @Column(name = "description", nullable = true, unique = false)
+//    private String description;
 
 
     @Column(name = "slug", nullable = false, unique = true)
@@ -82,6 +82,10 @@ public class Store {
     @OneToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "default_language_id")
+    private Language defaultLanguage;
 
     @PrePersist
     public void prePersist() {

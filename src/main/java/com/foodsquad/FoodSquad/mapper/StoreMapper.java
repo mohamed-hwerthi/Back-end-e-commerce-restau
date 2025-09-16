@@ -4,7 +4,7 @@ import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {ActivitySectorMapper.class, CurrencyMapper.class})
+@Mapper(componentModel = "spring", uses = {ActivitySectorMapper.class, CurrencyMapper.class , LanguageMapper.class})
 public interface StoreMapper {
 
     StoreDTO toDto(Store store);
