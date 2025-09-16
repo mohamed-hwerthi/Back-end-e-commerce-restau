@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.model.dto;
 
-import com.foodsquad.FoodSquad.model.entity.LocalizedString;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +24,10 @@ public class StoreDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
-   private LocalizedString description;
+   private String description;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String slug  ;
 
     @NotBlank(message = "PhonePhone number  is required")
     @Size(min = 8, max = 15, message = "Phone number must be between 8 and 15 characters")
@@ -36,6 +39,7 @@ public class StoreDTO {
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private String address;

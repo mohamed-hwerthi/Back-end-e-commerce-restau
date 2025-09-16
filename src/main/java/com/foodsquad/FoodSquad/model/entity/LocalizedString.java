@@ -1,5 +1,7 @@
     package com.foodsquad.FoodSquad.model.entity;
 
+    import com.fasterxml.jackson.annotation.JsonAnyGetter;
+    import com.fasterxml.jackson.annotation.JsonAnySetter;
     import lombok.AllArgsConstructor;
     import lombok.Builder;
     import lombok.Data;
@@ -9,9 +11,6 @@
     import java.util.Map;
 
     import static com.foodsquad.FoodSquad.config.utils.Constant.EN_LOCALE;
-
-    import com.fasterxml.jackson.annotation.JsonAnyGetter;
-    import com.fasterxml.jackson.annotation.JsonAnySetter;
 
     @Data
     @Builder
