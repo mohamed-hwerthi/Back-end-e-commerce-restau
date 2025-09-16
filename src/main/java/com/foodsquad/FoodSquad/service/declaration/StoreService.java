@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.service.declaration;
 
 import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
+import com.foodsquad.FoodSquad.model.dto.LanguageDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
@@ -27,6 +28,8 @@ public interface StoreService {
     StoreBasicDataDTO findByStoreSlug(String SToreSlug);
 
     CurrencyDTO findCurrencyOfStore(UUID storeId);
+
+    LanguageDTO findDefaultLanguageOfTheStore(UUID storeId) ;
 
 
 }

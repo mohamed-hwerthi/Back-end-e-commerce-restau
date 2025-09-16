@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
+import com.foodsquad.FoodSquad.model.dto.LanguageDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.service.declaration.StoreService;
@@ -152,6 +153,32 @@ public class StoreController {
         StoreBasicDataDTO storeDTO = storeService.findByStoreSlug(slug);
         log.info("Found store with ID: {}", storeDTO.getStoreId());
         return ResponseEntity.ok(storeDTO);
+    }
+
+    /**
+     * Get the default language of a store by its ID.
+     *
+     * @param storeId UUID of the store
+     * @return ResponseEntity containing the LanguageDTO
+     */
+    @GetMapping("/{storeId}/default-language")
+    @Operation(
+            summary = "Get store default language",
+            description = "Retrieves the default language of a store by its ID"
+    )
+    @ApiResponse(responseCode = "200", description = "Default language retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Store or default language not found")
+    public ResponseEntity<LanguageDTO> getDefaultLanguage(@PathVariable UUID storeId) {
+        logger.info("Received request to get default language for store id: {}", storeId);
+        LanguageDTO languageDTO = storeService.findDefaultLanguageOfTheStore(storeId);
+
+        if (languageDTO == null) {
+            logger.warn("Default language not found for store id: {}", storeId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        logger.info("Found default language {} for store id: {}", languageDTO.getCode(), storeId);
+        return ResponseEntity.ok(languageDTO);
     }
 
 

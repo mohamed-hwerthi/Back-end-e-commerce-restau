@@ -2,8 +2,11 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.config.security.EncryptionUtil;
 import com.foodsquad.FoodSquad.mapper.CurrencyMapper;
+import com.foodsquad.FoodSquad.mapper.LanguageMapper;
+import com.foodsquad.FoodSquad.mapper.LocalizedStringMapper;
 import com.foodsquad.FoodSquad.mapper.StoreMapper;
 import com.foodsquad.FoodSquad.model.dto.CurrencyDTO;
+import com.foodsquad.FoodSquad.model.dto.LanguageDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
@@ -20,10 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,9 +41,11 @@ public class StoreServiceImpl implements StoreService {
 
     private final AdminService adminService;
 
-    private final DataSource dataSource;
-
     private final CurrencyMapper currencyMapper;
+
+    private final LanguageMapper languageMapper;
+
+    private final LocalizedStringMapper localizedStringMapper;
 
 
     @Override
@@ -156,6 +157,27 @@ public class StoreServiceImpl implements StoreService {
     }
 
 
+    @Override
+    @Transactional(readOnly = true)
+    public LanguageDTO findDefaultLanguageOfTheStore(UUID storeId) {
+        log.debug("Fetching default language for store with id: {}", storeId);
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Store not found with id " + storeId));
+
+        if (store.getDefaultLanguage() == null) {
+            log.warn("Store with id {} does not have a default language set", storeId);
+            return null;
+        }
+
+        LanguageDTO languageDTO = languageMapper.toDto(store.getDefaultLanguage(), localizedStringMapper);
+
+        log.info("Default language for store {} is {}", storeId, languageDTO.getCode());
+        return languageDTO;
+    }
+
+
     /**
      * Encrypt store ID
      */
@@ -186,20 +208,6 @@ public class StoreServiceImpl implements StoreService {
         return name.toLowerCase()
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", "-");
-    }
-
-    private void logCurrentSchema() {
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet rs = statement.executeQuery("SHOW search_path")) {
-
-            if (rs.next()) {
-                String schema = rs.getString(1);
-                log.info("Current database schema (search_path): {}", schema);
-            }
-        } catch (Exception e) {
-            log.error("Failed to get current schema", e);
-        }
     }
 
 
