@@ -6,7 +6,7 @@ import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {MenuItemMapper.class})
+@Mapper(componentModel = "spring", uses = {MenuItemMapper.class , CategoryMapper.class})
 public interface PromotionMapper {
 
     PromotionDTO toDTO(Promotion promotion);

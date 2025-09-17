@@ -45,7 +45,7 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public PaginatedResponseDTO<CategoryDTO> findAllCategories(int page, int limit) {
         log.info("Fetching categories with pagination - page: {}, limit: {}", page, limit);
-        Pageable pageable = PageRequest.of(page, limit, Sort.by("name").ascending());
+        Pageable pageable = PageRequest.of(page, limit);
         Page<Category> categories = categoryRepository.findAll(pageable);
         List<CategoryDTO> categoryDTOs = categories.map(categoryMapper::toDto).toList();
         log.debug("Fetched {} categories", categoryDTOs.size());
@@ -72,7 +72,7 @@ public class CategoryServiceImp implements CategoryService {
     public CategoryDTO updateCategory(UUID id, CategoryDTO categoryDTO) {
         log.info("Updating category with id: {}", id);
         Category category = findCategory(id);
-        categoryMapper.updateExistedCatgoryFromDTO(categoryDTO, category);
+        categoryMapper.updateExistedCategoryFromDTO(categoryDTO, category);
         Category updatedCategory = categoryRepository.save(category);
         log.debug("Updated category: {}", updatedCategory);
         return categoryMapper.toDto(updatedCategory);
@@ -127,13 +127,17 @@ public class CategoryServiceImp implements CategoryService {
     }
 
 
+    /*
+    todo   :calling to seach by the  name and the search  item has been removed temporally
+     */
+
     @Override
     public PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(int page, int limit, String searchTerm) {
-        Pageable pageable = PageRequest.of(page, limit, Sort.by("name").ascending());
+        Pageable pageable = PageRequest.of(page, limit);
 
         Page<Category> categoryPage;
         if (StringUtils.hasText(searchTerm)) {
-            categoryPage = categoryRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchTerm, searchTerm, pageable);
+                categoryPage = categoryRepository.findAll( pageable);
         } else {
             categoryPage = categoryRepository.findAll(pageable);
         }

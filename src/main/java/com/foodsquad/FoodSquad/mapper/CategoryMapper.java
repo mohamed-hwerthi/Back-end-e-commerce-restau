@@ -16,6 +16,6 @@ public interface CategoryMapper {
     List<CategoryDTO> toDTOList(List<Category> categories);
 
     @Mapping(target = "id", ignore = true)
-    void updateExistedCatgoryFromDTO(CategoryDTO categoryDTO, @MappingTarget Category category);
+    void updateExistedCategoryFromDTO(CategoryDTO categoryDTO, @MappingTarget Category category);
 
 }
