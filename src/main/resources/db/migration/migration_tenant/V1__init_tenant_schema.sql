@@ -1,7 +1,5 @@
 -- Migration for tenant schema initialization
 
-
-
 -- Taxes
 CREATE TABLE taxes (
     id SERIAL PRIMARY KEY,
@@ -65,8 +63,8 @@ CREATE TABLE orders (
 -- Menu Items
 CREATE TABLE menu_items (
      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
+    title jsonb NOT NULL,
+    description jsonb ,
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,
     purchase_price NUMERIC CHECK (purchase_price > 0) ,
@@ -106,7 +104,6 @@ CREATE TABLE categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name jsonb NOT NULL,
     description jsonb ,
-    version BIGINT DEFAULT 0
 );
 
 -- Many-to-many tables

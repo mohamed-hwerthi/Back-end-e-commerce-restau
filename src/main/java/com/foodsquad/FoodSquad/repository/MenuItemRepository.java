@@ -13,27 +13,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
+
+/*
+todo : Methode are commented   until we Fix in all the transaltions
+ */
 public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
 
     @Query("SELECT m FROM MenuItem m JOIN m.categories c WHERE c.id = :categoryId")
     Page<MenuItem> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
-    @Query("SELECT DISTINCT m FROM MenuItem m JOIN m.categories c " +
-            "WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "AND c.id IN :categoryIds")
-    Page<MenuItem> filterByQueryAndCategories(
-            @Param("query") String query,
-            @Param("categoryIds") List<UUID> categoryIds,
-            Pageable pageable
-    );
+//    @Query("SELECT DISTINCT m FROM MenuItem m JOIN m.categories c " +
+//            "WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+//            "AND c.id IN :categoryIds")
+//    Page<MenuItem> filterByQueryAndCategories(
+//            @Param("query") String query,
+//            @Param("categoryIds") List<UUID> categoryIds,
+//            Pageable pageable
+//    );
 
     Optional<MenuItem> findByBarCode(String qrCode);
 
-    @Query("SELECT m FROM MenuItem m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%'))")
-    Page<MenuItem> findByQuery(
-            @Param("query") String query,
-            Pageable pageable
-    );
+//    @Query("SELECT m FROM MenuItem m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%'))")
+//    Page<MenuItem> findByQuery(
+//            @Param("query") String query,
+//            Pageable pageable
+//    );
 
     List<MenuItem> findAllByPromotionsContaining(Promotion promotion);
 

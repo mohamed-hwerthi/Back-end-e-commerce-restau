@@ -1,24 +1,27 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 public class MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
-    private String title;
+    private LocalizedString title;
 
-    private String description;
+    private  LocalizedString description;
 
     private String barCode;
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")

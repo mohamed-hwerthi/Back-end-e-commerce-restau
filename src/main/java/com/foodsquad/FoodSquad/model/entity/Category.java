@@ -28,10 +28,6 @@ public class Category {
     @Column(columnDefinition = "jsonb")
     private LocalizedString description;
 
-    @Version
-    @Column(name = "version")
-    private Long version;
-
     @ManyToMany(mappedBy = "categories")
     private List<MenuItem> menuItems = new ArrayList<>();
 

@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS activity_sectors (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL
+    name JSON NOT NULL
 );
 
 -- ========================================

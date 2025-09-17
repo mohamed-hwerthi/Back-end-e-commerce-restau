@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,11 +25,13 @@ public class MenuItem {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(nullable = false)
-    private String title;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private LocalizedString title;
 
-    @Column(nullable = false)
-    private String description;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private LocalizedString description;
 
 
     @Column(nullable = false)

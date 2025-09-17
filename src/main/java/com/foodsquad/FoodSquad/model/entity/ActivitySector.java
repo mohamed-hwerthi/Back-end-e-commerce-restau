@@ -21,7 +21,7 @@ public class ActivitySector {
     @Column(nullable = false, unique = true)
     private String code;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private LocalizedString name;
 
 }

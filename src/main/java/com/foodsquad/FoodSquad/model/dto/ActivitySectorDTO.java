@@ -1,12 +1,16 @@
 package com.foodsquad.FoodSquad.model.dto;
 
+import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 public class ActivitySectorDTO {
     private UUID id;
     private String code;
-    private String name;
+    private LocalizedString name;
 }

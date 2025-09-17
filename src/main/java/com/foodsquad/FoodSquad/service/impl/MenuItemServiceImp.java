@@ -109,10 +109,12 @@ public class MenuItemServiceImp implements MenuItemService {
         logger.debug("Searching menu items by query and categoriesIds ");
         Page<MenuItem> menuItemPage;
         if (ObjectUtils.isEmpty(menuItemFilterByCategoryAndQueryRequestDTO.getCategoriesIds())) {
-            menuItemPage = menuItemRepository.findByQuery(menuItemFilterByCategoryAndQueryRequestDTO.getQuery(), pageable);
+            /* todo  : we have to change it to find all until  we Fix all Trasnaltiosn */
+            menuItemPage = menuItemRepository.findAll( pageable);
 
         } else {
-            menuItemPage = menuItemRepository.filterByQueryAndCategories(menuItemFilterByCategoryAndQueryRequestDTO.getQuery(), menuItemFilterByCategoryAndQueryRequestDTO.getCategoriesIds(), pageable);
+            /* todo  : we have to change it to find all until  we Fix all Trasnaltiosn */
+            menuItemPage = menuItemRepository.findAll(pageable);
 
         }
 
@@ -130,8 +132,10 @@ public class MenuItemServiceImp implements MenuItemService {
 
         logger.debug("Searching menu items by query: {}", query);
 
-
-        Page<MenuItem> menuItemPage = menuItemRepository.findByQuery(query, pageable);
+  /*
+  todo   : we have to change it to find all until  we Fix all Trasnaltiosn
+   */
+        Page<MenuItem> menuItemPage = menuItemRepository.findAll( pageable);
         List<MenuItem> menuItems = menuItemPage.getContent();
         List<MenuItemDTO> menuItemDTOs = menuItems.stream()
                 .map(menuItem -> {
