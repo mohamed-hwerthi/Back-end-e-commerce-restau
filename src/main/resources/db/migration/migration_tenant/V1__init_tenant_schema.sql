@@ -103,7 +103,7 @@ CREATE TABLE employees (
 CREATE TABLE categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name jsonb NOT NULL,
-    description jsonb ,
+    description jsonb
 );
 
 -- Many-to-many tables
