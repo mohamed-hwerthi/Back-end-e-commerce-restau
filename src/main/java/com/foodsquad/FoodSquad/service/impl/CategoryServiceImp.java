@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.CategoryMapper;
 import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
@@ -35,10 +36,14 @@ public class CategoryServiceImp implements CategoryService {
 
     private final MenuItemService menuItemService;
 
-    public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper, MenuItemService menuItemService) {
+    private final LocaleContext localeContext;
+
+
+    public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper, MenuItemService menuItemService, LocaleContext localeContext) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
         this.menuItemService = menuItemService;
+        this.localeContext = localeContext;
     }
 
 
@@ -132,12 +137,15 @@ public class CategoryServiceImp implements CategoryService {
      */
 
     @Override
-    public PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(int page, int limit, String searchTerm) {
+    public PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(
+            int page, int limit, String searchTerm
+    ) {
         Pageable pageable = PageRequest.of(page, limit);
+        String lang = localeContext.getLocale();
 
         Page<Category> categoryPage;
         if (StringUtils.hasText(searchTerm)) {
-                categoryPage = categoryRepository.findAll( pageable);
+            categoryPage = categoryRepository.searchByLocalizedNameOrDescription(searchTerm, lang, pageable);
         } else {
             categoryPage = categoryRepository.findAll(pageable);
         }
@@ -151,6 +159,7 @@ public class CategoryServiceImp implements CategoryService {
                 categoryPage.getTotalPages()
         );
     }
+
 
 
 }
