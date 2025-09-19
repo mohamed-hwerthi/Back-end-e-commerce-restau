@@ -29,7 +29,7 @@ public interface StoreService {
 
     CurrencyDTO findCurrencyOfStore(UUID storeId);
 
-    LanguageDTO findDefaultLanguageOfTheStore(UUID storeId) ;
+    LanguageDTO findDefaultLanguageOfTheStore(UUID storeId);
 
 
 }

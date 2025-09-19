@@ -70,7 +70,7 @@ public class LocalizedStringMapper {
      * @return the current locale code
      * @throws BadRequestException if locale is missing or empty
      */
-    private String getCurrentLocale() throws  BadRequestException {
+    private String getCurrentLocale() throws BadRequestException {
         String locale = localeContext.getLocale();
         if (!StringUtils.hasText(locale)) {
             throw new BadRequestException("Locale must exist in the context");

@@ -26,9 +26,9 @@ public class Store {
     private String name;
 
 
-      @Column(name = "description", nullable = true, unique = false)
-      @JdbcTypeCode(SqlTypes.JSON)
-      private String description;
+    @Column(name = "description", nullable = true, unique = false)
+    @JdbcTypeCode(SqlTypes.JSON)
+    private String description;
 
 
     @Column(name = "slug", nullable = false, unique = true)

@@ -19,8 +19,8 @@ public class LanguageDTO {
     private String code;
 
     private String name;
-    
+
     private boolean active;
-    
+
     private CountryDTO country;
 }

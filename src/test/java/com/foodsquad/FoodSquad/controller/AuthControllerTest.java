@@ -69,7 +69,7 @@ class AuthControllerTest {
         userLoginDTO.setEmail("test@example.com");
         userLoginDTO.setPassword("password");
 
-            UserResponseDTO userResponseDTO = new UserResponseDTO();
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setEmail("test@example.com");
 
         when(authService.loginUser(any())).thenReturn(userResponseDTO);

@@ -146,7 +146,6 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
 
-
     private double round(double value) {
 
         return new BigDecimal(value).setScale(2, RoundingMode.HALF_UP).doubleValue();

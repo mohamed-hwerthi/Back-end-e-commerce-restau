@@ -21,7 +21,7 @@ public class MenuItemDTO {
 
     private LocalizedString title;
 
-    private  LocalizedString description;
+    private LocalizedString description;
 
     private String barCode;
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")

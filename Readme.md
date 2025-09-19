@@ -38,53 +38,54 @@ documentation accessible at http://localhost:8080/swagger-ui.html.
 
 # 🔒 Security Configuration
 
-The application uses Spring Security to manage authentication and authorization. Below is a summary of the security configuration:
+The application uses Spring Security to manage authentication and authorization. Below is a summary of the security
+configuration:
 
-| Configuration Aspect    | Details                                                                                  |
-|-------------------------|------------------------------------------------------------------------------------------|
-| **CSRF Protection**     | ❌ Disabled (stateless API)                                                               |
-| **Public Endpoints**    | ✔️ `/api/auth/**`, `/api/token/**`, Swagger endpoints (`/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`) |
-| **Role-Based Access**   | ✔️ Admin, Moderator, Normal roles with varying permissions for Users, Orders, Menu Items, and Reviews |
-| **Exception Handling**  | ✔️ Custom handlers for access denied and authentication errors                            |
-| **Session Management**  | ✔️ Stateless (Session Creation Policy)                                                    |
-| **JWT Filter**          | ✔️ Added before `UsernamePasswordAuthenticationFilter`                                     |
-| **Authentication Manager** | ✔️ Bean provided for managing authentication                                            |
+| Configuration Aspect       | Details                                                                                                         |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------|
+| **CSRF Protection**        | ❌ Disabled (stateless API)                                                                                      |
+| **Public Endpoints**       | ✔️ `/api/auth/**`, `/api/token/**`, Swagger endpoints (`/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`) |
+| **Role-Based Access**      | ✔️ Admin, Moderator, Normal roles with varying permissions for Users, Orders, Menu Items, and Reviews           |
+| **Exception Handling**     | ✔️ Custom handlers for access denied and authentication errors                                                  |
+| **Session Management**     | ✔️ Stateless (Session Creation Policy)                                                                          |
+| **JWT Filter**             | ✔️ Added before `UsernamePasswordAuthenticationFilter`                                                          |
+| **Authentication Manager** | ✔️ Bean provided for managing authentication                                                                    |
 
 ## Role-Based Access to Endpoints
 
-| Endpoint                              | Admin | Moderator | Normal |
-|---------------------------------------|--------|-----------|--------|
-| **Auth Controller**                   | ✔️     | ✔️        | ✔️     |
-| `/api/auth/**`                        | ✔️     | ✔️        | ✔️     |
-| **Token Controller**                  | ✔️     | ✔️        | ✔️     |
-| `/api/token/**`                       | ✔️     | ✔️        | ✔️     |
-| **User Controller**                   | ✔️     | ✔️        | ✔️     |
-| `/api/users/**`                       |        |           |        |
-| - **GET**                             | ✔️     | ✔️        | ❌     |
-| - **POST**                            | ✔️     | ✔️        | ❌     |
-| - **PUT**                             | ✔️     | ✔️        | ✔️     |
-| - **DELETE**                          | ✔️     | ❌        | ❌     |
-| **Order Controller**                  | ✔️     | ✔️        | ✔️     |
-| `/api/orders/**`                      |        |           |        |
-| - **GET**                             | ✔️     | ✔️        | ✔️     |
-| - **POST**                            | ✔️     | ✔️        | ✔️     |
-| - **PUT**                             | ✔️     | ✔️        | ❌     |
-| - **DELETE**                          | ✔️     | ❌        | ❌     |
-| **MenuItem Controller**               | ✔️     | ✔️        | ✔️     |
-| `/api/menu-items/**`                  |        |           |        |
-| - **GET**                             | ✔️     | ✔️        | ✔️     |
-| - **POST**                            | ✔️     | ✔️        | ❌     |
-| - **PUT**                             | ✔️     | ✔️        | ❌     |
-| - **DELETE**                          | ✔️     | ❌        | ❌     |
-| **Reviews Controller**                | ✔️     | ✔️        | ✔️     |
-| `/api/reviews/**`                     |        |           |        |
-| - **GET**                             | ✔️     | ✔️        | ✔️     |
-| - **POST**                            | ✔️     | ✔️        | ✔️     |
-| - **PUT**                             | ✔️     | ✔️        | ❌     |
-| - **DELETE**                          | ✔️     | ❌        | ❌     |
+| Endpoint                | Admin | Moderator | Normal |
+|-------------------------|-------|-----------|--------|
+| **Auth Controller**     | ✔️    | ✔️        | ✔️     |
+| `/api/auth/**`          | ✔️    | ✔️        | ✔️     |
+| **Token Controller**    | ✔️    | ✔️        | ✔️     |
+| `/api/token/**`         | ✔️    | ✔️        | ✔️     |
+| **User Controller**     | ✔️    | ✔️        | ✔️     |
+| `/api/users/**`         |       |           |        |
+| - **GET**               | ✔️    | ✔️        | ❌      |
+| - **POST**              | ✔️    | ✔️        | ❌      |
+| - **PUT**               | ✔️    | ✔️        | ✔️     |
+| - **DELETE**            | ✔️    | ❌         | ❌      |
+| **Order Controller**    | ✔️    | ✔️        | ✔️     |
+| `/api/orders/**`        |       |           |        |
+| - **GET**               | ✔️    | ✔️        | ✔️     |
+| - **POST**              | ✔️    | ✔️        | ✔️     |
+| - **PUT**               | ✔️    | ✔️        | ❌      |
+| - **DELETE**            | ✔️    | ❌         | ❌      |
+| **MenuItem Controller** | ✔️    | ✔️        | ✔️     |
+| `/api/menu-items/**`    |       |           |        |
+| - **GET**               | ✔️    | ✔️        | ✔️     |
+| - **POST**              | ✔️    | ✔️        | ❌      |
+| - **PUT**               | ✔️    | ✔️        | ❌      |
+| - **DELETE**            | ✔️    | ❌         | ❌      |
+| **Reviews Controller**  | ✔️    | ✔️        | ✔️     |
+| `/api/reviews/**`       |       |           |        |
+| - **GET**               | ✔️    | ✔️        | ✔️     |
+| - **POST**              | ✔️    | ✔️        | ✔️     |
+| - **PUT**               | ✔️    | ✔️        | ❌      |
+| - **DELETE**            | ✔️    | ❌         | ❌      |
 
-This setup ensures a secure and well-structured approach to handling API requests and protecting endpoints based on user roles.
-
+This setup ensures a secure and well-structured approach to handling API requests and protecting endpoints based on user
+roles.
 
 ## 🗂️ API Endpoints
 

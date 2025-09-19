@@ -12,12 +12,12 @@ public class LocaleContext {
 
     private static final ThreadLocal<String> CURRENT_LOCALE = new ThreadLocal<>();
 
-    public void setLocale(String locale) {
-        CURRENT_LOCALE.set(locale);
-    }
-
     public String getLocale() {
         return CURRENT_LOCALE.get();
+    }
+
+    public void setLocale(String locale) {
+        CURRENT_LOCALE.set(locale);
     }
 
     public void clear() {

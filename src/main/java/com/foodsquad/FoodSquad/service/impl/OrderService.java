@@ -119,7 +119,6 @@ public class OrderService {
     }
 
 
-
     public ResponseEntity<Map<String, String>> deleteOrder(String id) {
 
         Order order = orderRepository.findById(id)
@@ -162,6 +161,7 @@ public class OrderService {
             throw new IllegalArgumentException("Access denied");
         }
     }
+
     private void validateOrderDTO(OrderDTO orderDTO) {
         if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one menu item");

@@ -41,6 +41,7 @@ public class MenuItemDiscountPriceCalculator {
         }
         return menuItem.getPrice();
     }
+
     private BigDecimal applyDiscount(BigDecimal originalPrice, Integer discountPercentage) {
         BigDecimal discount = BigDecimal.valueOf(discountPercentage);
         BigDecimal discountFactor = BigDecimal.ONE.subtract(

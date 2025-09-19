@@ -24,10 +24,10 @@ public class StoreDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
-   private String description;
+    private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String slug  ;
+    private String slug;
 
     @NotBlank(message = "PhonePhone number  is required")
     @Size(min = 8, max = 15, message = "Phone number must be between 8 and 15 characters")
@@ -66,8 +66,7 @@ public class StoreDTO {
 
     private String encryptedStoreId;
 
-    private LanguageDTO defaultLanguage ;
-
+    private LanguageDTO defaultLanguage;
 
 
 }

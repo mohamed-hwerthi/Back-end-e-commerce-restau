@@ -6,7 +6,7 @@ import com.foodsquad.FoodSquad.model.entity.Language;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring" , uses = {CountryMapper.class})
+@Mapper(componentModel = "spring", uses = {CountryMapper.class})
 public interface LanguageMapper {
 
     @Mapping(target = "name", ignore = true)

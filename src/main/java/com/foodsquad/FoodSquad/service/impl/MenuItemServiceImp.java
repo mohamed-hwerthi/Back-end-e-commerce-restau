@@ -64,7 +64,7 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final MediaService mediaService;
 
-    private final LocaleContext localeContext ;
+    private final LocaleContext localeContext;
 
 
     public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext) {

@@ -49,7 +49,6 @@ public class OpenApiConfig {
                 .addTagsItem(new Tag().name("13. Promotion Management").description("APIs for managing promotions"));
 
 
-
     }
 
     @Bean

@@ -1,7 +1,6 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

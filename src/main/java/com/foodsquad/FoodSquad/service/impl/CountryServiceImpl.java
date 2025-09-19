@@ -43,7 +43,7 @@ public class CountryServiceImpl implements CountryService {
         Country savedCountry = countryRepository.save(country);
 
         logger.info("Country saved successfully with code: {}", savedCountry.getCode());
-        return countryMapper.toDto(country , localizedStringMapper) ;
+        return countryMapper.toDto(country, localizedStringMapper);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class CountryServiceImpl implements CountryService {
         List<Country> countries = countryRepository.findAll();
 
         List<CountryDTO> dtos = countries.stream()
-                .map(country -> countryMapper.toDto(country , localizedStringMapper))
+                .map(country -> countryMapper.toDto(country, localizedStringMapper))
                 .collect(Collectors.toList());
 
         logger.info("Found {} countries", dtos.size());
@@ -79,7 +79,7 @@ public class CountryServiceImpl implements CountryService {
 
         Country updatedCountry = countryRepository.save(existingCountry);
         logger.info("Country updated successfully with code: {}", updatedCountry.getCode());
-        return  countryMapper.toDto(updatedCountry , localizedStringMapper) ;
+        return countryMapper.toDto(updatedCountry, localizedStringMapper);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class CountryServiceImpl implements CountryService {
                 });
 
         String currentLocale = localeContext.getLocale();
-        CountryDTO dto = countryMapper.toDto(country , localizedStringMapper);
+        CountryDTO dto = countryMapper.toDto(country, localizedStringMapper);
         logger.info("Country fetched successfully with code: {}", code);
         return dto;
     }

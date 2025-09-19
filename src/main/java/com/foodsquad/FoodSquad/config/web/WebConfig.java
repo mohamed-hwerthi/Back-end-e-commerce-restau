@@ -15,7 +15,7 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final  LocaleInterceptor localeInterceptor;
+    private final LocaleInterceptor localeInterceptor;
 
     public WebConfig(LocaleInterceptor localeInterceptor) {
         this.localeInterceptor = localeInterceptor;
