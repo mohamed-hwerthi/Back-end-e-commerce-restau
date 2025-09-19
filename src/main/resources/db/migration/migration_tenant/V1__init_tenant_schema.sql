@@ -41,7 +41,7 @@ CREATE TABLE tokens (
 );
 
 -- Timbres
-CREATE TABLE timbre(
+CREATE TABLE timbres(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     amount DOUBLE PRECISION NOT NULL
 );
