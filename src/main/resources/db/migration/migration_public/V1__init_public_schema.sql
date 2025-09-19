@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS languages (
 CREATE TABLE IF NOT EXISTS currencies (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(255) UNIQUE,
-    name VARCHAR(255),
+    name JSON NOT NULL,
     symbol VARCHAR(10),
     scale INT
 );

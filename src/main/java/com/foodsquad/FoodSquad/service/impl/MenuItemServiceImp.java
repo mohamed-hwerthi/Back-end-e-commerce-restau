@@ -96,7 +96,6 @@ public class MenuItemServiceImp implements MenuItemService {
             BigDecimal price = menuItem.getPrice();
             BigDecimal taxRate = BigDecimal.valueOf((menuItemDTO.getTax().getRate()) / 100);
             BigDecimal priceWithTax = price.multiply(BigDecimal.ONE.add(taxRate));
-
             menuItem.setPrice(priceWithTax);
         }
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);

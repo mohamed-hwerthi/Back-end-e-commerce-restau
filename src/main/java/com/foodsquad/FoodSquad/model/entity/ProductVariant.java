@@ -1,0 +1,40 @@
+package com.foodsquad.FoodSquad.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "product_variants")
+@Getter
+@Setter
+public class ProductVariant {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private MenuItem product;
+
+    @Column(unique = true)
+    private String sku;
+
+    private BigDecimal price;
+
+    private Integer stockQuantity = 0;
+
+    private Boolean isDefault = false;
+
+    private Boolean isActive = true;
+
+    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
+    private List<VariantAttribute> attributes = new ArrayList<>();
+}
