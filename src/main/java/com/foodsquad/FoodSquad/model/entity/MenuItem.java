@@ -36,7 +36,7 @@ public class MenuItem {
 
     @Column(nullable = false)
     @Min(value = 0, message = "Quantity must be at least 0")
-    private Double price;
+    private BigDecimal price;
 
     @Column(nullable = true, name = "code_bar", unique = true)
     private String barCode;

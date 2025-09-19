@@ -34,40 +34,68 @@ public class InvoiceServiceImp implements InvoiceService {
 
     @Override
     public byte[] generateInvoice(String orderId) throws Exception {
-
         String INVOICE_TEMPLATE_PATH = "/jasper/invoice.jrxml";
         InputStream reportStream = getClass().getResourceAsStream(INVOICE_TEMPLATE_PATH);
         JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        prepareDiscountedPrices(order);
+
+        Map<Tax, BigDecimal> taxDetails = new HashMap<>();
+        List<Map<String, Object>> items = buildInvoiceItems(order, taxDetails);
+
+        BigDecimal totalHT = items.stream()
+                .map(i -> (BigDecimal) i.get("totalHT"))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalTTC = items.stream()
+                .map(i -> (BigDecimal) i.get("totalTTC"))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Timbre timbre = timbreRepository.findAll().stream().findFirst().orElse(null);
+        BigDecimal timbreAmount = (timbre != null) ? timbre.getAmount() : BigDecimal.ZERO;
+
+        boolean addTimbre = totalTTC.compareTo(BigDecimal.ONE) >= 0;
+        if (addTimbre) {
+            totalTTC = applyTimbre(totalTTC, timbreAmount);
+        }
+
+        Map<String, Object> parameters = createParameters(order, totalHT, totalTTC, taxDetails, timbreAmount, addTimbre);
+
+        JRDataSource dataSource = new JRBeanCollectionDataSource(items);
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+    private void prepareDiscountedPrices(Order order) {
         if (order.getMenuItemsWithQuantity() != null) {
             for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
                 MenuItem menuItem = entry.getKey();
                 if (menuItem != null) {
                     menuItem.setPrice(menuItemService.findMenuItemDiscountedPrice(menuItem.getId()));
-
                 }
             }
         }
+    }
 
-
-        double totalHT = 0;
-        double totalTTC = 0;
-        Map<Tax, Double> taxDetails = new HashMap<>();
-
+    private List<Map<String, Object>> buildInvoiceItems(Order order, Map<Tax, BigDecimal> taxDetails) {
         List<Map<String, Object>> items = new ArrayList<>();
 
         for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
             MenuItem item = entry.getKey();
             int quantity = entry.getValue();
-            double itemTTCUnit = item.getPrice();
-            double taxRate = item.getTax() != null ? item.getTax().getRate() : 0.0;
 
-            double itemHTUnit = itemTTCUnit / (1 + (taxRate / 100));
-            double itemHT = itemHTUnit * quantity;
-            double itemTTC = itemTTCUnit * quantity;
-            double taxAmount = itemTTC - itemHT;
+            BigDecimal itemTTCUnit = item.getPrice();
+            BigDecimal taxRate = (item.getTax() != null)
+                    ? BigDecimal.valueOf(item.getTax().getRate()).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+
+            BigDecimal itemHTUnit = itemTTCUnit.divide(BigDecimal.ONE.add(taxRate), 4, RoundingMode.HALF_UP);
+            BigDecimal itemHT = itemHTUnit.multiply(BigDecimal.valueOf(quantity));
+            BigDecimal itemTTC = itemTTCUnit.multiply(BigDecimal.valueOf(quantity));
+            BigDecimal taxAmount = itemTTC.subtract(itemHT);
 
             itemHTUnit = round(itemHTUnit);
             itemHT = round(itemHT);
@@ -75,11 +103,8 @@ public class InvoiceServiceImp implements InvoiceService {
             taxAmount = round(taxAmount);
 
             if (item.getTax() != null) {
-                taxDetails.merge(item.getTax(), taxAmount, Double::sum);
+                taxDetails.merge(item.getTax(), taxAmount, BigDecimal::add);
             }
-
-            totalHT += itemHT;
-            totalTTC += itemTTC;
 
             Map<String, Object> itemData = new HashMap<>();
             itemData.put("menuItemName", item.getTitle());
@@ -91,15 +116,19 @@ public class InvoiceServiceImp implements InvoiceService {
             items.add(itemData);
         }
 
-        Timbre timbre = timbreRepository.findAll().stream().findFirst().orElse(null);
-        double timbreAmount = (timbre != null) ? timbre.getAmount() : 0.0;
+        return items;
+    }
 
-        boolean addTimbre = (round(totalTTC) >= 1.0); // Changed from == 0.1 to >= 1.0
-        if (addTimbre) {
-            totalTTC += timbreAmount;
-            totalTTC = round(totalTTC); // Round after adding timbre
-        }
+    private BigDecimal applyTimbre(BigDecimal totalTTC, BigDecimal timbreAmount) {
+        return totalTTC.add(timbreAmount).setScale(2, RoundingMode.HALF_UP);
+    }
 
+    private Map<String, Object> createParameters(Order order,
+                                                 BigDecimal totalHT,
+                                                 BigDecimal totalTTC,
+                                                 Map<Tax, BigDecimal> taxDetails,
+                                                 BigDecimal timbreAmount,
+                                                 boolean addTimbre) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("orderId", order.getId());
         parameters.put("totalHT", round(totalHT));
@@ -107,12 +136,16 @@ public class InvoiceServiceImp implements InvoiceService {
         parameters.put("createdOn", order.getCreatedAt());
         parameters.put("taxDetails", new ArrayList<>(taxDetails.entrySet()));
         parameters.put("addTimbre", addTimbre);
-        parameters.put("timbreAmount", timbreAmount);
+        parameters.put("timbreAmount", round(timbreAmount));
         parameters.put("net.sf.jasperreports.resource.path", "images");
-        JRDataSource dataSource = new JRBeanCollectionDataSource(items);
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        return JasperExportManager.exportReportToPdf(jasperPrint);
+        return parameters;
     }
+
+    private BigDecimal round(BigDecimal value) {
+        return value.setScale(2, RoundingMode.HALF_UP);
+    }
+
+
 
     private double round(double value) {
 

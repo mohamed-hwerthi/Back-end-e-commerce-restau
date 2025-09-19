@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -88,9 +89,10 @@ public class MenuItemServiceImp implements MenuItemService {
         if (menuItemDTO.getTax() != null) {
             Tax tax = this.taxService.createTax(menuItemDTO);
             menuItem.setTax(tax);
-            double price = menuItem.getPrice();
-            double taxRate = (menuItemDTO.getTax().getRate()) / 100;
-            double priceWithTax = price * (1 + taxRate);
+            BigDecimal price = menuItem.getPrice();
+            BigDecimal taxRate = BigDecimal.valueOf((menuItemDTO.getTax().getRate()) / 100);
+            BigDecimal priceWithTax = price.multiply(BigDecimal.ONE.add(taxRate));
+
             menuItem.setPrice(priceWithTax);
         }
         MenuItem savedMenuItem = menuItemRepository.save(menuItem);
@@ -110,7 +112,7 @@ public class MenuItemServiceImp implements MenuItemService {
         Page<MenuItem> menuItemPage;
         if (ObjectUtils.isEmpty(menuItemFilterByCategoryAndQueryRequestDTO.getCategoriesIds())) {
             /* todo  : we have to change it to find all until  we Fix all Trasnaltiosn */
-            menuItemPage = menuItemRepository.findAll( pageable);
+            menuItemPage = menuItemRepository.findAll(pageable);
 
         } else {
             /* todo  : we have to change it to find all until  we Fix all Trasnaltiosn */
@@ -135,7 +137,7 @@ public class MenuItemServiceImp implements MenuItemService {
   /*
   todo   : we have to change it to find all until  we Fix all Trasnaltiosn
    */
-        Page<MenuItem> menuItemPage = menuItemRepository.findAll( pageable);
+        Page<MenuItem> menuItemPage = menuItemRepository.findAll(pageable);
         List<MenuItem> menuItems = menuItemPage.getContent();
         List<MenuItemDTO> menuItemDTOs = menuItems.stream()
                 .map(menuItem -> {
@@ -240,10 +242,10 @@ public class MenuItemServiceImp implements MenuItemService {
 
         if (menuItemDTO.getTax() != null) {
             Tax existingTax = existingMenuItem.getTax();
-            double newPrice = menuItemDTO.getPrice();
+            BigDecimal newPrice = menuItemDTO.getPrice();
             double newTaxRate = menuItemDTO.getTax().getRate();
             double existingTaxRate = (existingTax != null) ? existingTax.getRate() : 0;
-            double existingPriceTTC = existingMenuItem.getPrice();
+            BigDecimal existingPriceTTC = existingMenuItem.getPrice();
             Tax tax = existingTax != null ? existingTax : new Tax();
             tax.setRate(newTaxRate);
             tax.setName(menuItemDTO.getTax().getName());
@@ -362,7 +364,7 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public Double findMenuItemDiscountedPrice(UUID menuItemId) {
+    public BigDecimal findMenuItemDiscountedPrice(UUID menuItemId) {
 
         MenuItem menuItem = menuItemRepository.findById(menuItemId).orElseThrow(() -> new EntityNotFoundException("MenuItem not found for ID: " + menuItemId));
         return menuItemDiscountPriceCalculator.calculateDiscountedPrice(menuItem);
@@ -379,7 +381,7 @@ public class MenuItemServiceImp implements MenuItemService {
         boolean hasActivePromotion = menuItemPromotionSharedService.isMenuItemHasActivePromotionInCurrentDay(menuItem.getId());
         menuItemDTO.setPromoted(hasActivePromotion);
 
-        double discountedPrice = menuItem.getPrice();
+        BigDecimal discountedPrice = menuItem.getPrice();
 
         if (hasActivePromotion) {
             discountedPrice = menuItemDiscountPriceCalculator.calculateDiscountedPrice(menuItem);

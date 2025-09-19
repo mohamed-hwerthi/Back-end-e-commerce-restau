@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class Order {
     private String id;
 
     @Column(nullable = false)
-    private Double totalCost;
+    private BigDecimal totalCost;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

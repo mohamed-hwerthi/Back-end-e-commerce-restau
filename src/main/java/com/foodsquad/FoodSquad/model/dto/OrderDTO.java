@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class OrderDTO {
 
     @Positive(message = "Total cost must be positive")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Double totalCost;
+    private BigDecimal totalCost;
 
     @NotNull(message = "Creation date is required")
     private LocalDateTime createdAt;
@@ -43,7 +44,7 @@ public class OrderDTO {
     public OrderDTO() {
     }
 
-    public OrderDTO(String id, String userEmail, Map<UUID, Integer> menuItemQuantities, OrderStatus status, Double totalCost, LocalDateTime createdOn, Boolean paid) {
+    public OrderDTO(String id, String userEmail, Map<UUID, Integer> menuItemQuantities, OrderStatus status, BigDecimal totalCost, LocalDateTime createdOn, Boolean paid) {
         this.id = id;
         this.userEmail = userEmail;
         this.menuItemQuantities = menuItemQuantities;
@@ -62,13 +63,6 @@ public class OrderDTO {
         this.status = status;
     }
 
-    public @Positive(message = "Total cost must be positive") Double getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(@Positive(message = "Total cost must be positive") Double totalCost) {
-        this.totalCost = totalCost;
-    }
 
     public @NotNull(message = "Creation date is required") LocalDateTime getCreatedOn() {
         return createdAt;

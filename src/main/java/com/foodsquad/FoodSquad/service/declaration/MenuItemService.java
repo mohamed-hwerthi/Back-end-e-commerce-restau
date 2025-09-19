@@ -9,6 +9,7 @@ import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,7 +44,7 @@ public interface MenuItemService {
 
     MenuItemDTO decrementMenuItemQuantity(UUID menuItemId, int quantity);
 
-    Double findMenuItemDiscountedPrice(UUID menuItemId);
+    BigDecimal findMenuItemDiscountedPrice(UUID menuItemId);
 
     List<MenuItem> findByPromotion(Promotion promotion);
 

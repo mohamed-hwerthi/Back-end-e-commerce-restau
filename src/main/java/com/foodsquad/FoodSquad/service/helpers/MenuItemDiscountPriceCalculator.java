@@ -8,6 +8,8 @@ import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedServic
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @Component
@@ -20,7 +22,7 @@ public class MenuItemDiscountPriceCalculator {
         this.promotionService = promotionService;
     }
 
-    public double calculateDiscountedPrice(MenuItem menuItem) {
+    public BigDecimal calculateDiscountedPrice(MenuItem menuItem) {
         UUID menuItemId = menuItem.getId();
         if (!promotionService.isMenuItemHasActivePromotionInCurrentDay(menuItemId)) {
             return menuItem.getPrice();
@@ -39,8 +41,13 @@ public class MenuItemDiscountPriceCalculator {
         }
         return menuItem.getPrice();
     }
-
-    private double applyDiscount(double originalPrice, double discountPercentage) {
-        return originalPrice * (1 - discountPercentage / 100.0);
+    private BigDecimal applyDiscount(BigDecimal originalPrice, Integer discountPercentage) {
+        BigDecimal discount = BigDecimal.valueOf(discountPercentage);
+        BigDecimal discountFactor = BigDecimal.ONE.subtract(
+                discount.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)
+        );
+        return originalPrice.multiply(discountFactor).setScale(2, RoundingMode.HALF_UP);
     }
+
+
 }

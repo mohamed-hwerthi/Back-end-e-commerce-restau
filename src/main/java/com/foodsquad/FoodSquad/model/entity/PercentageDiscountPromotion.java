@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -18,6 +20,6 @@ public class PercentageDiscountPromotion extends Promotion {
 
     private DiscountType discountType;
 
-    private Double promotionalPrice;
+    private BigDecimal promotionalPrice;
 
 }

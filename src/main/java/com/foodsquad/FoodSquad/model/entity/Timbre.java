@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Table(name = "timbres")
@@ -16,7 +17,7 @@ public class Timbre {
     private UUID id;
 
     @Column(nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
 
 }

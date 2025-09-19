@@ -31,7 +31,7 @@ public class MenuItemDTO {
     private BigDecimal purchasePrice;
 
     @PositiveOrZero(message = "Le prix  doit être positive ou zéro")
-    private Double price;
+    private BigDecimal price;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer salesCount;
@@ -51,7 +51,7 @@ public class MenuItemDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 
-    private Double discountedPrice;
+    private BigDecimal discountedPrice;
 
     private TaxDTO tax;
 

@@ -43,39 +43,26 @@ public class OrderService {
 
 
     public ResponseEntity<OrderDTO> createOrder(OrderDTO orderDTO) {
+        validateOrderDTO(orderDTO);
 
-        if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
-            throw new IllegalArgumentException("Order must contain at least one menu item");
-        }
-        User user = userRepository.findByEmail(orderDTO.getUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + orderDTO.getUserEmail()));
-
-        Map<UUID, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
-        Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
-        Double totalCost = 0.0;
-
-        for (Map.Entry<UUID, Integer> entry : menuItemQuantities.entrySet()) {
-            MenuItem menuItem = menuItemRepository.findById(entry.getKey())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + entry.getKey()));
-            menuItemService.decrementMenuItemQuantity(menuItem.getId(), entry.getValue());
-            int quantity = entry.getValue() != null ? entry.getValue() : 1;
-            menuItemsWithQuantity.put(menuItem, quantity);
-            totalCost += menuItem.getPrice() * quantity;
-        }
-        BigDecimal roundedTotalCost = BigDecimal.valueOf(totalCost).setScale(2, RoundingMode.HALF_UP);
+        User user = fetchUser(orderDTO.getUserEmail());
+        Map<MenuItem, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
+        BigDecimal totalCost = calculateTotalCost(menuItemsWithQuantity);
 
         Order order = new Order();
         order.setUser(user);
         order.setMenuItemsWithQuantity(menuItemsWithQuantity);
         order.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
-        order.setTotalCost(roundedTotalCost.doubleValue());
+        order.setTotalCost(totalCost);
         order.setCreatedAt(orderDTO.getCreatedOn());
         order.setPaid(true);
 
         orderRepository.save(order);
+
         OrderDTO responseDTO = modelMapper.map(order, OrderDTO.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
+
 
     public List<OrderDTO> getAllOrders(int page, int size) {
 
@@ -108,41 +95,29 @@ public class OrderService {
     }
 
     public ResponseEntity<OrderDTO> updateOrder(String id, OrderDTO orderDTO) {
-
-        if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
-            throw new IllegalArgumentException("Order must contain at least one menu item");
-        }
+        validateOrderDTO(orderDTO);
 
         Order existingOrder = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found for ID: " + id));
         checkOwnership(existingOrder.getUser());
 
-        User user = userRepository.findByEmail(orderDTO.getUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + orderDTO.getUserEmail()));
+        User user = fetchUser(orderDTO.getUserEmail());
+        Map<MenuItem, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
+        BigDecimal totalCost = calculateTotalCost(menuItemsWithQuantity);
+
         existingOrder.setUser(user);
-
-        Map<UUID, Integer> menuItemQuantities = orderDTO.getMenuItemQuantities();
-        Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
-        Double totalCost = 0.0;
-
-        for (Map.Entry<UUID, Integer> entry : menuItemQuantities.entrySet()) {
-            MenuItem menuItem = menuItemRepository.findById(entry.getKey())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + entry.getKey()));
-            int quantity = entry.getValue() != null ? entry.getValue() : 1;
-            menuItemsWithQuantity.put(menuItem, quantity);
-            totalCost += menuItem.getPrice() * quantity;
-        }
-        BigDecimal roundedTotalCost = BigDecimal.valueOf(totalCost).setScale(2, RoundingMode.HALF_UP);
         existingOrder.setMenuItemsWithQuantity(menuItemsWithQuantity);
         existingOrder.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
-        existingOrder.setTotalCost(roundedTotalCost.doubleValue());
+        existingOrder.setTotalCost(totalCost);
         existingOrder.setCreatedAt(orderDTO.getCreatedOn());
         existingOrder.setPaid(orderDTO.getPaid());
 
         orderRepository.save(existingOrder);
+
         OrderDTO updatedOrderDTO = modelMapper.map(existingOrder, OrderDTO.class);
         return ResponseEntity.ok(updatedOrderDTO);
     }
+
 
 
     public ResponseEntity<Map<String, String>> deleteOrder(String id) {
@@ -187,5 +162,40 @@ public class OrderService {
             throw new IllegalArgumentException("Access denied");
         }
     }
+    private void validateOrderDTO(OrderDTO orderDTO) {
+        if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
+            throw new IllegalArgumentException("Order must contain at least one menu item");
+        }
+    }
+
+    private User fetchUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+    }
+
+    private Map<MenuItem, Integer> buildMenuItems(OrderDTO orderDTO) {
+        Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
+
+        for (Map.Entry<UUID, Integer> entry : orderDTO.getMenuItemQuantities().entrySet()) {
+            UUID menuItemId = entry.getKey();
+            int quantity = (entry.getValue() != null && entry.getValue() > 0) ? entry.getValue() : 1;
+
+            MenuItem menuItem = menuItemRepository.findById(menuItemId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + menuItemId));
+
+            menuItemService.decrementMenuItemQuantity(menuItem.getId(), quantity);
+            menuItemsWithQuantity.put(menuItem, quantity);
+        }
+
+        return menuItemsWithQuantity;
+    }
+
+    private BigDecimal calculateTotalCost(Map<MenuItem, Integer> menuItemsWithQuantity) {
+        return menuItemsWithQuantity.entrySet().stream()
+                .map(entry -> entry.getKey().getPrice().multiply(BigDecimal.valueOf(entry.getValue())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
 
 }
