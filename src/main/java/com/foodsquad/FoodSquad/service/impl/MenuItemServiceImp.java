@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.exception.DuplicateMenuItemException;
 import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.model.dto.DiscountType;
@@ -63,8 +64,10 @@ public class MenuItemServiceImp implements MenuItemService {
 
     private final MediaService mediaService;
 
+    private final LocaleContext localeContext ;
 
-    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator, MediaService mediaService) {
+
+    public MenuItemServiceImp(MenuItemRepository menuItemRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy MenuItemPromotionSharedService menuItemPromotionSharedService, MenuItemMapper menuItemMapper, TaxService taxService, MenuItemDiscountPriceCalculator menuItemDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext) {
 
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
@@ -76,6 +79,7 @@ public class MenuItemServiceImp implements MenuItemService {
         this.taxService = taxService;
         this.menuItemDiscountPriceCalculator = menuItemDiscountPriceCalculator;
         this.mediaService = mediaService;
+        this.localeContext = localeContext;
     }
 
 
@@ -106,32 +110,34 @@ public class MenuItemServiceImp implements MenuItemService {
     }
 
     @Override
-    public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
+    public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(
+            MenuItemFilterByCategoryAndQueryRequestDTO filterRequest,
+            Pageable pageable
+    ) {
+        String query = filterRequest.getQuery();
+        UUID[] categoryIds = filterRequest.getCategoriesIds() != null
+                ? filterRequest.getCategoriesIds().toArray(new UUID[0])
+                : null;
+        Boolean inStock = filterRequest.getInStock() != null ? filterRequest.getInStock() : null;
 
-        logger.debug("Searching menu items by query and categoriesIds ");
-        Page<MenuItem> menuItemPage;
-        if (ObjectUtils.isEmpty(menuItemFilterByCategoryAndQueryRequestDTO.getCategoriesIds())) {
-            /* todo  : we have to change it to find all until  we Fix all Trasnaltiosn */
-            menuItemPage = menuItemRepository.findAll(pageable);
+        Page<MenuItem> menuItemPage = menuItemRepository.searchByQueryAndFilters(
+                query,
+                categoryIds,
+                inStock,
+                localeContext.getLocale(),
+                pageable
+        );
 
-        } else {
-            /* todo  : we have to change it to find all until  we Fix all Trasnaltiosn */
-            menuItemPage = menuItemRepository.findAll(pageable);
-
-        }
-
-        List<MenuItem> menuItems = menuItemPage.getContent();
-        List<MenuItemDTO> menuItemDTOs = menuItems.stream()
+        List<MenuItemDTO> menuItemDTOs = menuItemPage.getContent().stream()
                 .map(menuItemMapper::toDto)
                 .toList();
+
         return new PaginatedResponseDTO<>(menuItemDTOs, menuItemPage.getTotalElements());
-
-
     }
+
 
     @Override
     public PaginatedResponseDTO<MenuItemDTO> searchMenuItemsByQuery(String query, Pageable pageable) {
-
         logger.debug("Searching menu items by query: {}", query);
 
   /*

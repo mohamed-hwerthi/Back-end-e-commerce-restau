@@ -10,5 +10,6 @@ import java.util.UUID;
 public class MenuItemFilterByCategoryAndQueryRequestDTO {
     private String query;
     private List<UUID> categoriesIds;
+    private  Boolean inStock ;
 
 }

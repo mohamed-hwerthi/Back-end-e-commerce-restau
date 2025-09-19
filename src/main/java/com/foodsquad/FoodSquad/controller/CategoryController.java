@@ -28,7 +28,7 @@ public class CategoryController {
     @GetMapping()
     public ResponseEntity<List<CategoryDTO>> findAllCategories() {
         log.info("Fetching all categories without pagination");
-        List<CategoryDTO> categories = categoryService.findAllCategories();
+            List<CategoryDTO> categories = categoryService.findAllCategories();
         log.info("Found {} categories", categories.size());
         return ResponseEntity.ok(categories);
     }
