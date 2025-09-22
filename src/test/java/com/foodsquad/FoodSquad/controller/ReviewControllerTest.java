@@ -42,7 +42,7 @@ class ReviewControllerTest {
 
         mockMvc.perform(post("/api/reviews")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"comment\":\"Great food!\",\"rating\":5,\"menuItemId\":1}"))
+                        .content("{\"comment\":\"Great food!\",\"rating\":5,\"ProductId\":1}"))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -58,9 +58,9 @@ class ReviewControllerTest {
     }
 
     @Test
-    void testGetReviewsByMenuItemId() throws Exception {
+    void testGetReviewsByProductId() throws Exception {
         List<ReviewDTO> reviews = List.of(new ReviewDTO());
-        when(reviewService.getReviewsByMenuItemId(anyLong())).thenReturn(reviews);
+        when(reviewService.getReviewsByProductId(anyLong())).thenReturn(reviews);
 
         mockMvc.perform(get("/api/reviews/menu-item/1"))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ class ReviewControllerTest {
 
         mockMvc.perform(put("/api/reviews/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"comment\":\"Updated comment\",\"rating\":4,\"menuItemId\":1}"))
+                        .content("{\"comment\":\"Updated comment\",\"rating\":4,\"ProductId\":1}"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }

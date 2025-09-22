@@ -2,10 +2,10 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.dto.OrderDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
-import com.foodsquad.FoodSquad.repository.MenuItemRepository;
+import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -35,9 +35,9 @@ public class OrderService {
 
     private final UserRepository userRepository;
 
-    private final MenuItemRepository menuItemRepository;
+    private final ProductRepository ProductRepository;
 
-    private final MenuItemService menuItemService;
+    private final ProductService ProductService;
 
     private final ModelMapper modelMapper;
 
@@ -46,12 +46,12 @@ public class OrderService {
         validateOrderDTO(orderDTO);
 
         User user = fetchUser(orderDTO.getUserEmail());
-        Map<Product, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
-        BigDecimal totalCost = calculateTotalCost(menuItemsWithQuantity);
+        Map<Product, Integer> ProductsWithQuantity = buildProducts(orderDTO);
+        BigDecimal totalCost = calculateTotalCost(ProductsWithQuantity);
 
         Order order = new Order();
         order.setUser(user);
-        order.setMenuItemsWithQuantity(menuItemsWithQuantity);
+        order.setProductsWithQuantity(ProductsWithQuantity);
         order.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
         order.setTotalCost(totalCost);
         order.setCreatedAt(orderDTO.getCreatedOn());
@@ -102,11 +102,11 @@ public class OrderService {
         checkOwnership(existingOrder.getUser());
 
         User user = fetchUser(orderDTO.getUserEmail());
-        Map<Product, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
-        BigDecimal totalCost = calculateTotalCost(menuItemsWithQuantity);
+        Map<Product, Integer> ProductsWithQuantity = buildProducts(orderDTO);
+        BigDecimal totalCost = calculateTotalCost(ProductsWithQuantity);
 
         existingOrder.setUser(user);
-        existingOrder.setMenuItemsWithQuantity(menuItemsWithQuantity);
+        existingOrder.setProductsWithQuantity(ProductsWithQuantity);
         existingOrder.setStatus(OrderStatus.valueOf(orderDTO.getStatus().toUpperCase()));
         existingOrder.setTotalCost(totalCost);
         existingOrder.setCreatedAt(orderDTO.getCreatedOn());
@@ -163,7 +163,7 @@ public class OrderService {
     }
 
     private void validateOrderDTO(OrderDTO orderDTO) {
-        if (orderDTO.getMenuItemQuantities() == null || orderDTO.getMenuItemQuantities().isEmpty()) {
+        if (orderDTO.getProductQuantities() == null || orderDTO.getProductQuantities().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one menu item");
         }
     }
@@ -173,25 +173,25 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
     }
 
-    private Map<Product, Integer> buildMenuItems(OrderDTO orderDTO) {
-        Map<Product, Integer> menuItemsWithQuantity = new HashMap<>();
+    private Map<Product, Integer> buildProducts(OrderDTO orderDTO) {
+        Map<Product, Integer> ProductsWithQuantity = new HashMap<>();
 
-        for (Map.Entry<UUID, Integer> entry : orderDTO.getMenuItemQuantities().entrySet()) {
-            UUID menuItemId = entry.getKey();
+        for (Map.Entry<UUID, Integer> entry : orderDTO.getProductQuantities().entrySet()) {
+            UUID ProductId = entry.getKey();
             int quantity = (entry.getValue() != null && entry.getValue() > 0) ? entry.getValue() : 1;
 
-            Product product = menuItemRepository.findById(menuItemId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + menuItemId));
+            Product product = ProductRepository.findById(ProductId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + ProductId));
 
-            menuItemService.decrementMenuItemQuantity(product.getId(), quantity);
-            menuItemsWithQuantity.put(product, quantity);
+            ProductService.decrementProductQuantity(product.getId(), quantity);
+            ProductsWithQuantity.put(product, quantity);
         }
 
-        return menuItemsWithQuantity;
+        return ProductsWithQuantity;
     }
 
-    private BigDecimal calculateTotalCost(Map<Product, Integer> menuItemsWithQuantity) {
-        return menuItemsWithQuantity.entrySet().stream()
+    private BigDecimal calculateTotalCost(Map<Product, Integer> ProductsWithQuantity) {
+        return ProductsWithQuantity.entrySet().stream()
                 .map(entry -> entry.getKey().getPrice().multiply(BigDecimal.valueOf(entry.getValue())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);

@@ -85,7 +85,7 @@ public class OrderController {
 
     @Operation(summary = "Delete orders by IDs", description = "Delete existing orders by their unique IDs.")
     @DeleteMapping("/batch")
-    public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(
+    public ResponseEntity<Map<String, String>> deleteProductsByIds(
             @Parameter(description = "List of IDs of the orders to delete", example = "[1, 2, 3]")
             @RequestParam List<String> ids) {
         return orderService.deleteOrders(ids);

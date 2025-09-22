@@ -20,7 +20,7 @@ public class MenuDTO {
     private String description;
     private String qrCode;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<UUID> menuItemsIds = new ArrayList<>();
+    private List<UUID> ProductsIds = new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ProductDTO> products = new ArrayList<>();
 

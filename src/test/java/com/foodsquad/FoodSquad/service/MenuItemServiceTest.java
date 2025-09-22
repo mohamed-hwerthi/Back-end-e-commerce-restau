@@ -4,11 +4,11 @@ import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
-import com.foodsquad.FoodSquad.repository.MenuItemRepository;
+import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-class MenuItemServiceTest {
+class ProductServiceTest {
 
     @Mock
-    private MenuItemRepository menuItemRepository;
+    private ProductRepository ProductRepository;
 
     @Mock
     private OrderRepository orderRepository;
@@ -47,7 +47,7 @@ class MenuItemServiceTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private MenuItemService menuItemService;
+    private ProductService ProductService;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +56,7 @@ class MenuItemServiceTest {
     }
 
     @Test
-    void testCreateMenuItem() {
+    void testCreateProduct() {
         // Arrange
         ProductDTO productDTO = new ProductDTO();
         productDTO.setTitle("Burger");
@@ -71,12 +71,12 @@ class MenuItemServiceTest {
         product.setUser(user);
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(menuItemRepository.save(any(Product.class))).thenReturn(product);
+        when(ProductRepository.save(any(Product.class))).thenReturn(product);
         when(modelMapper.map(any(ProductDTO.class), eq(Product.class))).thenReturn(product);
         when(modelMapper.map(any(Product.class), eq(ProductDTO.class))).thenReturn(productDTO);
 
         // Act
-        ResponseEntity<ProductDTO> response = menuItemService.createMenuItem(productDTO);
+        ResponseEntity<ProductDTO> response = ProductService.createProduct(productDTO);
 
         // Assert
         assertEquals(201, response.getStatusCodeValue());
@@ -86,9 +86,9 @@ class MenuItemServiceTest {
 
 
     @Test
-    void testUpdateMenuItem() {
+    void testUpdateProduct() {
         // Arrange
-        Long menuItemId = 1L;
+        Long ProductId = 1L;
         ProductDTO productDTO = new ProductDTO();
         productDTO.setTitle("Updated Burger");
         productDTO.setDescription("Updated description");
@@ -98,20 +98,20 @@ class MenuItemServiceTest {
         user.setEmail("test@example.com");
         user.setRole(UserRole.ADMIN);
 
-        Product existingMenuItem = new Product();
-        existingMenuItem.setId(menuItemId);
-        existingMenuItem.setUser(user);
+        Product existingProduct = new Product();
+        existingProduct.setId(ProductId);
+        existingProduct.setUser(user);
 
         TypeMap<ProductDTO, Product> typeMap = mock(TypeMap.class);
 
-        when(menuItemRepository.findById(menuItemId)).thenReturn(Optional.of(existingMenuItem));
+        when(ProductRepository.findById(ProductId)).thenReturn(Optional.of(existingProduct));
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(menuItemRepository.save(any(Product.class))).thenReturn(existingMenuItem);
+        when(ProductRepository.save(any(Product.class))).thenReturn(existingProduct);
         when(modelMapper.typeMap(ProductDTO.class, Product.class)).thenReturn(typeMap);
         when(modelMapper.map(any(Product.class), eq(ProductDTO.class))).thenReturn(productDTO);
 
         // Act
-        ResponseEntity<ProductDTO> response = menuItemService.updateMenuItem(menuItemId, productDTO);
+        ResponseEntity<ProductDTO> response = ProductService.updateProduct(ProductId, productDTO);
 
         // Assert
         assertEquals(200, response.getStatusCodeValue());
@@ -122,28 +122,28 @@ class MenuItemServiceTest {
     }
 
     @Test
-    void testDeleteMenuItem() {
+    void testDeleteProduct() {
         // Arrange
-        Long menuItemId = 1L;
+        Long ProductId = 1L;
         User user = new User();
         user.setEmail("test@example.com");
         user.setRole(UserRole.EMPLOYEE);
 
         Product product = new Product();
-        product.setId(menuItemId);
+        product.setId(ProductId);
         product.setUser(user);
 
-        when(menuItemRepository.findById(menuItemId)).thenReturn(Optional.of(product));
+        when(ProductRepository.findById(ProductId)).thenReturn(Optional.of(product));
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
         // Act
-        ResponseEntity<Map<String, String>> response = menuItemService.deleteMenuItem(menuItemId);
+        ResponseEntity<Map<String, String>> response = ProductService.deleteProduct(ProductId);
 
         // Assert
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
         assertEquals("Menu Item successfully deleted", response.getBody().get("message"));
-        verify(menuItemRepository, times(1)).delete(product);
+        verify(ProductRepository, times(1)).delete(product);
     }
 
     private void mockSecurityContext(String email) {

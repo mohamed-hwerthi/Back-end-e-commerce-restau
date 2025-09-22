@@ -39,11 +39,11 @@ public class ReviewController {
     }
 
     @Operation(summary = "Get reviews by menu item ID", description = "Retrieve a list of reviews for a specific menu item by its unique ID.")
-    @GetMapping("/menu-item/{menuItemId}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByMenuItemId(
+    @GetMapping("/menu-item/{ProductId}")
+    public ResponseEntity<List<ReviewDTO>> getReviewsByProductId(
             @Parameter(description = "ID of the menu item whose reviews to retrieve", example = "1")
-            @PathVariable UUID menuItemId) {
-        List<ReviewDTO> reviews = reviewService.getReviewsByMenuItemId(menuItemId);
+            @PathVariable UUID ProductId) {
+        List<ReviewDTO> reviews = reviewService.getReviewsByProductId(ProductId);
         return ResponseEntity.ok(reviews);
     }
 

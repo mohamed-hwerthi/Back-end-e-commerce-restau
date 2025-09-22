@@ -20,7 +20,7 @@ public class Menu {
     private String description;
     @ManyToMany
     @JoinTable(
-            name = "menu_menuItems",
+            name = "menu_Products",
             joinColumns = @JoinColumn(name = "menu_id"),
             inverseJoinColumns = @JoinColumn(name = "menu_item_id")
     )

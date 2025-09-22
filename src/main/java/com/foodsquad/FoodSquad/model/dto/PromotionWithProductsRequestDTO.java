@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class PromotionWithMenuItemsRequestDTO {
+public class PromotionWithProductsRequestDTO {
     private PromotionDTO promotion;
-    private List<UUID> menuItemsIds = new ArrayList<>();
+    private List<UUID> ProductsIds = new ArrayList<>();
 }

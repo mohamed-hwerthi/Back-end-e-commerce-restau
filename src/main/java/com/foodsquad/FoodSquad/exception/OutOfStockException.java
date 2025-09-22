@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class OutOfStockException extends RuntimeException {
 
-    private String menuItemName;
+    private String ProductName;
 
-    public OutOfStockException(String menuItemName) {
+    public OutOfStockException(String ProductName) {
         super(" is out of stock");
 
     }

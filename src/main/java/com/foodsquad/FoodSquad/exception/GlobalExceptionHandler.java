@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleProductOutOfStockException(OutOfStockException ex) {
         Map<String, String> errors = new HashMap<>();
-        errors.put("error", ex.getMenuItemName() + ex.getMessage());
+        errors.put("error", ex.getProductName() + ex.getMessage());
         errors.put("status", "409");
         return ResponseEntity.badRequest().body(errors);
     }
@@ -140,16 +140,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(DuplicateMenuItemException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemException(DuplicateMenuItemException ex) {
+    @ExceptionHandler(DuplicateProductException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateProductException(DuplicateProductException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
 
-    @ExceptionHandler(MenuItemHasActivePromotionInAPeriodException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(MenuItemHasActivePromotionInAPeriodException ex) {
+    @ExceptionHandler(ProductHasActivePromotionInAPeriodException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateProductHasActivePromotionInAPeriodException(ProductHasActivePromotionInAPeriodException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
@@ -157,7 +157,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(CategoryActivePromotionInAPeriodException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateMenuItemHasActivePromotionInAPeriodException(CategoryActivePromotionInAPeriodException ex) {
+    public ResponseEntity<Map<String, String>> handleDuplicateProductHasActivePromotionInAPeriodException(CategoryActivePromotionInAPeriodException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);

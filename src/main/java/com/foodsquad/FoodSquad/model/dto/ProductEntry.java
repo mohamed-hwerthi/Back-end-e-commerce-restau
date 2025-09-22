@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.model.dto;
 
-public class MenuItemEntry {
+public class ProductEntry {
     private String title;
     private String description;
     private Double price;
@@ -8,7 +8,7 @@ public class MenuItemEntry {
     private String imageUrl;
 
 
-    public MenuItemEntry(String title, String description, Double price, Integer quantity) {
+    public ProductEntry(String title, String description, Double price, Integer quantity) {
 
         this.title = title;
         this.description = description;

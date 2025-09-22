@@ -4,7 +4,7 @@ package com.foodsquad.FoodSquad.service.helpers;
 import com.foodsquad.FoodSquad.model.dto.DiscountType;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.model.entity.Product;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
+import com.foodsquad.FoodSquad.service.declaration.ProductPromotionSharedService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -13,22 +13,22 @@ import java.math.RoundingMode;
 import java.util.UUID;
 
 @Component
-public class MenuItemDiscountPriceCalculator {
+public class ProductDiscountPriceCalculator {
 
-    private final MenuItemPromotionSharedService promotionService;
+    private final ProductPromotionSharedService promotionService;
 
-    public MenuItemDiscountPriceCalculator(@Lazy MenuItemPromotionSharedService promotionService) {
+    public ProductDiscountPriceCalculator(@Lazy ProductPromotionSharedService promotionService) {
 
         this.promotionService = promotionService;
     }
 
     public BigDecimal calculateDiscountedPrice(Product product) {
-        UUID menuItemId = product.getId();
-        if (!promotionService.isMenuItemHasActivePromotionInCurrentDay(menuItemId)) {
+        UUID ProductId = product.getId();
+        if (!promotionService.isProductHasActivePromotionInCurrentDay(ProductId)) {
             return product.getPrice();
         }
 
-        PercentageDiscountPromotion promotion = promotionService.getMenuItemActivePromotionInCurrentDay(menuItemId);
+        PercentageDiscountPromotion promotion = promotionService.getProductActivePromotionInCurrentDay(ProductId);
 
 
         if (promotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE)) {

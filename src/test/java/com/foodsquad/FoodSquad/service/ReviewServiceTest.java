@@ -4,7 +4,7 @@ import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Review;
 import com.foodsquad.FoodSquad.model.entity.User;
-import com.foodsquad.FoodSquad.repository.MenuItemRepository;
+import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.impl.ReviewService;
@@ -34,7 +34,7 @@ class ReviewServiceTest {
     private ReviewRepository reviewRepository;
 
     @Mock
-    private MenuItemRepository menuItemRepository;
+    private ProductRepository ProductRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -55,7 +55,7 @@ class ReviewServiceTest {
     void testCreateReview() {
         // Arrange
         ReviewDTO reviewDTO = new ReviewDTO();
-        reviewDTO.setMenuItemId(1L);
+        reviewDTO.setProductId(1L);
         reviewDTO.setComment("Great food!");
         reviewDTO.setRating(5);
 
@@ -71,7 +71,7 @@ class ReviewServiceTest {
         review.setProduct(product);
         review.setUser(user);
 
-        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(ProductRepository.findById(1L)).thenReturn(Optional.of(product));
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(reviewDTO);
@@ -86,18 +86,18 @@ class ReviewServiceTest {
     }
 
     @Test
-    void testGetReviewsByMenuItemId() {
+    void testGetReviewsByProductId() {
         // Arrange
-        Long menuItemId = 1L;
+        Long ProductId = 1L;
         Review review = new Review();
         review.setComment("Great food!");
         review.setRating(5);
 
-        when(reviewRepository.findByMenuItemId(menuItemId)).thenReturn(Arrays.asList(review));
+        when(reviewRepository.findByProductId(ProductId)).thenReturn(Arrays.asList(review));
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(new ReviewDTO());
 
         // Act
-        List<ReviewDTO> result = reviewService.getReviewsByMenuItemId(menuItemId);
+        List<ReviewDTO> result = reviewService.getReviewsByProductId(ProductId);
 
         // Assert
         assertNotNull(result);

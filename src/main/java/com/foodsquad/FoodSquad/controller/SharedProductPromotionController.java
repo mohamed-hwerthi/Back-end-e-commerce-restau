@@ -2,8 +2,8 @@ package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
-import com.foodsquad.FoodSquad.model.dto.PromotionWithMenuItemsRequestDTO;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
+import com.foodsquad.FoodSquad.model.dto.PromotionWithProductsRequestDTO;
+import com.foodsquad.FoodSquad.service.declaration.ProductPromotionSharedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +16,18 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/items-promotions")
 @RequiredArgsConstructor
-public class SharedMenuItemPromotionController {
+public class SharedProductPromotionController {
 
-    private final MenuItemPromotionSharedService promotionSharedService;
+    private final ProductPromotionSharedService promotionSharedService;
 
     /**
      * Crée une promotion pour une liste d'items de menu.
      */
     @PostMapping("")
-    public ResponseEntity<PromotionDTO> createPromotionForMenuItems(
-            @RequestBody PromotionWithMenuItemsRequestDTO promotionWithMenuItemsRequestDTO
+    public ResponseEntity<PromotionDTO> createPromotionForProducts(
+            @RequestBody PromotionWithProductsRequestDTO promotionWithProductsRequestDTO
     ) {
-        PromotionDTO createdPromotion = promotionSharedService.createPromotionForMenuItems(promotionWithMenuItemsRequestDTO.getMenuItemsIds(), promotionWithMenuItemsRequestDTO.getPromotion());
+        PromotionDTO createdPromotion = promotionSharedService.createPromotionForProducts(promotionWithProductsRequestDTO.getProductsIds(), promotionWithProductsRequestDTO.getPromotion());
         if (createdPromotion == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -38,42 +38,42 @@ public class SharedMenuItemPromotionController {
      * Récupère la liste des items de menu liés à une promotion donnée.
      */
     @GetMapping("/{promotionId}/menu-items")
-    public ResponseEntity<List<ProductDTO>> findMenuItemsRelatedToPromotion(@PathVariable UUID promotionId) {
-        List<ProductDTO> products = promotionSharedService.findMenuItemsRelatedToPromotion(promotionId);
+    public ResponseEntity<List<ProductDTO>> findProductsRelatedToPromotion(@PathVariable UUID promotionId) {
+        List<ProductDTO> products = promotionSharedService.findProductsRelatedToPromotion(promotionId);
         return ResponseEntity.ok(products);
     }
 
     /**
      * Vérifie s'il existe une promotion active qui chevauche une période donnée pour un item de menu.
      */
-    @GetMapping("/{menuItemId}/active-promotion-overlap")
+    @GetMapping("/{ProductId}/active-promotion-overlap")
     public ResponseEntity<Boolean> hasActivePromotionOverlappingPeriod(
-            @PathVariable UUID menuItemId,
+            @PathVariable UUID ProductId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        boolean hasOverlap = promotionSharedService.hasActivePromotionOverlappingPeriod(menuItemId, startDate, endDate);
+        boolean hasOverlap = promotionSharedService.hasActivePromotionOverlappingPeriod(ProductId, startDate, endDate);
         return ResponseEntity.ok(hasOverlap);
     }
 
     /**
      * Désactive une promotion pour un item de menu donné.
      */
-    @DeleteMapping("/{menuItemId}/promotions/{promotionId}/deactivate")
-    public ResponseEntity<Void> desactivatePromotionForMenuItem(
-            @PathVariable UUID menuItemId,
+    @DeleteMapping("/{ProductId}/promotions/{promotionId}/deactivate")
+    public ResponseEntity<Void> desactivatePromotionForProduct(
+            @PathVariable UUID ProductId,
             @PathVariable UUID promotionId) {
 
-        promotionSharedService.deactivatePromotionForMenuItem(menuItemId, promotionId);
+        promotionSharedService.deactivatePromotionForProduct(ProductId, promotionId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{menuItemId}/promotions/{promotionId}/add")
-    public ResponseEntity<Void> addPromotionToMenuItem(
-            @PathVariable UUID menuItemId,
+    @PostMapping("/{ProductId}/promotions/{promotionId}/add")
+    public ResponseEntity<Void> addPromotionToProduct(
+            @PathVariable UUID ProductId,
             @PathVariable UUID promotionId) {
 
-        promotionSharedService.addPromotionToMenuItem(menuItemId, promotionId);
+        promotionSharedService.addPromotionToProduct(ProductId, promotionId);
         return ResponseEntity.ok().build();
     }
 

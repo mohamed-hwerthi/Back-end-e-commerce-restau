@@ -22,7 +22,7 @@ public class ModelMapperConfig {
             protected void configure() {
                 using(ctx -> ((Map<Product, Integer>) ctx.getSource()).entrySet().stream()
                         .collect(Collectors.toMap(e -> e.getKey().getId(), Map.Entry::getValue)))
-                        .map(source.getMenuItemsWithQuantity(), destination.getMenuItemQuantities());
+                        .map(source.getProductsWithQuantity(), destination.getProductQuantities());
             }
         });
         return modelMapper;

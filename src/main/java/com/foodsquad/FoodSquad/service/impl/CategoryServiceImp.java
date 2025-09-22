@@ -8,7 +8,7 @@ import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import com.foodsquad.FoodSquad.repository.CategoryRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,15 +33,15 @@ public class CategoryServiceImp implements CategoryService {
 
     private final CategoryMapper categoryMapper;
 
-    private final MenuItemService menuItemService;
+    private final ProductService ProductService;
 
     private final LocaleContext localeContext;
 
 
-    public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper, MenuItemService menuItemService, LocaleContext localeContext) {
+    public CategoryServiceImp(CategoryRepository categoryRepository, CategoryMapper categoryMapper, ProductService ProductService, LocaleContext localeContext) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
-        this.menuItemService = menuItemService;
+        this.ProductService = ProductService;
         this.localeContext = localeContext;
     }
 
@@ -88,7 +88,7 @@ public class CategoryServiceImp implements CategoryService {
         Category category = findCategory(id);
         if (category.getProducts() != null && !category.getProducts().isEmpty()) {
             log.info("Deleting {} menu items linked to category {}", category.getProducts().size(), id);
-            category.getProducts().forEach(product -> menuItemService.deleteMenuItem(product.getId()));
+            category.getProducts().forEach(product -> ProductService.deleteProduct(product.getId()));
         }
 
         categoryRepository.delete(category);

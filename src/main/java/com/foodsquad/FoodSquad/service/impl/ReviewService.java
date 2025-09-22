@@ -4,7 +4,7 @@ import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Review;
 import com.foodsquad.FoodSquad.model.entity.User;
-import com.foodsquad.FoodSquad.repository.MenuItemRepository;
+import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -28,7 +28,7 @@ public class ReviewService {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private MenuItemRepository menuItemRepository;
+    private ProductRepository ProductRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -43,7 +43,7 @@ public class ReviewService {
     }
 
     public ReviewDTO createReview(ReviewDTO reviewDTO) {
-        Product product = menuItemRepository.findById(reviewDTO.getMenuItemId())
+        Product product = ProductRepository.findById(reviewDTO.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Menu item not found"));
 
         User user = getCurrentUser();
@@ -58,8 +58,8 @@ public class ReviewService {
         return modelMapper.map(savedReview, ReviewDTO.class);
     }
 
-    public List<ReviewDTO> getReviewsByMenuItemId(UUID menuItemId) {
-        return reviewRepository.findByProductId(menuItemId)
+    public List<ReviewDTO> getReviewsByProductId(UUID ProductId) {
+        return reviewRepository.findByProductId(ProductId)
                 .stream()
                 .map(review -> modelMapper.map(review, ReviewDTO.class))
                 .collect(Collectors.toList());

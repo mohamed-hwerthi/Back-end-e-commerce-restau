@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class MenuItemControllerTest {
+class ProductControllerTest {
 
     @Mock
-    private com.foodsquad.FoodSquad.service.declaration.MenuItemService menuItemService;
+    private com.foodsquad.FoodSquad.service.declaration.ProductService ProductService;
 
     @InjectMocks
-    private MenuItemController menuItemController;
+    private ProductController ProductController;
 
     @BeforeEach
     void setUp() {
@@ -32,77 +32,77 @@ class MenuItemControllerTest {
 
 
     @Test
-    void testCreateMenuItem() {
+    void testCreateProduct() {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setTitle("Burger");
-        when(menuItemService.createMenuItem(any(ProductDTO.class))).thenReturn(ResponseEntity.ok(productDTO));
+        when(ProductService.createProduct(any(ProductDTO.class))).thenReturn(ResponseEntity.ok(productDTO));
 
-        ResponseEntity<ProductDTO> response = menuItemController.createMenuItem(productDTO);
+        ResponseEntity<ProductDTO> response = ProductController.createProduct(productDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(productDTO, response.getBody());
-        verify(menuItemService, times(1)).createMenuItem(any(ProductDTO.class));
+        verify(ProductService, times(1)).createProduct(any(ProductDTO.class));
     }
 
     @Test
-    void testGetMenuItemById() {
+    void testGetProductById() {
         ProductDTO productDTO = new ProductDTO();
-        when(menuItemService.getMenuItemById(anyLong())).thenReturn(productDTO);
+        when(ProductService.getProductById(anyLong())).thenReturn(productDTO);
 
-        ResponseEntity<ProductDTO> response = menuItemController.getMenuItemById(1L);
+        ResponseEntity<ProductDTO> response = ProductController.getProductById(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(productDTO, response.getBody());
-        verify(menuItemService, times(1)).getMenuItemById(1L);
+        verify(ProductService, times(1)).getProductById(1L);
     }
 
     @Test
-    void testUpdateMenuItem() {
+    void testUpdateProduct() {
         ProductDTO productDTO = new ProductDTO();
-        when(menuItemService.updateMenuItem(anyLong(), any(ProductDTO.class))).thenReturn(ResponseEntity.ok(productDTO));
+        when(ProductService.updateProduct(anyLong(), any(ProductDTO.class))).thenReturn(ResponseEntity.ok(productDTO));
 
-        ResponseEntity<ProductDTO> response = menuItemController.updateMenuItem(1L, productDTO);
+        ResponseEntity<ProductDTO> response = ProductController.updateProduct(1L, productDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(productDTO, response.getBody());
-        verify(menuItemService, times(1)).updateMenuItem(anyLong(), any(ProductDTO.class));
+        verify(ProductService, times(1)).updateProduct(anyLong(), any(ProductDTO.class));
     }
 
     @Test
-    void testDeleteMenuItem() {
-        when(menuItemService.deleteMenuItem(anyLong())).thenReturn(ResponseEntity.ok(Collections.singletonMap("message", "Menu Item successfully deleted")));
+    void testDeleteProduct() {
+        when(ProductService.deleteProduct(anyLong())).thenReturn(ResponseEntity.ok(Collections.singletonMap("message", "Menu Item successfully deleted")));
 
-        ResponseEntity<Map<String, String>> response = menuItemController.deleteMenuItem(1L);
+        ResponseEntity<Map<String, String>> response = ProductController.deleteProduct(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Menu Item successfully deleted", response.getBody().get("message"));
-        verify(menuItemService, times(1)).deleteMenuItem(1L);
+        verify(ProductService, times(1)).deleteProduct(1L);
     }
 
     @Test
-    void testGetMenuItemsByIds() {
+    void testGetProductsByIds() {
         List<ProductDTO> products = Collections.singletonList(new ProductDTO());
-        when(menuItemService.getMenuItemsByIds(anyList())).thenReturn(ResponseEntity.ok(products));
+        when(ProductService.getProductsByIds(anyList())).thenReturn(ResponseEntity.ok(products));
 
-        List<Long> menuItemIds = List.of(1L, 2L, 3L);
-        ResponseEntity<List<ProductDTO>> response = menuItemController.getMenuItemsByIds(menuItemIds);
+        List<Long> ProductIds = List.of(1L, 2L, 3L);
+        ResponseEntity<List<ProductDTO>> response = ProductController.getProductsByIds(ProductIds);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(products, response.getBody());
-        verify(menuItemService, times(1)).getMenuItemsByIds(anyList());
+        verify(ProductService, times(1)).getProductsByIds(anyList());
     }
 
 
     @Test
-    void testDeleteMenuItemsByIds() {
-        when(menuItemService.deleteMenuItemsByIds(anyList())).thenReturn(ResponseEntity.ok(Collections.singletonMap("message", "Menu Items successfully deleted")));
+    void testDeleteProductsByIds() {
+        when(ProductService.deleteProductsByIds(anyList())).thenReturn(ResponseEntity.ok(Collections.singletonMap("message", "Menu Items successfully deleted")));
 
-        List<Long> menuItemIds = List.of(1L, 2L, 3L);
-        ResponseEntity<Map<String, String>> response = menuItemController.deleteMenuItemsByIds(menuItemIds);
+        List<Long> ProductIds = List.of(1L, 2L, 3L);
+        ResponseEntity<Map<String, String>> response = ProductController.deleteProductsByIds(ProductIds);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Menu Items successfully deleted", response.getBody().get("message"));
-        verify(menuItemService, times(1)).deleteMenuItemsByIds(anyList());
+        verify(ProductService, times(1)).deleteProductsByIds(anyList());
     }
 
 }

@@ -1,9 +1,9 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.model.dto.MenuItemFilterByCategoryAndQueryRequestDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductFilterByCategoryAndQueryRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,13 +24,13 @@ import java.util.UUID;
 @RequestMapping("/api/menu-items")
 @Slf4j
 @Tag(name = "5. Menu Item Management", description = "Menu Item Management API")
-public class MenuItemController {
+public class ProductController {
 
-    private final MenuItemService menuItemService;
+    private final ProductService ProductService;
 
-    public MenuItemController(MenuItemService menuItemService) {
+    public ProductController(ProductService ProductService) {
 
-        this.menuItemService = menuItemService;
+        this.ProductService = ProductService;
     }
 
     @Operation(
@@ -38,28 +38,28 @@ public class MenuItemController {
             description = "Creates a new menu item with the provided details."
     )
     @PostMapping
-    public ResponseEntity<ProductDTO> createMenuItem(@Valid @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
         log.info("Request to create menu item: {}", productDTO);
 
-        ProductDTO createdMenuItem = menuItemService.createMenuItem(productDTO);
+        ProductDTO createdProduct = ProductService.createProduct(productDTO);
 
-        log.info("Menu item created successfully: {}", createdMenuItem.getId());
+        log.info("Menu item created successfully: {}", createdProduct.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdMenuItem);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @Operation(summary = "Get a menu item by ID", description = "Retrieve a menu item by its unique ID.")
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getMenuItemById(
+    public ResponseEntity<ProductDTO> getProductById(
             @Parameter(description = "ID of the menu item to retrieve", example = "1")
             @PathVariable UUID id) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(menuItemService.getMenuItemById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(ProductService.getProductById(id));
     }
 
     @Operation(summary = "Get all menu items", description = "Retrieve a list of menu items with optional filters and sorting.")
     @GetMapping
-    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> getAllMenuItems(
+    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> getAllProducts(
             @Parameter(description = "Page number, starting from 0", example = "0")
             @RequestParam(defaultValue = "0") int page,
 
@@ -82,60 +82,60 @@ public class MenuItemController {
 
             @RequestParam(required = false) String priceSortDirection
     ) {
-        PaginatedResponseDTO<ProductDTO> response = menuItemService.getAllMenuItems(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
+        PaginatedResponseDTO<ProductDTO> response = ProductService.getAllProducts(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update a menu item by ID", description = "Update the details of an existing menu item by its unique ID.")
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateMenuItem(
+    public ResponseEntity<ProductDTO> updateProduct(
             @Parameter(description = "ID of the menu item to update", example = "1")
             @PathVariable UUID id,
             @Valid @RequestBody ProductDTO productDTO) {
 
-        return menuItemService.updateMenuItem(id, productDTO);
+        return ProductService.updateProduct(id, productDTO);
     }
 
     @Operation(summary = "Delete a menu item by ID", description = "Delete an existing menu item by its unique ID.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteMenuItem(
+    public ResponseEntity<Map<String, String>> deleteProduct(
             @Parameter(description = "ID of the menu item to delete", example = "1")
             @PathVariable UUID id) {
 
-        return menuItemService.deleteMenuItem(id);
+        return ProductService.deleteProduct(id);
     }
 
     @Operation(summary = "Get menu items by IDs", description = "Retrieve a list of menu items by their unique IDs.")
     @GetMapping("/batch")
-    public ResponseEntity<List<ProductDTO>> getMenuItemsByIds(
+    public ResponseEntity<List<ProductDTO>> getProductsByIds(
             @Parameter(description = "List of IDs of the menu items to retrieve", example = "[1, 2, 3]")
             @RequestParam List<UUID> ids) {
 
-        return menuItemService.getMenuItemsByIds(ids);
+        return ProductService.getProductsByIds(ids);
     }
 
     @Operation(summary = "Delete menu items by IDs", description = "Delete existing menu items by their unique IDs.")
     @DeleteMapping("/batch")
-    public ResponseEntity<Map<String, String>> deleteMenuItemsByIds(
+    public ResponseEntity<Map<String, String>> deleteProductsByIds(
             @Parameter(description = "List of IDs of the menu items to delete", example = "[1, 2, 3]")
             @RequestParam List<UUID> ids) {
 
-        return menuItemService.deleteMenuItemsByIds(ids);
+        return ProductService.deleteProductsByIds(ids);
     }
 
     @Operation(summary = "Search menu items by query , stock or not in stock   and category   ", description = "Retrieve a list of menu items that their title  match the provided query  and matchs a categories.")
     @PostMapping("/search/by-query-categories")
-    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> searchMenuItemsByQuery(@RequestBody() MenuItemFilterByCategoryAndQueryRequestDTO menuItemFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
+    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> searchProductsByQuery(@RequestBody() ProductFilterByCategoryAndQueryRequestDTO ProductFilterByCategoryAndQueryRequestDTO, Pageable pageable) {
 
-        PaginatedResponseDTO<ProductDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(menuItemFilterByCategoryAndQueryRequestDTO, pageable);
+        PaginatedResponseDTO<ProductDTO> paginatedResponseDTOS = ProductService.searchProductsByQuery(ProductFilterByCategoryAndQueryRequestDTO, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(paginatedResponseDTOS);
     }
 
     @Operation(summary = "Search menu items by query", description = "Retrieve a list of menu items that their title  match the provided query.")
     @GetMapping("/search/{query}")
-    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> searchMenuItemsByQuery(@Parameter(description = "Query to search menu items by title", example = "pizza") @PathVariable("query") String query, Pageable pageable) {
+    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> searchProductsByQuery(@Parameter(description = "Query to search menu items by title", example = "pizza") @PathVariable("query") String query, Pageable pageable) {
 
-        PaginatedResponseDTO<ProductDTO> paginatedResponseDTOS = menuItemService.searchMenuItemsByQuery(query, pageable);
+        PaginatedResponseDTO<ProductDTO> paginatedResponseDTOS = ProductService.searchProductsByQuery(query, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(paginatedResponseDTOS);
     }
 
@@ -144,25 +144,25 @@ public class MenuItemController {
     @GetMapping("/bar-code/{barCode}")
     public ResponseEntity<ProductDTO> findByQrCode(@Parameter(description = "Search by bar code  ", example = "0001236") @PathVariable("barCode") String barCode) {
 
-        return ResponseEntity.ok(menuItemService.findByBarCode(barCode));
+        return ResponseEntity.ok(ProductService.findByBarCode(barCode));
     }
 
     @Operation(
             summary = "Delete a media from a menu item",
             description = "Deletes a specific media associated with a menu item. This will also delete the related file from storage."
     )
-    @DeleteMapping("/{menuItemId}/media/{mediaId}")
-    public ResponseEntity<Map<String, String>> deleteMediaFromMenuItem(
+    @DeleteMapping("/{ProductId}/media/{mediaId}")
+    public ResponseEntity<Map<String, String>> deleteMediaFromProduct(
             @Parameter(description = "ID of the menu item", example = "123e4567-e89b-12d3-a456-426614174000")
-            @PathVariable UUID menuItemId,
+            @PathVariable UUID ProductId,
 
             @Parameter(description = "ID of the media to delete", example = "1")
             @PathVariable UUID mediaId) {
 
-        log.info("Request to delete media {} from menu item {}", mediaId, menuItemId);
-        menuItemService.deleteMediaForMenuItem(menuItemId, mediaId);
+        log.info("Request to delete media {} from menu item {}", mediaId, ProductId);
+        ProductService.deleteMediaForProduct(ProductId, mediaId);
 
-        return ResponseEntity.ok(Map.of("message", "Media " + mediaId + " deleted successfully from menu item " + menuItemId));
+        return ResponseEntity.ok(Map.of("message", "Media " + mediaId + " deleted successfully from menu item " + ProductId));
     }
 
 

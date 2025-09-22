@@ -116,7 +116,7 @@ class OrderControllerTest {
         Map<String, String> responseMap = Map.of("message", "Orders successfully deleted");
         when(orderService.deleteOrders(orderIds)).thenReturn(new ResponseEntity<>(responseMap, HttpStatus.OK));
 
-        ResponseEntity<Map<String, String>> response = orderController.deleteMenuItemsByIds(orderIds);
+        ResponseEntity<Map<String, String>> response = orderController.deleteProductsByIds(orderIds);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(responseMap, response.getBody());

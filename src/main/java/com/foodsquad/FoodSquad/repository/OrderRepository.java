@@ -19,11 +19,11 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     /**
      * Sums the quantities of a specific menu item across all orders.
      *
-     * @param menuItemId The ID of the menu item.
+     * @param ProductId The ID of the menu item.
      * @return The total quantity of the menu item.
      */
-    @Query(value = "SELECT SUM(quantity) FROM order_menu_items WHERE menu_item_id = :menuItemId", nativeQuery = true)
-    Integer sumQuantityByMenuItemId(@Param("menuItemId") UUID menuItemId);
+    @Query(value = "SELECT SUM(quantity) FROM order_menu_items WHERE menu_item_id = :ProductId", nativeQuery = true)
+    Integer sumQuantityByProductId(@Param("ProductId") UUID ProductId);
 
     /**
      * Finds all orders with their associated users and returns them in a pageable format.
@@ -56,11 +56,11 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     /**
      * Removes references to a menu item from the order_menu_items table.
      *
-     * @param menuItemId The ID of the menu item to remove references to.
+     * @param ProductId The ID of the menu item to remove references to.
      */
     @Modifying
-    @Query(value = "DELETE FROM order_menu_items WHERE menu_item_id = :menuItemId", nativeQuery = true)
-    void removeMenuItemReferences(@Param("menuItemId") UUID menuItemId);
+    @Query(value = "DELETE FROM order_menu_items WHERE menu_item_id = :ProductId", nativeQuery = true)
+    void removeProductReferences(@Param("ProductId") UUID ProductId);
 
 
     /**

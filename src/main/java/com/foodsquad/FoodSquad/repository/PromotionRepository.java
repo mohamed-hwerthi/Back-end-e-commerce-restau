@@ -17,9 +17,9 @@ public interface PromotionRepository extends JpaRepository<Promotion, UUID> {
                 LEFT JOIN p.products mi
                 LEFT JOIN p.categories c
                 LEFT JOIN c.products cmi
-                WHERE mi.id = :menuItemId OR cmi.id = :menuItemId
+                WHERE mi.id = :ProductId OR cmi.id = :ProductId
             """)
-    List<Promotion> findAllPromotionsForMenuItem(@Param("menuItemId") UUID menuItemId);
+    List<Promotion> findAllPromotionsForProduct(@Param("ProductId") UUID ProductId);
 
 
 }

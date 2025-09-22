@@ -22,7 +22,7 @@ public class OrderDTO {
 
     @NotNull(message = "Menu item quantities are required")
     @Schema(example = "{\"1\": 1, \"2\": 2}")
-    private Map<UUID, Integer> menuItemQuantities;
+    private Map<UUID, Integer> ProductQuantities;
 
     @NotNull(message = "Status is required")
     @Schema(example = "PENDING")
@@ -44,10 +44,10 @@ public class OrderDTO {
     public OrderDTO() {
     }
 
-    public OrderDTO(String id, String userEmail, Map<UUID, Integer> menuItemQuantities, OrderStatus status, BigDecimal totalCost, LocalDateTime createdOn, Boolean paid) {
+    public OrderDTO(String id, String userEmail, Map<UUID, Integer> ProductQuantities, OrderStatus status, BigDecimal totalCost, LocalDateTime createdOn, Boolean paid) {
         this.id = id;
         this.userEmail = userEmail;
-        this.menuItemQuantities = menuItemQuantities;
+        this.ProductQuantities = ProductQuantities;
         this.status = status;
         this.totalCost = totalCost;
         this.createdAt = createdOn;

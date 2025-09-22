@@ -34,12 +34,12 @@ public interface PromotionService {
      * This includes promotions directly linked to the menu item as well as promotions
      * linked to the categories related to the menu item.
      *
-     * @param menuItemId the ID of the menu item for which to retrieve promotions
+     * @param ProductId the ID of the menu item for which to retrieve promotions
      * @return a {@code PromotionDTO} containing all relevant promotions
      */
-    List<PromotionDTO> findAllPromotionForMenuItem(UUID menuItemId);
+    List<PromotionDTO> findAllPromotionForProduct(UUID ProductId);
 
-    List<Promotion> findPromotionsForMenuItem(UUID menuItemId);
+    List<Promotion> findPromotionsForProduct(UUID ProductId);
 
 
 }

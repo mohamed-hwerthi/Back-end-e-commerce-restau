@@ -21,9 +21,9 @@ public interface ProductMapper {
     List<ProductDTO> toDtoList(List<Product> products);
 
     @Mapping(target = "id", ignore = true)
-    void updateMenuItemFromDto(ProductDTO dto, @MappingTarget Product entity);
+    void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
-    default ProductDTO toMenuItemDtoWithMoreInformation(Product product, int salesCount, long reviewCount, double averageRating) {
+    default ProductDTO toProductDtoWithMoreInformation(Product product, int salesCount, long reviewCount, double averageRating) {
 
         ProductDTO productDTO = toDto(product);
         productDTO.setSalesCount(salesCount);

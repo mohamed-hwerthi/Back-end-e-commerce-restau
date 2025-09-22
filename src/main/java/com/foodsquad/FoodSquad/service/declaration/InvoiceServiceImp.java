@@ -30,7 +30,7 @@ public class InvoiceServiceImp implements InvoiceService {
     private static final Logger log = LoggerFactory.getLogger(InvoiceServiceImp.class);
     private final OrderRepository orderRepository;
     private final TimbreRepository timbreRepository;
-    private final MenuItemService menuItemService;
+    private final ProductService ProductService;
 
     @Override
     public byte[] generateInvoice(String orderId) throws Exception {
@@ -70,11 +70,11 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
     private void prepareDiscountedPrices(Order order) {
-        if (order.getMenuItemsWithQuantity() != null) {
-            for (Map.Entry<Product, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
+        if (order.getProductsWithQuantity() != null) {
+            for (Map.Entry<Product, Integer> entry : order.getProductsWithQuantity().entrySet()) {
                 Product product = entry.getKey();
                 if (product != null) {
-                    product.setPrice(menuItemService.findMenuItemDiscountedPrice(product.getId()));
+                    product.setPrice(ProductService.findProductDiscountedPrice(product.getId()));
                 }
             }
         }
@@ -83,7 +83,7 @@ public class InvoiceServiceImp implements InvoiceService {
     private List<Map<String, Object>> buildInvoiceItems(Order order, Map<Tax, BigDecimal> taxDetails) {
         List<Map<String, Object>> items = new ArrayList<>();
 
-        for (Map.Entry<Product, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
+        for (Map.Entry<Product, Integer> entry : order.getProductsWithQuantity().entrySet()) {
             Product item = entry.getKey();
             int quantity = entry.getValue();
 
@@ -107,7 +107,7 @@ public class InvoiceServiceImp implements InvoiceService {
             }
 
             Map<String, Object> itemData = new HashMap<>();
-            itemData.put("menuItemName", item.getTitle());
+            itemData.put("ProductName", item.getTitle());
             itemData.put("quantity", quantity);
             itemData.put("priceHT", itemHTUnit);
             itemData.put("priceTTC", itemTTCUnit);

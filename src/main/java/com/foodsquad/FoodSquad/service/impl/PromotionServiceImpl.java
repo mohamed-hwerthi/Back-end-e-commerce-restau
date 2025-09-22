@@ -7,7 +7,7 @@ import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.PromotionRepository;
 import com.foodsquad.FoodSquad.service.declaration.CategoryService;
-import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
+import com.foodsquad.FoodSquad.service.declaration.ProductService;
 import com.foodsquad.FoodSquad.service.declaration.PromotionService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -27,7 +27,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     private final PromotionMapper promotionMapper;
 
-    private final MenuItemService menuItemService;
+    private final ProductService ProductService;
 
     private final CategoryService categoryService;
 
@@ -81,9 +81,9 @@ public class PromotionServiceImpl implements PromotionService {
     public void deletePromotion(UUID id) {
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
-        if (promotion.getPromotionTarget().equals(PromotionTarget.MENUITEMS)) {
-            List<Product> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
-            menuItemsWithPromotion.forEach(product -> product.getPromotions().remove(promotion));
+        if (promotion.getPromotionTarget().equals(PromotionTarget.ProductS)) {
+            List<Product> ProductsWithPromotion = ProductService.findByPromotion(promotion);
+            ProductsWithPromotion.forEach(product -> product.getPromotions().remove(promotion));
 
         }
         if (promotion.getPromotionTarget().equals(PromotionTarget.CATEGORIES)) {
@@ -119,13 +119,13 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public List<PromotionDTO> findAllPromotionForMenuItem(UUID menuItemId) {
-        return promotionRepository.findAllPromotionsForMenuItem(menuItemId).stream().map(promotionMapper::toDTO).toList();
+    public List<PromotionDTO> findAllPromotionForProduct(UUID ProductId) {
+        return promotionRepository.findAllPromotionsForProduct(ProductId).stream().map(promotionMapper::toDTO).toList();
     }
 
     @Override
-    public List<Promotion> findPromotionsForMenuItem(UUID menuItemId) {
-        return promotionRepository.findAllPromotionsForMenuItem(menuItemId);
+    public List<Promotion> findPromotionsForProduct(UUID ProductId) {
+        return promotionRepository.findAllPromotionsForProduct(ProductId);
     }
 }
 

@@ -34,7 +34,7 @@ public class ReviewDTO {
 
     @NotNull(message = "Menu Item ID is required")
     @Schema(description = "ID of the menu item being reviewed", example = "5")
-    private UUID menuItemId;
+    private UUID ProductId;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Email of the user who wrote the review", example = "user@example.com")
@@ -60,11 +60,11 @@ public class ReviewDTO {
         this.rating = rating;
     }
 
-    public @NotNull(message = "Menu Item ID is required") UUID getMenuItemId() {
-        return menuItemId;
+    public @NotNull(message = "Menu Item ID is required") UUID getProductId() {
+        return ProductId;
     }
 
-    public void setMenuItemId(@NotNull(message = "Menu Item ID is required") UUID menuItemId) {
-        this.menuItemId = menuItemId;
+    public void setProductId(@NotNull(message = "Menu Item ID is required") UUID ProductId) {
+        this.ProductId = ProductId;
     }
 }

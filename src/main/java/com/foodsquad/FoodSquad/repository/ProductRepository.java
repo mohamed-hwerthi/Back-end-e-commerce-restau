@@ -17,7 +17,7 @@ import java.util.UUID;
 /*
 todo : Methode are commented   until we Fix in all the transaltions
  */
-public interface MenuItemRepository extends JpaRepository<Product, UUID> {
+public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("SELECT m FROM Product m JOIN m.categories c WHERE c.id = :categoryId")
     Page<Product> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
