@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.mapper;
 
 import com.foodsquad.FoodSquad.model.dto.AttributeTypeDTO;
-import com.foodsquad.FoodSquad.model.dto.AttributeValueDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductAttributeValueDTO;
 import com.foodsquad.FoodSquad.model.entity.AttributeType;
 import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
 import org.mapstruct.Mapper;
@@ -14,10 +14,10 @@ public interface AttributeValueMapper {
     AttributeValueMapper INSTANCE = Mappers.getMapper(AttributeValueMapper.class);
 
 
-    AttributeValueDTO toDto(ProductAttributeValue attributeValue);
+    ProductAttributeValueDTO toDto(ProductAttributeValue attributeValue);
 
 
-    ProductAttributeValue toEntity(AttributeValueDTO dto);
+    ProductAttributeValue toEntity(ProductAttributeValueDTO dto);
 
     @Named("mapAttributeTypeToDto")
     default AttributeTypeDTO mapAttributeTypeToDto(AttributeType attributeType) {

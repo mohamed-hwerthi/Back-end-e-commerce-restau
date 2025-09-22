@@ -3,7 +3,7 @@ package com.foodsquad.FoodSquad.service.impl;
 import com.foodsquad.FoodSquad.mapper.VariantAttributeMapper;
 import com.foodsquad.FoodSquad.model.dto.VariantAttributeDTO;
 import com.foodsquad.FoodSquad.model.entity.VariantAttribute;
-import com.foodsquad.FoodSquad.repository.AttributeValueRepository;
+import com.foodsquad.FoodSquad.repository.ProductAttributeValueRepository;
 import com.foodsquad.FoodSquad.repository.ProductVariantRepository;
 import com.foodsquad.FoodSquad.repository.VariantAttributeRepository;
 import com.foodsquad.FoodSquad.service.declaration.VariantAttributeService;
@@ -22,7 +22,7 @@ public class VariantAttributeServiceImpl implements VariantAttributeService {
 
     private final VariantAttributeRepository variantAttributeRepository;
     private final ProductVariantRepository productVariantRepository;
-    private final AttributeValueRepository attributeValueRepository;
+    private final ProductAttributeValueRepository ProductAttributeValueRepository;
     private final VariantAttributeMapper variantAttributeMapper;
 
 

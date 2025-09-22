@@ -29,11 +29,7 @@ public class ProductVariant {
 
     private BigDecimal price;
 
-    private Integer stockQuantity = 0;
-
-    private Boolean isDefault = false;
-
-    private Boolean isActive = true;
+    private Integer quantity = 0;
 
     @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
     private List<VariantAttribute> attributes = new ArrayList<>();

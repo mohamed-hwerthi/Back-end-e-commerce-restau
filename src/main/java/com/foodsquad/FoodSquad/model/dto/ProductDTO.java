@@ -5,6 +5,7 @@ import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProductDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -43,6 +45,8 @@ public class ProductDTO {
     private Double averageRating;
     private List<CategoryDTO> categories = new ArrayList<>();
 
+    private BigDecimal discountedPrice ;
+
     private List<MediaDTO> medias = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -51,14 +55,10 @@ public class ProductDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 
-    private BigDecimal discountedPrice;
-
     private TaxDTO tax;
 
+    private List<ProductVariantDTO>variants = new ArrayList<>() ;
 
-    public ProductDTO() {
-
-    }
 
 
 }

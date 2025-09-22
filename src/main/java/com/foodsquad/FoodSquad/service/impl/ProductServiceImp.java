@@ -3,19 +3,13 @@ package com.foodsquad.FoodSquad.service.impl;
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.exception.DuplicateProductException;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
-import com.foodsquad.FoodSquad.model.dto.DiscountType;
-import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
-import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.model.dto.ProductFilterByCategoryAndQueryRequestDTO;
+import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.TaxRepository;
-import com.foodsquad.FoodSquad.service.declaration.MediaService;
-import com.foodsquad.FoodSquad.service.declaration.ProductPromotionSharedService;
-import com.foodsquad.FoodSquad.service.declaration.ProductService;
-import com.foodsquad.FoodSquad.service.declaration.TaxService;
+import com.foodsquad.FoodSquad.service.declaration.*;
 import com.foodsquad.FoodSquad.service.helpers.ProductDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -42,7 +36,7 @@ public class ProductServiceImp implements ProductService {
 
     private final Logger logger = LoggerFactory.getLogger(ProductServiceImp.class);
 
-    private final ProductRepository ProductRepository;
+    private final ProductRepository productRepository;
 
     private final OrderRepository orderRepository;
 
@@ -66,10 +60,14 @@ public class ProductServiceImp implements ProductService {
 
     private final LocaleContext localeContext;
 
+    private ProductAttributeService productAttributeService;
+
+    private ProductAttributeValueService productAttributeValueService;
+
 
     public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext) {
 
-        this.ProductRepository = ProductRepository;
+        this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
         this.modelMapper = modelMapper;
@@ -82,31 +80,28 @@ public class ProductServiceImp implements ProductService {
         this.localeContext = localeContext;
     }
 
-
+  @Override
     public ProductDTO createProduct(ProductDTO productDTO) {
+        logger.debug("Creating product: {}", productDTO);
 
-        logger.debug("Creating menu item: {}", productDTO);
-        if (StringUtils.hasText(productDTO.getBarCode()) && isProductExistByBarCode(productDTO.getBarCode())) {
-            throw new DuplicateProductException("Menu item with bar code " + productDTO.getBarCode() + " already exists");
-        }
+        checkDuplicateBarCode(productDTO);
+
         Product product = productMapper.toEntity(productDTO);
-        if (productDTO.getTax() != null) {
-            Tax tax = this.taxService.createTax(productDTO);
-            product.setTax(tax);
-            BigDecimal price = product.getPrice();
-            BigDecimal taxRate = BigDecimal.valueOf((productDTO.getTax().getRate()) / 100);
-            BigDecimal priceWithTax = price.multiply(BigDecimal.ONE.add(taxRate));
-            product.setPrice(priceWithTax);
-        }
-        Product savedProduct = ProductRepository.save(product);
+
+        Product savedProduct = productRepository.save(product);
+
+        manageProductTaxesIfPresent(productDTO, savedProduct);
+
+        manageVariantsAndAttributes(productDTO, savedProduct);
+
+        savedProduct = productRepository.save(savedProduct);
+
         return productMapper.toDto(savedProduct);
     }
 
 
-    private boolean isProductExistByBarCode(String barCode) {
 
-        return ProductRepository.findByBarCode(barCode).isPresent();
-    }
+
 
     @Override
     public PaginatedResponseDTO<ProductDTO> searchProductsByQuery(
@@ -119,7 +114,7 @@ public class ProductServiceImp implements ProductService {
                 : null;
         Boolean inStock = filterRequest.getInStock() != null ? filterRequest.getInStock() : null;
 
-        Page<Product> ProductPage = ProductRepository.searchByQueryAndFilters(
+        Page<Product> ProductPage = productRepository.searchByQueryAndFilters(
                 query,
                 categoryIds,
                 inStock,
@@ -138,11 +133,7 @@ public class ProductServiceImp implements ProductService {
     @Override
     public PaginatedResponseDTO<ProductDTO> searchProductsByQuery(String query, Pageable pageable) {
         logger.debug("Searching menu items by query: {}", query);
-
-  /*
-  todo   : we have to change it to find all until  we Fix all Trasnaltiosn
-   */
-        Page<Product> ProductPage = ProductRepository.findAll(pageable);
+        Page<Product> ProductPage = productRepository.findAll(pageable);
         List<Product> products = ProductPage.getContent();
         List<ProductDTO> ProductDTOs = products.stream()
                 .map(product -> {
@@ -159,7 +150,7 @@ public class ProductServiceImp implements ProductService {
 
         logger.debug("Getting menu item by ID: {}", id);
 
-        Product product = ProductRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
         Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
         if (salesCount == null) {
@@ -178,7 +169,7 @@ public class ProductServiceImp implements ProductService {
         return productDTO;
 
     }
-
+ @Override
     public PaginatedResponseDTO<ProductDTO> getAllProducts(
             int page,
             int limit,
@@ -196,11 +187,270 @@ public class ProductServiceImp implements ProductService {
         Pageable pageable = PageRequest.of(page, limit, Sort.by(direction, sortField));
         Page<Product> ProductPage;
         if (categoryId != null) {
-            ProductPage = ProductRepository.findByCategoryId(categoryId, pageable);
+            ProductPage = productRepository.findByCategoryId(categoryId, pageable);
         } else {
-            ProductPage = ProductRepository.findAll(pageable);
+            ProductPage = productRepository.findAll(pageable);
         }
-//        List<ProductDTO> products = ProductPage.stream()
+        return new PaginatedResponseDTO<>(ProductPage.getContent().stream().map(productMapper::toDto).toList(), ProductPage.getTotalElements());
+    }
+
+    @Transactional
+    public ResponseEntity<ProductDTO> updateProduct(UUID id, ProductDTO productDTO) {
+
+        logger.debug("Updating menu item with ID: {}", id);
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
+
+        if (productDTO.getTax() != null) {
+            Tax existingTax = existingProduct.getTax();
+            BigDecimal newPrice = productDTO.getPrice();
+            double newTaxRate = productDTO.getTax().getRate();
+            double existingTaxRate = (existingTax != null) ? existingTax.getRate() : 0;
+            BigDecimal existingPriceTTC = existingProduct.getPrice();
+            Tax tax = existingTax != null ? existingTax : new Tax();
+            tax.setRate(newTaxRate);
+            tax.setName(productDTO.getTax().getName());
+            tax = taxRepository.save(tax);
+            existingProduct.setTax(tax);
+        }
+
+        productMapper.updateProductFromDto(productDTO, existingProduct);
+        Product savedProduct = productRepository.save(existingProduct);
+        ProductDTO responseDTO = modelMapper.map(savedProduct, ProductDTO.class);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
+
+    @Override
+    public ProductDTO decrementProductQuantity(UUID ProductId, int quantity) {
+
+        Product product = productRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
+        if (product.getQuantity() < quantity) {
+            throw new EntityNotFoundException("Product quantity is not enough");
+        }
+        product.setQuantity(product.getQuantity() - quantity);
+        return productMapper.toDto(productRepository.save(product));
+
+    }
+
+    @Transactional
+    public ResponseEntity<Map<String, String>> deleteProduct(UUID id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
+        orderRepository.removeProductReferences(product.getId());
+
+        productRepository.delete(product);
+        return ResponseEntity.ok(Map.of("message", "Menu Item successfully deleted"));
+    }
+
+    @Transactional
+    public ResponseEntity<Map<String, String>> deleteProductsByIds(List<UUID> ids) {
+
+        List<Product> products = productRepository.findAllById(ids);
+        if (products.isEmpty()) {
+            throw new EntityNotFoundException("No Products found for the given IDs");
+        }
+        products.forEach(product -> {
+            orderRepository.removeProductReferences(product.getId());
+            productRepository.delete(product);
+        });
+        return ResponseEntity.ok(Map.of("message", "Menu Items successfully deleted"));
+    }
+
+    @Override
+    public void deleteMediaForProduct(UUID ProductId, UUID mediaId) {
+        logger.debug("Deleting media {} for menu item {}", mediaId, ProductId);
+
+        Product product = productRepository.findById(ProductId)
+                .orElseThrow(() -> new EntityNotFoundException("Product with id " + ProductId + " not found"));
+
+        product.getMedias().removeIf(media -> media.getId().equals(mediaId));
+
+        productRepository.save(product);
+
+        mediaService.deleteMedia(mediaId);
+
+        logger.info("Successfully deleted media {} for menu item {}", mediaId, ProductId);
+    }
+
+    @Override
+    public ResponseEntity<List<ProductDTO>> getProductsByIds(List<UUID> ids) {
+
+        logger.debug("Getting menu items by IDs: {}", ids);
+
+        List<Product> products = productRepository.findAllById(ids);
+        if (products.isEmpty()) {
+            throw new EntityNotFoundException("No Products found for the given IDs");
+        }
+        List<ProductDTO> ProductDTOs = products.stream()
+                .map(product -> {
+                    Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
+                    if (salesCount == null) {
+                        salesCount = 0;
+                    }
+                    long reviewCount = reviewRepository.countByProductId(product.getId());
+                    Double averageRating = reviewRepository.findAverageRatingByProductId(product.getId());
+                    if (averageRating == null) {
+                        averageRating = 0.0;
+                    }
+                    averageRating = Math.round(averageRating * 10.0) / 10.0;
+
+
+                    ProductDTO productDTO = productMapper.toProductDtoWithMoreInformation(product, salesCount, reviewCount, averageRating);
+                    return verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(product, productDTO);
+                })
+                .toList();
+        return ResponseEntity.ok(ProductDTOs);
+    }
+
+    @Override
+    public ProductDTO findByBarCode(String barCode) {
+
+        return productRepository.findByBarCode(barCode)
+                .map(productMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found for barCode"));
+    }
+
+    private double roundToScale(double value, int scale) {
+
+        if (scale < 0) throw new IllegalArgumentException("Scale must be a positive integer");
+
+        double factor = Math.pow(10, scale);
+        return Math.round(value * factor) / factor;
+    }
+
+    @Override
+    public List<ProductDTO> saveProducts(List<Product> products) {
+
+        return productRepository.saveAll(products).stream().map(productMapper::toDto).toList();
+    }
+
+    @Override
+    public ProductDTO save(Product product) {
+
+        return productMapper.toDto(productRepository.save(product));
+    }
+
+    @Override
+    public Product findProductById(UUID id) {
+
+        return productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
+    }
+
+    @Override
+    public BigDecimal findProductDiscountedPrice(UUID ProductId) {
+
+        Product product = productRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
+        return ProductDiscountPriceCalculator.calculateDiscountedPrice(product);
+    }
+
+    @Override
+    public List<Product> findByPromotion(Promotion promotion) {
+
+        return productRepository.findAllByPromotionsContaining(promotion);
+    }
+
+
+
+    @Override
+    public List<Product> findByCategory(Category category) {
+
+        return productRepository.findAllByCategoriesContaining(category);
+    }
+
+
+
+
+
+    private void checkDuplicateBarCode(ProductDTO productDTO) {
+        if (StringUtils.hasText(productDTO.getBarCode()) && isProductExistByBarCode(productDTO.getBarCode())) {
+            throw new DuplicateProductException(
+                    "Product with bar code " + productDTO.getBarCode() + " already exists"
+            );
+        }
+    }
+
+    private void manageProductTaxesIfPresent(ProductDTO productDTO, Product product) {
+        if (productDTO.getTax() != null) {
+            manageProductTaxes(productDTO, product);
+        }
+    }
+
+    private void manageProductTaxes(ProductDTO productDTO, Product savedProduct) {
+        Tax tax = this.taxService.createTax(productDTO);
+        savedProduct.setTax(tax);
+
+
+    }
+
+
+    private boolean isProductExistByBarCode(String barCode) {
+
+        return productRepository.findByBarCode(barCode).isPresent();
+    }
+
+
+    private void manageVariantsAndAttributes(ProductDTO productDTO, Product savedProduct) {
+        if (ObjectUtils.isEmpty(productDTO.getVariants())) return;
+        for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
+            ProductVariant variant = createVariant(savedProduct, variantDTO);
+
+            for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
+                ProductAttribute attribute = productAttributeService.findOrCreateAttribute(savedProduct, optionDTO.getAttributeName());
+                ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+                VariantAttribute variantAttribute = new VariantAttribute();
+                variantAttribute.setVariant(variant);
+                variantAttribute.setAttributeValue(value);
+                variant.getAttributes().add(variantAttribute);
+            }
+            savedProduct.getVariants().add(variant);
+        }
+    }
+
+    private ProductVariant createVariant(Product product, ProductVariantDTO variantDTO) {
+        ProductVariant variant = new ProductVariant();
+        variant.setProduct(product);
+        variant.setSku(variantDTO.getSku());
+        variant.setPrice(variantDTO.getPrice());
+        variant.setQuantity(variantDTO.getQuantity());
+        return variant;
+    }
+
+
+    private ProductDTO verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(Product product, ProductDTO productDTO) {
+
+        boolean hasActivePromotion = ProductPromotionSharedService.isProductHasActivePromotionInCurrentDay(product.getId());
+        productDTO.setPromoted(hasActivePromotion);
+
+        BigDecimal discountedPrice = product.getPrice();
+
+        if (hasActivePromotion) {
+            discountedPrice = ProductDiscountPriceCalculator.calculateDiscountedPrice(product);
+        }
+        productDTO.setDiscountedPrice(discountedPrice);
+        return productDTO;
+    }
+
+    private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion percentageDiscountPromotion) {
+
+        return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
+    }
+
+    private boolean isPromotionDiscountTypeByAmount(PercentageDiscountPromotion percentageDiscountPromotion) {
+
+        return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
+    }
+
+
+
+    /*
+    todo  : commented code that exsits in the product find all methode  :
+     */
+
+    //        List<ProductDTO> products = ProductPage.stream()
 //                .map(product -> {
 //                    Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
 //                    if (salesCount == null) {
@@ -235,198 +485,8 @@ public class ProductServiceImp implements ProductService {
 //                    : item1.getSalesCount().compareTo(item2.getSalesCount()));
 //        }
 
-        return new PaginatedResponseDTO<>(ProductPage.getContent().stream().map(productMapper::toDto).toList(), ProductPage.getTotalElements());
-    }
 
-    @Transactional
-    public ResponseEntity<ProductDTO> updateProduct(UUID id, ProductDTO productDTO) {
-
-        logger.debug("Updating menu item with ID: {}", id);
-        Product existingProduct = ProductRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
-
-        if (productDTO.getTax() != null) {
-            Tax existingTax = existingProduct.getTax();
-            BigDecimal newPrice = productDTO.getPrice();
-            double newTaxRate = productDTO.getTax().getRate();
-            double existingTaxRate = (existingTax != null) ? existingTax.getRate() : 0;
-            BigDecimal existingPriceTTC = existingProduct.getPrice();
-            Tax tax = existingTax != null ? existingTax : new Tax();
-            tax.setRate(newTaxRate);
-            tax.setName(productDTO.getTax().getName());
-            tax = taxRepository.save(tax);
-            existingProduct.setTax(tax);
-        }
-
-        productMapper.updateProductFromDto(productDTO, existingProduct);
-        Product savedProduct = ProductRepository.save(existingProduct);
-        ProductDTO responseDTO = modelMapper.map(savedProduct, ProductDTO.class);
-
-        return ResponseEntity.ok(responseDTO);
-    }
-
-
-    @Override
-    public ProductDTO decrementProductQuantity(UUID ProductId, int quantity) {
-
-        Product product = ProductRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
-        if (product.getQuantity() < quantity) {
-            throw new EntityNotFoundException("Product quantity is not enough");
-        }
-        product.setQuantity(product.getQuantity() - quantity);
-        return productMapper.toDto(ProductRepository.save(product));
-
-    }
-
-    @Transactional
-    public ResponseEntity<Map<String, String>> deleteProduct(UUID id) {
-
-        Product product = ProductRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
-        orderRepository.removeProductReferences(product.getId());
-
-        ProductRepository.delete(product);
-        return ResponseEntity.ok(Map.of("message", "Menu Item successfully deleted"));
-    }
-
-    @Transactional
-    public ResponseEntity<Map<String, String>> deleteProductsByIds(List<UUID> ids) {
-
-        List<Product> products = ProductRepository.findAllById(ids);
-        if (products.isEmpty()) {
-            throw new EntityNotFoundException("No Products found for the given IDs");
-        }
-        products.forEach(product -> {
-            orderRepository.removeProductReferences(product.getId());
-            ProductRepository.delete(product);
-        });
-        return ResponseEntity.ok(Map.of("message", "Menu Items successfully deleted"));
-    }
-
-
-    public ResponseEntity<List<ProductDTO>> getProductsByIds(List<UUID> ids) {
-
-        logger.debug("Getting menu items by IDs: {}", ids);
-
-        List<Product> products = ProductRepository.findAllById(ids);
-        if (products.isEmpty()) {
-            throw new EntityNotFoundException("No Products found for the given IDs");
-        }
-        List<ProductDTO> ProductDTOs = products.stream()
-                .map(product -> {
-                    Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
-                    if (salesCount == null) {
-                        salesCount = 0;
-                    }
-                    long reviewCount = reviewRepository.countByProductId(product.getId());
-                    Double averageRating = reviewRepository.findAverageRatingByProductId(product.getId());
-                    if (averageRating == null) {
-                        averageRating = 0.0;
-                    }
-                    averageRating = Math.round(averageRating * 10.0) / 10.0;
-
-
-                    ProductDTO productDTO = productMapper.toProductDtoWithMoreInformation(product, salesCount, reviewCount, averageRating);
-                    return verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(product, productDTO);
-                })
-                .toList();
-        return ResponseEntity.ok(ProductDTOs);
-    }
-
-    @Override
-    public ProductDTO findByBarCode(String barCode) {
-
-        return ProductRepository.findByBarCode(barCode)
-                .map(productMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for barCode"));
-    }
-
-    private double roundToScale(double value, int scale) {
-
-        if (scale < 0) throw new IllegalArgumentException("Scale must be a positive integer");
-
-        double factor = Math.pow(10, scale);
-        return Math.round(value * factor) / factor;
-    }
-
-    @Override
-    public List<ProductDTO> saveProducts(List<Product> products) {
-
-        return ProductRepository.saveAll(products).stream().map(productMapper::toDto).toList();
-    }
-
-    @Override
-    public ProductDTO save(Product product) {
-
-        return productMapper.toDto(ProductRepository.save(product));
-    }
-
-    @Override
-    public Product findProductById(UUID id) {
-
-        return ProductRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
-    }
-
-    @Override
-    public BigDecimal findProductDiscountedPrice(UUID ProductId) {
-
-        Product product = ProductRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
-        return ProductDiscountPriceCalculator.calculateDiscountedPrice(product);
-    }
-
-    @Override
-    public List<Product> findByPromotion(Promotion promotion) {
-
-        return ProductRepository.findAllByPromotionsContaining(promotion);
-    }
-
-    private ProductDTO verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(Product product, ProductDTO productDTO) {
-
-        boolean hasActivePromotion = ProductPromotionSharedService.isProductHasActivePromotionInCurrentDay(product.getId());
-        productDTO.setPromoted(hasActivePromotion);
-
-        BigDecimal discountedPrice = product.getPrice();
-
-        if (hasActivePromotion) {
-            discountedPrice = ProductDiscountPriceCalculator.calculateDiscountedPrice(product);
-        }
-        productDTO.setDiscountedPrice(discountedPrice);
-        return productDTO;
-    }
-
-
-    @Override
-    public List<Product> findByCategory(Category category) {
-
-        return ProductRepository.findAllByCategoriesContaining(category);
-    }
-
-
-    private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion percentageDiscountPromotion) {
-
-        return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
-    }
-
-    private boolean isPromotionDiscountTypeByAmount(PercentageDiscountPromotion percentageDiscountPromotion) {
-
-        return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
-    }
-
-    @Override
-    public void deleteMediaForProduct(UUID ProductId, UUID mediaId) {
-        logger.debug("Deleting media {} for menu item {}", mediaId, ProductId);
-
-        Product product = ProductRepository.findById(ProductId)
-                .orElseThrow(() -> new EntityNotFoundException("Product with id " + ProductId + " not found"));
-
-        product.getMedias().removeIf(media -> media.getId().equals(mediaId));
-
-        ProductRepository.save(product);
-
-        mediaService.deleteMedia(mediaId);
-
-        logger.info("Successfully deleted media {} for menu item {}", mediaId, ProductId);
-    }
 
 }
+
+
