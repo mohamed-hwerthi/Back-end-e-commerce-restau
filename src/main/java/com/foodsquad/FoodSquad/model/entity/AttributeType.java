@@ -21,17 +21,14 @@ public class AttributeType {
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private DataType dataType = DataType.TEXT;
 
     private Boolean isRequired = false;
 
     private Integer displayOrder = 0;
 
     @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL)
-    private List<AttributeValue> values = new ArrayList<>();
+    private List<ProductAttributeValue> values = new ArrayList<>();
 
-    public enum DataType {
-        TEXT, NUMBER, COLOR, BOOLEAN
-    }
+
+
 }

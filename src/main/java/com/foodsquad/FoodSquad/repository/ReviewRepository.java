@@ -12,13 +12,13 @@ import java.util.UUID;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    List<Review> findByMenuItemId(UUID menuItemId);
+    List<Review> findByProductId(UUID productId);
 
     List<Review> findByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
 
-    long countByMenuItemId(UUID menuItemId);
+    long countByProductId(UUID productId);
 
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.menuItem.id = :menuItemId")
-    Double findAverageRatingByMenuItemId(UUID menuItemId);
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId")
+    Double findAverageRatingByProductId(UUID productId);
 
 }

@@ -46,7 +46,7 @@ public class OrderService {
         validateOrderDTO(orderDTO);
 
         User user = fetchUser(orderDTO.getUserEmail());
-        Map<MenuItem, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
+        Map<Product, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
         BigDecimal totalCost = calculateTotalCost(menuItemsWithQuantity);
 
         Order order = new Order();
@@ -102,7 +102,7 @@ public class OrderService {
         checkOwnership(existingOrder.getUser());
 
         User user = fetchUser(orderDTO.getUserEmail());
-        Map<MenuItem, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
+        Map<Product, Integer> menuItemsWithQuantity = buildMenuItems(orderDTO);
         BigDecimal totalCost = calculateTotalCost(menuItemsWithQuantity);
 
         existingOrder.setUser(user);
@@ -173,24 +173,24 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
     }
 
-    private Map<MenuItem, Integer> buildMenuItems(OrderDTO orderDTO) {
-        Map<MenuItem, Integer> menuItemsWithQuantity = new HashMap<>();
+    private Map<Product, Integer> buildMenuItems(OrderDTO orderDTO) {
+        Map<Product, Integer> menuItemsWithQuantity = new HashMap<>();
 
         for (Map.Entry<UUID, Integer> entry : orderDTO.getMenuItemQuantities().entrySet()) {
             UUID menuItemId = entry.getKey();
             int quantity = (entry.getValue() != null && entry.getValue() > 0) ? entry.getValue() : 1;
 
-            MenuItem menuItem = menuItemRepository.findById(menuItemId)
+            Product product = menuItemRepository.findById(menuItemId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid menu item ID: " + menuItemId));
 
-            menuItemService.decrementMenuItemQuantity(menuItem.getId(), quantity);
-            menuItemsWithQuantity.put(menuItem, quantity);
+            menuItemService.decrementMenuItemQuantity(product.getId(), quantity);
+            menuItemsWithQuantity.put(product, quantity);
         }
 
         return menuItemsWithQuantity;
     }
 
-    private BigDecimal calculateTotalCost(Map<MenuItem, Integer> menuItemsWithQuantity) {
+    private BigDecimal calculateTotalCost(Map<Product, Integer> menuItemsWithQuantity) {
         return menuItemsWithQuantity.entrySet().stream()
                 .map(entry -> entry.getKey().getPrice().multiply(BigDecimal.valueOf(entry.getValue())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add)

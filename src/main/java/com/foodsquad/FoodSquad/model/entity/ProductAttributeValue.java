@@ -12,7 +12,7 @@ import java.util.UUID;
 @Table(name = "attribute_values")
 @Getter
 @Setter
-public class AttributeValue {
+public class ProductAttributeValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,6 +31,7 @@ public class AttributeValue {
     @Column(columnDefinition = "JSON")
     private String additionalData;
 
-    @OneToMany(mappedBy = "attributeValue", cascade = CascadeType.ALL)
-    private List<VariantAttribute> variantAttributes = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "attribute_id")
+    private ProductAttribute productAttribute;
 }

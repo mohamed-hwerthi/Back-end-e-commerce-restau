@@ -1,8 +1,8 @@
 package com.foodsquad.FoodSquad.config.mapper;
 
 import com.foodsquad.FoodSquad.model.dto.OrderDTO;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Order;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,7 @@ public class ModelMapperConfig {
         modelMapper.addMappings(new PropertyMap<Order, OrderDTO>() {
             @Override
             protected void configure() {
-                using(ctx -> ((Map<MenuItem, Integer>) ctx.getSource()).entrySet().stream()
+                using(ctx -> ((Map<Product, Integer>) ctx.getSource()).entrySet().stream()
                         .collect(Collectors.toMap(e -> e.getKey().getId(), Map.Entry::getValue)))
                         .map(source.getMenuItemsWithQuantity(), destination.getMenuItemQuantities());
             }

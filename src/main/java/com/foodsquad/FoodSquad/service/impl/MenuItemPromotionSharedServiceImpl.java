@@ -1,13 +1,13 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.exception.MenuItemHasActivePromotionInAPeriodException;
-import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
+import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.mapper.PromotionMapper;
-import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionType;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
@@ -30,36 +30,36 @@ public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionShar
 
     private final PromotionService promotionService;
 
-    private final MenuItemMapper menuItemMapper;
+    private final ProductMapper productMapper;
 
 
     @Override
     public PromotionDTO createPromotionForMenuItems(List<UUID> menuItemsIds, PromotionDTO promotionDTO) {
 
-        List<MenuItemDTO> menuItems = getMenuItems(menuItemsIds);
+        List<ProductDTO> products = getProducts(menuItemsIds);
 
         if (promotionDTO.getPromotionType().equals(PromotionType.DISCOUNT)) {
-            return createPercentageDiscountPromotion(promotionDTO, menuItems);
+            return createPercentageDiscountPromotion(promotionDTO, products);
 
         }
         return null;
     }
 
     @Override
-    public List<MenuItemDTO> findMenuItemsRelatedToPromotion(UUID promotionId) {
+    public List<ProductDTO> findMenuItemsRelatedToPromotion(UUID promotionId) {
 
         Promotion promotion = promotionService.getPromotion(promotionId);
 
-        return menuItemMapper.toDtoList(promotion.getMenuItems());
+        return productMapper.toDtoList(promotion.getProducts());
     }
 
-    private PromotionDTO createPercentageDiscountPromotion(PromotionDTO promotionDTO, List<MenuItemDTO> menuItems) {
+    private PromotionDTO createPercentageDiscountPromotion(PromotionDTO promotionDTO, List<ProductDTO> products) {
 
         PercentageDiscountPromotion promotion = promotionMapper.mapPromotionDTOToPercentageDiscountPromotion(promotionDTO);
 
         Promotion savePromotion = promotionService.savePromotion(promotion);
 
-        associatePromotionWithMenuItems(savePromotion, menuItems);
+        associatePromotionWithMenuItems(savePromotion, products);
 
         Promotion savedPromotion = promotionService.savePromotion(promotion);
 
@@ -69,9 +69,9 @@ public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionShar
 
     @Override
     public boolean hasActivePromotionOverlappingPeriod(UUID menuItemId, LocalDate startDate, LocalDate endDate) {
-        MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
+        Product product = menuItemService.findMenuItemById(menuItemId);
 
-        return menuItem.getPromotions().stream()
+        return product.getPromotions().stream()
                 .filter(Promotion::isActive)
                 .anyMatch(promotion ->
                         arePeriodsOverlapping(
@@ -86,11 +86,11 @@ public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionShar
     @Override
     public void deactivatePromotionForMenuItem(UUID menuItemId, UUID promotionId) {
 
-        MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
+        Product product = menuItemService.findMenuItemById(menuItemId);
 
-        menuItem.getPromotions().removeIf(promotion -> promotion.getId().equals(promotionId));
+        product.getPromotions().removeIf(promotion -> promotion.getId().equals(promotionId));
 
-        menuItemService.save(menuItem);
+        menuItemService.save(product);
 
     }
 
@@ -98,18 +98,18 @@ public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionShar
     @Override
     public void addPromotionToMenuItem(UUID menuItemId, UUID promotionId) {
 
-        MenuItem menuItem = menuItemService.findMenuItemById(menuItemId);
+        Product product = menuItemService.findMenuItemById(menuItemId);
 
         Promotion promotion = promotionService.getPromotion(promotionId);
 
         if (hasActivePromotionOverlappingPeriod(menuItemId, promotion.getStartDate(), promotion.getEndDate())) {
-            throw new MenuItemHasActivePromotionInAPeriodException("MenuItem has active promotion in this  period");
+            throw new MenuItemHasActivePromotionInAPeriodException("Product has active promotion in this  period");
 
         }
 
-        menuItem.getPromotions().add(promotionService.getPromotion(promotionId));
+        product.getPromotions().add(promotionService.getPromotion(promotionId));
 
-        menuItemService.save(menuItem);
+        menuItemService.save(product);
 
     }
 
@@ -152,18 +152,18 @@ public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionShar
     }
 
 
-    private void associatePromotionWithMenuItems(Promotion promotion, List<MenuItemDTO> menuItemDTOS) {
+    private void associatePromotionWithMenuItems(Promotion promotion, List<ProductDTO> menuItemDTOS) {
 
-        List<MenuItem> menuItems = menuItemDTOS.stream().map(
-                menuItemDTO -> {
-                    MenuItem menuItem = menuItemMapper.toEntity(menuItemDTO);
-                    menuItem.getPromotions().add(promotion);
-                    return menuItem;
+        List<Product> products = menuItemDTOS.stream().map(
+                productDTO -> {
+                    Product product = productMapper.toEntity(productDTO);
+                    product.getPromotions().add(promotion);
+                    return product;
                 }
         ).toList();
 
 
-        menuItemService.saveMenuItems(menuItems);
+        menuItemService.saveMenuItems(products);
 
     }
 
@@ -175,7 +175,7 @@ public class MenuItemPromotionSharedServiceImpl implements MenuItemPromotionShar
         return !period1End.isBefore(period2Start) && !period1Start.isAfter(period2End);
     }
 
-    private List<MenuItemDTO> getMenuItems(List<UUID> menuItemsIds) {
+    private List<ProductDTO> getProducts(List<UUID> menuItemsIds) {
 
 
         return menuItemsIds.stream().map(menuItemService::getMenuItemById).toList();

@@ -18,7 +18,7 @@ import java.util.UUID;
 @Table(name = "menu_items")
 @Getter
 @Setter
-public class MenuItem {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,7 +49,7 @@ public class MenuItem {
     @Min(value = 0, message = "Quantity must be at least 0")
     private int quantity;
 
-    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     @Column(nullable = false, name = "created_at", updatable = false)

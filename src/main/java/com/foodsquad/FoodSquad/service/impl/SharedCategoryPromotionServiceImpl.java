@@ -8,8 +8,8 @@ import com.foodsquad.FoodSquad.model.dto.CategoryDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionType;
 import com.foodsquad.FoodSquad.model.entity.Category;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import com.foodsquad.FoodSquad.service.declaration.*;
 import lombok.RequiredArgsConstructor;
@@ -67,8 +67,8 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
     public boolean hasActivePromotionOverlappingPeriod(UUID categoryId, LocalDate startDate, LocalDate endDate) {
 
         Category category = categoryService.findCategory(categoryId);
-        List<MenuItem> menuItems = menuItemService.findByCategory(category);
-        checkIfMenuItemsOfThePromotionHasActivePromotion(menuItems, startDate, endDate);
+        List<Product> products = menuItemService.findByCategory(category);
+        checkIfMenuItemsOfThePromotionHasActivePromotion(products, startDate, endDate);
         return category.getPromotions().stream()
                 .filter(Promotion::isActive)
                 .anyMatch(promotion -> arePeriodsOverlapping(
@@ -84,10 +84,10 @@ public class SharedCategoryPromotionServiceImpl implements SharedCategoryPromoti
         return categoryMapper.toDTOList(promotion.getCategories());
     }
 
-    private void checkIfMenuItemsOfThePromotionHasActivePromotion(List<MenuItem> menuItems, LocalDate startDate, LocalDate endDate) {
-        menuItems.forEach(
-                menuItem -> {
-                    if (menuItemPromotionSharedService.hasActivePromotionOverlappingPeriod(menuItem.getId(), startDate, endDate)) {
+    private void checkIfMenuItemsOfThePromotionHasActivePromotion(List<Product> products, LocalDate startDate, LocalDate endDate) {
+        products.forEach(
+                product -> {
+                    if (menuItemPromotionSharedService.hasActivePromotionOverlappingPeriod(product.getId(), startDate, endDate)) {
                         throw new MenuItemHasActivePromotionInAPeriodException("menu item has active promotion ");
                     }
                 }

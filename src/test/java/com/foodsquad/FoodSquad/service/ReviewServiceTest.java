@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.service;
 
 import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Review;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.MenuItemRepository;
@@ -59,8 +59,8 @@ class ReviewServiceTest {
         reviewDTO.setComment("Great food!");
         reviewDTO.setRating(5);
 
-        MenuItem menuItem = new MenuItem();
-        menuItem.setId(1L);
+        Product product = new Product();
+        product.setId(1L);
 
         User user = new User();
         user.setEmail("test@example.com");
@@ -68,10 +68,10 @@ class ReviewServiceTest {
         Review review = new Review();
         review.setComment("Great food!");
         review.setRating(5);
-        review.setMenuItem(menuItem);
+        review.setProduct(product);
         review.setUser(user);
 
-        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
+        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(product));
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(reviewDTO);

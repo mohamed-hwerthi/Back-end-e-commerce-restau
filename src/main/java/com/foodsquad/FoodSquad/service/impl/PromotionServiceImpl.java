@@ -82,8 +82,8 @@ public class PromotionServiceImpl implements PromotionService {
         Promotion promotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Promotion not found with id: " + id));
         if (promotion.getPromotionTarget().equals(PromotionTarget.MENUITEMS)) {
-            List<MenuItem> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
-            menuItemsWithPromotion.forEach(menuItem -> menuItem.getPromotions().remove(promotion));
+            List<Product> menuItemsWithPromotion = menuItemService.findByPromotion(promotion);
+            menuItemsWithPromotion.forEach(product -> product.getPromotions().remove(promotion));
 
         }
         if (promotion.getPromotionTarget().equals(PromotionTarget.CATEGORIES)) {

@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.repository;
 
 import com.foodsquad.FoodSquad.model.entity.Category;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,18 +17,18 @@ import java.util.UUID;
 /*
 todo : Methode are commented   until we Fix in all the transaltions
  */
-public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
+public interface MenuItemRepository extends JpaRepository<Product, UUID> {
 
-    @Query("SELECT m FROM MenuItem m JOIN m.categories c WHERE c.id = :categoryId")
-    Page<MenuItem> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
-
-
-    Optional<MenuItem> findByBarCode(String qrCode);
+    @Query("SELECT m FROM Product m JOIN m.categories c WHERE c.id = :categoryId")
+    Page<Product> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
 
-    List<MenuItem> findAllByPromotionsContaining(Promotion promotion);
+    Optional<Product> findByBarCode(String qrCode);
 
-    List<MenuItem> findAllByCategoriesContaining(Category category);
+
+    List<Product> findAllByPromotionsContaining(Promotion promotion);
+
+    List<Product> findAllByCategoriesContaining(Category category);
 
     @Query(value = """
             SELECT DISTINCT m.*
@@ -40,7 +40,7 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, UUID> {
               AND (:inStock IS NULL OR (:inStock = true AND m.quantity > 0) OR (:inStock = false AND m.quantity = 0))
               AND (COALESCE(:categoryIds, NULL) IS NULL OR c.id = ANY(:categoryIds))
             """, nativeQuery = true)
-    Page<MenuItem> searchByQueryAndFilters(
+    Page<Product> searchByQueryAndFilters(
             @Param("query") String query,
             @Param("categoryIds") UUID[] categoryIds,
             @Param("inStock") Boolean inStock,

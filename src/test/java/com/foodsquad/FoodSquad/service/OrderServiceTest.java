@@ -1,9 +1,9 @@
 package com.foodsquad.FoodSquad.service;
 
 import com.foodsquad.FoodSquad.model.dto.OrderDTO;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Order;
 import com.foodsquad.FoodSquad.model.entity.OrderStatus;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.MenuItemRepository;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
@@ -66,17 +66,17 @@ class OrderServiceTest {
         User user = new User();
         user.setEmail("test@example.com");
 
-        MenuItem menuItem = new MenuItem();
-        menuItem.setId(1L);
-        menuItem.setPrice(10.0);
+        Product product = new Product();
+        product.setId(1L);
+        product.setPrice(10.0);
 
         Order order = new Order();
         order.setUser(user);
-        order.setMenuItemsWithQuantity(Map.of(menuItem, 2));
+        order.setMenuItemsWithQuantity(Map.of(product, 2));
         order.setTotalCost(20.0);
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
+        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.save(any(Order.class))).thenReturn(order);
         when(modelMapper.map(any(Order.class), eq(OrderDTO.class))).thenAnswer(invocation -> {
             Order source = invocation.getArgument(0);
@@ -178,9 +178,9 @@ class OrderServiceTest {
         User user = new User();
         user.setEmail("test@example.com");
 
-        MenuItem menuItem = new MenuItem();
-        menuItem.setId(1L);
-        menuItem.setPrice(10.0);
+        Product product = new Product();
+        product.setId(1L);
+        product.setPrice(10.0);
 
         Order existingOrder = new Order();
         existingOrder.setId(orderId);
@@ -189,12 +189,12 @@ class OrderServiceTest {
         Order updatedOrder = new Order();
         updatedOrder.setId(orderId);
         updatedOrder.setUser(user);
-        updatedOrder.setMenuItemsWithQuantity(Map.of(menuItem, 2));
+        updatedOrder.setMenuItemsWithQuantity(Map.of(product, 2));
         updatedOrder.setTotalCost(20.0);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
+        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(product));
         when(orderRepository.save(any(Order.class))).thenReturn(updatedOrder);
         when(modelMapper.map(any(Order.class), eq(OrderDTO.class))).thenAnswer(invocation -> {
             Order source = invocation.getArgument(0);

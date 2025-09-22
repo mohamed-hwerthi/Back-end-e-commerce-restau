@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,39 +33,39 @@ class MenuItemControllerTest {
 
     @Test
     void testCreateMenuItem() {
-        MenuItemDTO menuItemDTO = new MenuItemDTO();
-        menuItemDTO.setTitle("Burger");
-        when(menuItemService.createMenuItem(any(MenuItemDTO.class))).thenReturn(ResponseEntity.ok(menuItemDTO));
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setTitle("Burger");
+        when(menuItemService.createMenuItem(any(ProductDTO.class))).thenReturn(ResponseEntity.ok(productDTO));
 
-        ResponseEntity<MenuItemDTO> response = menuItemController.createMenuItem(menuItemDTO);
+        ResponseEntity<ProductDTO> response = menuItemController.createMenuItem(productDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(menuItemDTO, response.getBody());
-        verify(menuItemService, times(1)).createMenuItem(any(MenuItemDTO.class));
+        assertEquals(productDTO, response.getBody());
+        verify(menuItemService, times(1)).createMenuItem(any(ProductDTO.class));
     }
 
     @Test
     void testGetMenuItemById() {
-        MenuItemDTO menuItemDTO = new MenuItemDTO();
-        when(menuItemService.getMenuItemById(anyLong())).thenReturn(menuItemDTO);
+        ProductDTO productDTO = new ProductDTO();
+        when(menuItemService.getMenuItemById(anyLong())).thenReturn(productDTO);
 
-        ResponseEntity<MenuItemDTO> response = menuItemController.getMenuItemById(1L);
+        ResponseEntity<ProductDTO> response = menuItemController.getMenuItemById(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(menuItemDTO, response.getBody());
+        assertEquals(productDTO, response.getBody());
         verify(menuItemService, times(1)).getMenuItemById(1L);
     }
 
     @Test
     void testUpdateMenuItem() {
-        MenuItemDTO menuItemDTO = new MenuItemDTO();
-        when(menuItemService.updateMenuItem(anyLong(), any(MenuItemDTO.class))).thenReturn(ResponseEntity.ok(menuItemDTO));
+        ProductDTO productDTO = new ProductDTO();
+        when(menuItemService.updateMenuItem(anyLong(), any(ProductDTO.class))).thenReturn(ResponseEntity.ok(productDTO));
 
-        ResponseEntity<MenuItemDTO> response = menuItemController.updateMenuItem(1L, menuItemDTO);
+        ResponseEntity<ProductDTO> response = menuItemController.updateMenuItem(1L, productDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(menuItemDTO, response.getBody());
-        verify(menuItemService, times(1)).updateMenuItem(anyLong(), any(MenuItemDTO.class));
+        assertEquals(productDTO, response.getBody());
+        verify(menuItemService, times(1)).updateMenuItem(anyLong(), any(ProductDTO.class));
     }
 
     @Test
@@ -81,14 +81,14 @@ class MenuItemControllerTest {
 
     @Test
     void testGetMenuItemsByIds() {
-        List<MenuItemDTO> menuItems = Collections.singletonList(new MenuItemDTO());
-        when(menuItemService.getMenuItemsByIds(anyList())).thenReturn(ResponseEntity.ok(menuItems));
+        List<ProductDTO> products = Collections.singletonList(new ProductDTO());
+        when(menuItemService.getMenuItemsByIds(anyList())).thenReturn(ResponseEntity.ok(products));
 
         List<Long> menuItemIds = List.of(1L, 2L, 3L);
-        ResponseEntity<List<MenuItemDTO>> response = menuItemController.getMenuItemsByIds(menuItemIds);
+        ResponseEntity<List<ProductDTO>> response = menuItemController.getMenuItemsByIds(menuItemIds);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(menuItems, response.getBody());
+        assertEquals(products, response.getBody());
         verify(menuItemService, times(1)).getMenuItemsByIds(anyList());
     }
 

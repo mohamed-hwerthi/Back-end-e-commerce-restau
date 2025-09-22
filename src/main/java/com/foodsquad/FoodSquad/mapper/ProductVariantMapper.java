@@ -46,7 +46,7 @@ public interface ProductVariantMapper {
         }
         return dtos.stream()
                 .map(dto -> {
-                    VariantAttribute attr = new VariantAttribute() ;
+                    VariantAttribute attr = new VariantAttribute();
                     return attr;
                 })
                 .toList();

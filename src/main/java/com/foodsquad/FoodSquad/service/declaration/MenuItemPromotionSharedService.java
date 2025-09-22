@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.service.declaration;
 
-import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 
@@ -12,7 +12,7 @@ public interface MenuItemPromotionSharedService {
 
     PromotionDTO createPromotionForMenuItems(List<UUID> menuItemsIds, PromotionDTO promotionDTO);
 
-    List<MenuItemDTO> findMenuItemsRelatedToPromotion(UUID promotionId);
+    List<ProductDTO> findMenuItemsRelatedToPromotion(UUID promotionId);
 
     boolean hasActivePromotionOverlappingPeriod(UUID menuItemId, LocalDate startDate, LocalDate endDate);
 

@@ -49,7 +49,7 @@ public class PromotionDTO {
 
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<MenuItemDTO> menuItems = new ArrayList<>();
+    private List<ProductDTO> products = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<CategoryDTO> categories = new ArrayList<>();

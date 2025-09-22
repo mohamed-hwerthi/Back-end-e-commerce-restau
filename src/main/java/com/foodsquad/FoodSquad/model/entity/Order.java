@@ -36,7 +36,7 @@ public class Order {
     @CollectionTable(name = "order_menu_items", joinColumns = @JoinColumn(name = "order_id"))
     @MapKeyJoinColumn(name = "menu_item_id")
     @Column(name = "quantity")
-    private Map<MenuItem, Integer> menuItemsWithQuantity;
+    private Map<Product, Integer> menuItemsWithQuantity;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

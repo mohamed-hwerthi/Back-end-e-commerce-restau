@@ -11,7 +11,7 @@ import java.util.UUID;
 public class AttributeTypeDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
-    
+
     private String name;
     private String description;
     private String dataType; // e.g., "TEXT", "NUMBER", "BOOLEAN"

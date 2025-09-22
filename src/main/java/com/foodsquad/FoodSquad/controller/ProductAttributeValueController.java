@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.foodsquad.FoodSquad.model.dto.AttributeValueDTO;
-import com.foodsquad.FoodSquad.service.declaration.AttributeValueService;
+import com.foodsquad.FoodSquad.service.declaration.ProductAttributeValueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequestMapping("/api/attribute-values")
 @RequiredArgsConstructor
 @Tag(name = "Attribute Values", description = "APIs for managing attribute values")
-public class AttributeValueController {
+public class ProductAttributeValueController {
 
-    private final AttributeValueService attributeValueService;
+    private final ProductAttributeValueService attributeValueService;
 
     @PostMapping
     @Operation(summary = "Create a new attribute value")

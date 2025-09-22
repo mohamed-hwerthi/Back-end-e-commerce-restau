@@ -86,9 +86,9 @@ public class CategoryServiceImp implements CategoryService {
     public void deleteCategory(UUID id) {
         log.warn("Deleting category with id: {}", id);
         Category category = findCategory(id);
-        if (category.getMenuItems() != null && !category.getMenuItems().isEmpty()) {
-            log.info("Deleting {} menu items linked to category {}", category.getMenuItems().size(), id);
-            category.getMenuItems().forEach(menuItem -> menuItemService.deleteMenuItem(menuItem.getId()));
+        if (category.getProducts() != null && !category.getProducts().isEmpty()) {
+            log.info("Deleting {} menu items linked to category {}", category.getProducts().size(), id);
+            category.getProducts().forEach(product -> menuItemService.deleteMenuItem(product.getId()));
         }
 
         categoryRepository.delete(category);

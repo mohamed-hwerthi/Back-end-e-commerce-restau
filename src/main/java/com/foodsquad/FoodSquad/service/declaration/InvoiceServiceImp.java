@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.service.declaration;
 
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.Order;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Tax;
 import com.foodsquad.FoodSquad.model.entity.Timbre;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
@@ -71,10 +71,10 @@ public class InvoiceServiceImp implements InvoiceService {
 
     private void prepareDiscountedPrices(Order order) {
         if (order.getMenuItemsWithQuantity() != null) {
-            for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
-                MenuItem menuItem = entry.getKey();
-                if (menuItem != null) {
-                    menuItem.setPrice(menuItemService.findMenuItemDiscountedPrice(menuItem.getId()));
+            for (Map.Entry<Product, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
+                Product product = entry.getKey();
+                if (product != null) {
+                    product.setPrice(menuItemService.findMenuItemDiscountedPrice(product.getId()));
                 }
             }
         }
@@ -83,8 +83,8 @@ public class InvoiceServiceImp implements InvoiceService {
     private List<Map<String, Object>> buildInvoiceItems(Order order, Map<Tax, BigDecimal> taxDetails) {
         List<Map<String, Object>> items = new ArrayList<>();
 
-        for (Map.Entry<MenuItem, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
-            MenuItem item = entry.getKey();
+        for (Map.Entry<Product, Integer> entry : order.getMenuItemsWithQuantity().entrySet()) {
+            Product item = entry.getKey();
             int quantity = entry.getValue();
 
             BigDecimal itemTTCUnit = item.getPrice();

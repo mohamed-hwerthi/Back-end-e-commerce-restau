@@ -2,8 +2,8 @@ package com.foodsquad.FoodSquad.service.helpers;
 
 
 import com.foodsquad.FoodSquad.model.dto.DiscountType;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -22,24 +22,24 @@ public class MenuItemDiscountPriceCalculator {
         this.promotionService = promotionService;
     }
 
-    public BigDecimal calculateDiscountedPrice(MenuItem menuItem) {
-        UUID menuItemId = menuItem.getId();
+    public BigDecimal calculateDiscountedPrice(Product product) {
+        UUID menuItemId = product.getId();
         if (!promotionService.isMenuItemHasActivePromotionInCurrentDay(menuItemId)) {
-            return menuItem.getPrice();
+            return product.getPrice();
         }
 
         PercentageDiscountPromotion promotion = promotionService.getMenuItemActivePromotionInCurrentDay(menuItemId);
 
 
         if (promotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE)) {
-            return applyDiscount(menuItem.getPrice(), promotion.getDiscountPercentage());
+            return applyDiscount(product.getPrice(), promotion.getDiscountPercentage());
 
         }
         if (promotion.getDiscountType().equals(DiscountType.BY_AMOUNT)) {
             return promotion.getPromotionalPrice();
 
         }
-        return menuItem.getPrice();
+        return product.getPrice();
     }
 
     private BigDecimal applyDiscount(BigDecimal originalPrice, Integer discountPercentage) {

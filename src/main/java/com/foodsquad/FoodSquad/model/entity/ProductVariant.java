@@ -22,7 +22,7 @@ public class ProductVariant {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private MenuItem product;
+    private Product product;
 
     @Column(unique = true)
     private String sku;

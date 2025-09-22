@@ -10,12 +10,12 @@ import java.util.UUID;
 
 @Repository
 public interface VariantAttributeRepository extends JpaRepository<VariantAttribute, UUID> {
-    
+
     List<VariantAttribute> findByVariantId(UUID variantId);
-    
+
     Optional<VariantAttribute> findByVariantIdAndAttributeValueId(UUID variantId, UUID attributeValueId);
-    
+
     boolean existsByVariantIdAndAttributeValueId(UUID variantId, UUID attributeValueId);
-    
+
     void deleteByVariantId(UUID variantId);
 }

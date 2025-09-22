@@ -32,7 +32,7 @@ public class Media {
     private String type;
 
     @ManyToMany(mappedBy = "medias")
-    private List<MenuItem> menuItems = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     @ManyToMany(mappedBy = "medias")
     private List<Category> categories = new ArrayList<>();

@@ -1,11 +1,11 @@
 package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.mapper.MenuItemMapper;
 import com.foodsquad.FoodSquad.mapper.MenuMapper;
+import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.model.dto.MenuDTO;
-import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.entity.Menu;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.repository.MenuRepository;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemService;
 import com.foodsquad.FoodSquad.service.declaration.MenuService;
@@ -22,14 +22,14 @@ public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
     private final MenuMapper menuMapper;
     private final MenuItemService menuItemService;
-    private final MenuItemMapper menuItemMapper;
+    private final ProductMapper productMapper;
 
 
-    public MenuServiceImpl(MenuRepository menuRepository, MenuMapper menuMapper, MenuItemService menuItemService, MenuItemMapper menuItemMapper) {
+    public MenuServiceImpl(MenuRepository menuRepository, MenuMapper menuMapper, MenuItemService menuItemService, ProductMapper productMapper) {
         this.menuRepository = menuRepository;
         this.menuMapper = menuMapper;
         this.menuItemService = menuItemService;
-        this.menuItemMapper = menuItemMapper;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -52,9 +52,9 @@ public class MenuServiceImpl implements MenuService {
         if (!ObjectUtils.isEmpty(menuDTO.getMenuItemsIds())) {
             menuDTO.getMenuItemsIds().forEach(
                     menuItemId -> {
-                        MenuItemDTO foundedMenuItem = menuItemService.getMenuItemById(menuItemId);
-                        MenuItem menuItem = menuItemMapper.toEntity(foundedMenuItem);
-                        menu.getMenuItems().add(menuItem);
+                        ProductDTO foundedMenuItem = menuItemService.getMenuItemById(menuItemId);
+                        Product product = productMapper.toEntity(foundedMenuItem);
+                        menu.getProducts().add(product);
                     }
             );
 

@@ -22,7 +22,7 @@ public class MenuDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<UUID> menuItemsIds = new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<MenuItemDTO> menuItems = new ArrayList<>();
+    private List<ProductDTO> products = new ArrayList<>();
 
 
 }

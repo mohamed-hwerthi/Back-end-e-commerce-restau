@@ -22,7 +22,6 @@ public class VariantAttributeController {
     private final VariantAttributeService variantAttributeService;
 
 
-
     @GetMapping("/{id}")
     @Operation(summary = "Get a variant attribute by ID")
     public ResponseEntity<VariantAttributeDTO> getVariantAttributeById(@PathVariable UUID id) {
@@ -39,7 +38,6 @@ public class VariantAttributeController {
         List<VariantAttributeDTO> variantAttributes = variantAttributeService.getVariantAttributesByVariantId(variantId);
         return ResponseEntity.ok(variantAttributes);
     }
-
 
 
     @DeleteMapping("/{id}")

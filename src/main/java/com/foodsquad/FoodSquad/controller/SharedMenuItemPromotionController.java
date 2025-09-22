@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.model.dto.MenuItemDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionDTO;
 import com.foodsquad.FoodSquad.model.dto.PromotionWithMenuItemsRequestDTO;
 import com.foodsquad.FoodSquad.service.declaration.MenuItemPromotionSharedService;
@@ -38,9 +38,9 @@ public class SharedMenuItemPromotionController {
      * Récupère la liste des items de menu liés à une promotion donnée.
      */
     @GetMapping("/{promotionId}/menu-items")
-    public ResponseEntity<List<MenuItemDTO>> findMenuItemsRelatedToPromotion(@PathVariable UUID promotionId) {
-        List<MenuItemDTO> menuItems = promotionSharedService.findMenuItemsRelatedToPromotion(promotionId);
-        return ResponseEntity.ok(menuItems);
+    public ResponseEntity<List<ProductDTO>> findMenuItemsRelatedToPromotion(@PathVariable UUID promotionId) {
+        List<ProductDTO> products = promotionSharedService.findMenuItemsRelatedToPromotion(promotionId);
+        return ResponseEntity.ok(products);
     }
 
     /**

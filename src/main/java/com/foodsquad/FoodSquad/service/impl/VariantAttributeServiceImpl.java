@@ -2,11 +2,9 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.VariantAttributeMapper;
 import com.foodsquad.FoodSquad.model.dto.VariantAttributeDTO;
-import com.foodsquad.FoodSquad.model.entity.ProductVariant;
 import com.foodsquad.FoodSquad.model.entity.VariantAttribute;
-import com.foodsquad.FoodSquad.model.entity.AttributeValue;
-import com.foodsquad.FoodSquad.repository.ProductVariantRepository;
 import com.foodsquad.FoodSquad.repository.AttributeValueRepository;
+import com.foodsquad.FoodSquad.repository.ProductVariantRepository;
 import com.foodsquad.FoodSquad.repository.VariantAttributeRepository;
 import com.foodsquad.FoodSquad.service.declaration.VariantAttributeService;
 import jakarta.transaction.Transactional;
@@ -28,7 +26,6 @@ public class VariantAttributeServiceImpl implements VariantAttributeService {
     private final VariantAttributeMapper variantAttributeMapper;
 
 
-
     @Override
     public VariantAttributeDTO getVariantAttributeById(UUID id) {
         log.info("Fetching variant attribute with ID: {}", id);
@@ -44,7 +41,6 @@ public class VariantAttributeServiceImpl implements VariantAttributeService {
                 .map(variantAttributeMapper::toDto)
                 .toList();
     }
-
 
 
     @Override

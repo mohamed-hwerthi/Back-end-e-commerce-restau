@@ -44,7 +44,7 @@ public class Promotion {
     private PromotionTarget promotionTarget;
 
     @ManyToMany(mappedBy = "promotions")
-    private List<MenuItem> menuItems = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     @ManyToMany(mappedBy = "promotions")
     private List<Category> categories = new ArrayList<>();

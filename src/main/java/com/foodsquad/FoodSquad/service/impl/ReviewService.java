@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
-import com.foodsquad.FoodSquad.model.entity.MenuItem;
+import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Review;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.MenuItemRepository;
@@ -43,7 +43,7 @@ public class ReviewService {
     }
 
     public ReviewDTO createReview(ReviewDTO reviewDTO) {
-        MenuItem menuItem = menuItemRepository.findById(reviewDTO.getMenuItemId())
+        Product product = menuItemRepository.findById(reviewDTO.getMenuItemId())
                 .orElseThrow(() -> new IllegalArgumentException("Menu item not found"));
 
         User user = getCurrentUser();
@@ -51,7 +51,7 @@ public class ReviewService {
         Review review = new Review();
         review.setComment(reviewDTO.getComment());
         review.setRating(reviewDTO.getRating());
-        review.setMenuItem(menuItem);
+        review.setProduct(product);
         review.setUser(user);
 
         Review savedReview = reviewRepository.save(review);
@@ -59,7 +59,7 @@ public class ReviewService {
     }
 
     public List<ReviewDTO> getReviewsByMenuItemId(UUID menuItemId) {
-        return reviewRepository.findByMenuItemId(menuItemId)
+        return reviewRepository.findByProductId(menuItemId)
                 .stream()
                 .map(review -> modelMapper.map(review, ReviewDTO.class))
                 .collect(Collectors.toList());

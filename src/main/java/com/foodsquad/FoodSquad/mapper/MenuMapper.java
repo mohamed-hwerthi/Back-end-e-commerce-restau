@@ -7,9 +7,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {MenuItemMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {ProductMapper.class})
 public interface MenuMapper {
-    @Mapping(source = "menuItems", target = "menuItems")
+    @Mapping(source = "products", target = "products")
     MenuDTO toDto(Menu menu);
 
     Menu toEntity(MenuDTO menuDTO);

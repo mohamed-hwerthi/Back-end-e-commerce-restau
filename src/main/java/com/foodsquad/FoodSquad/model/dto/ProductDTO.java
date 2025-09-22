@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class MenuItemDTO {
+public class ProductDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
@@ -56,7 +56,7 @@ public class MenuItemDTO {
     private TaxDTO tax;
 
 
-    public MenuItemDTO() {
+    public ProductDTO() {
 
     }
 

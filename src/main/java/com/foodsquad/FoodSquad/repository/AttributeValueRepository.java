@@ -1,6 +1,6 @@
 package com.foodsquad.FoodSquad.repository;
 
-import com.foodsquad.FoodSquad.model.entity.AttributeValue;
+import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,13 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AttributeValueRepository extends JpaRepository<AttributeValue, UUID> {
-    
-    List<AttributeValue> findByAttributeTypeId(UUID attributeTypeId);
-    
-    Optional<AttributeValue> findByValueAndAttributeTypeId(String value, UUID attributeTypeId);
-    
+public interface AttributeValueRepository extends JpaRepository<ProductAttributeValue, UUID> {
+
+    List<ProductAttributeValue> findByAttributeTypeId(UUID attributeTypeId);
+
+    Optional<ProductAttributeValue> findByValueAndAttributeTypeId(String value, UUID attributeTypeId);
+
     boolean existsByValueAndAttributeTypeId(String value, UUID attributeTypeId);
-    
-    List<AttributeValue> findByAttributeTypeIdIn(List<UUID> attributeTypeIds);
+
+    List<ProductAttributeValue> findByAttributeTypeIdIn(List<UUID> attributeTypeIds);
 }

@@ -21,7 +21,7 @@ public class AttributeValueDTO {
     private String value;
 
     private String displayName;
-    
+
     private String additionalData;
 
     // For displaying related data in responses
