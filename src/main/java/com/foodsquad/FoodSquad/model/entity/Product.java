@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "menu_items")
+@Table(name = "products")
 @Getter
 @Setter
 public class Product {
@@ -60,8 +60,8 @@ public class Product {
     private Tax tax;
     @ManyToMany
     @JoinTable(
-            name = "menu_item_categories",
-            joinColumns = @JoinColumn(name = "menu_item_id"),
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
 
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
@@ -69,8 +69,8 @@ public class Product {
 
     @ManyToMany
     @JoinTable(
-            name = " menu_item_medias",
-            joinColumns = @JoinColumn(name = "menu_item_id"),
+            name = " product_medias",
+            joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "media_id")
     )
     private List<Media> medias = new ArrayList<>();
@@ -78,8 +78,8 @@ public class Product {
 
     @ManyToMany
     @JoinTable(
-            name = "menu_item_promotions",
-            joinColumns = @JoinColumn(name = "menu_item_id"),
+            name = "product_promotions",
+            joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "promotion_id")
     )
     private List<Promotion> promotions = new ArrayList<>();

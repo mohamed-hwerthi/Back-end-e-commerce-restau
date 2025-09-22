@@ -5,7 +5,6 @@ import com.foodsquad.FoodSquad.model.dto.AttributeValueDTO;
 import com.foodsquad.FoodSquad.model.entity.AttributeType;
 import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 

@@ -30,5 +30,4 @@ public class AttributeType {
     private List<ProductAttributeValue> values = new ArrayList<>();
 
 
-
 }
