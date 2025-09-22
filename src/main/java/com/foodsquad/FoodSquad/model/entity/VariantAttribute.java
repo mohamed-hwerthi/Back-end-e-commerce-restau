@@ -5,8 +5,9 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "variant_attributes",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"variant_id", "attribute_value_id"})})
+@Table(name = "variant_attributes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"variant_id", "attribute_value_id"})
+})
 public class VariantAttribute {
 
     @Id
