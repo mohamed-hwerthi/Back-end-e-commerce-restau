@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -39,21 +38,8 @@ public class ProductVariantController {
         return ResponseEntity.ok(variant);
     }
 
-    @GetMapping("/product/{productId}")
-    @Operation(summary = "Get all variants for a product")
-    public ResponseEntity<List<ProductVariantDTO>> getVariantsByProductId(@PathVariable UUID productId) {
-        log.info("Fetching all variants for product with ID: {}", productId);
-        List<ProductVariantDTO> variants = variantService.getVariantsByProductId(productId);
-        return ResponseEntity.ok(variants);
-    }
 
-    @GetMapping
-    @Operation(summary = "Get all product variants")
-    public ResponseEntity<List<ProductVariantDTO>> getAllVariants() {
-        log.info("Fetching all product variants");
-        List<ProductVariantDTO> variants = variantService.getAllVariants();
-        return ResponseEntity.ok(variants);
-    }
+
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a product variant")

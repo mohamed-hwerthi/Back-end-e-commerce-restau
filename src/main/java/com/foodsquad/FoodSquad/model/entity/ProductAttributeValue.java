@@ -24,11 +24,6 @@ public class ProductAttributeValue {
 
     private String value;
 
-    private String displayName;
-
-    @Column(columnDefinition = "JSON")
-    private String additionalData;
-
     @ManyToOne
     @JoinColumn(name = "attribute_id")
     private ProductAttribute productAttribute;

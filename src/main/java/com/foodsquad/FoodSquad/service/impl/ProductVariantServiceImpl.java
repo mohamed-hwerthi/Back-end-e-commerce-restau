@@ -45,25 +45,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         return variantMapper.toDto(variant);
     }
 
-    @Override
-    public List<ProductVariantDTO> getVariantsByProductId(UUID productId) {
-        log.info("Fetching all active variants for product with ID: {}", productId);
-        List<ProductVariantDTO> variants = variantRepository.findByProductIdAndIsActiveTrue(productId).stream()
-                .map(variantMapper::toDto)
-                .toList();
-        log.info("Found {} variants for product ID {}", variants.size(), productId);
-        return variants;
-    }
 
-    @Override
-    public List<ProductVariantDTO> getAllVariants() {
-        log.info("Fetching all active product variants");
-        List<ProductVariantDTO> variants = variantRepository.findByIsActiveTrue().stream()
-                .map(variantMapper::toDto)
-                .toList();
-        log.info("Total active variants: {}", variants.size());
-        return variants;
-    }
+
 
     @Override
     @Transactional
@@ -73,12 +56,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
         variant.setSku(variantDTO.getSku());
         variant.setPrice(variantDTO.getPrice());
-        variant.setStockQuantity(variantDTO.getStockQuantity());
+        variant.setQuantity(variantDTO.getQuantity());
 
-        if (variantDTO.getAttributes() != null) {
-            variant.getAttributes().clear();
-            variant.getAttributes().addAll(variantMapper.mapAttributeEntities(variantDTO.getAttributes()));
-        }
 
         ProductVariant updatedVariant = variantRepository.save(variant);
         log.info("Updated product variant with ID: {}", id);
@@ -103,13 +82,13 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         log.info("Updating stock for product variant with ID: {} by quantity: {}", id, quantity);
         ProductVariant variant = findVariantById(id);
 
-        int newQuantity = variant.getStockQuantity() + quantity;
+        int newQuantity = variant.getQuantity() + quantity;
         if (newQuantity < 0) {
-            log.error("Insufficient stock for variant ID: {}. Current: {}, Requested change: {}", id, variant.getStockQuantity(), quantity);
+            log.error("Insufficient stock for variant ID: {}. Current: {}, Requested change: {}", id, variant.getQuantity(), quantity);
             throw new IllegalArgumentException("Insufficient stock");
         }
 
-        variant.setStockQuantity(newQuantity);
+        variant.setQuantity(newQuantity);
         ProductVariant updatedVariant = variantRepository.save(variant);
         log.info("Updated stock for variant ID: {}. New quantity: {}", id, newQuantity);
         return variantMapper.toDto(updatedVariant);
@@ -139,9 +118,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     }
 
     private void saveAttributesIfPresent(ProductVariant variant, ProductVariantDTO dto) {
-        if (dto.getAttributes() != null) {
-            variant.getAttributes().addAll(variantMapper.mapAttributeEntities(dto.getAttributes()));
-        }
+
     }
 
     private ProductVariant findVariantById(UUID id) {

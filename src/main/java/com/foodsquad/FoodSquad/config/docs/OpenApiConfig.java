@@ -38,7 +38,7 @@ public class OpenApiConfig {
                 .addTagsItem(new Tag().name("2. Authentication").description("Authentication API"))
                 .addTagsItem(new Tag().name("3. User Management").description("User Management API"))
                 .addTagsItem(new Tag().name("4. Order Management").description("Order Management API"))
-                .addTagsItem(new Tag().name("5. Menu Item Management").description("Menu Item Management API"))
+                .addTagsItem(new Tag().name("5.Product Management").description("Menu Item Management API"))
                 .addTagsItem(new Tag().name("6. Review Management").description("Review Item Management API"))
                 .addTagsItem(new Tag().name("7. Category Management").description("Category Management API"))
                 .addTagsItem(new Tag().name("8. Menu Management").description("Menu Management API"))

@@ -16,14 +16,9 @@ public interface ProductVariantMapper {
 
     ProductVariantMapper INSTANCE = Mappers.getMapper(ProductVariantMapper.class);
 
-    @Mapping(source = "product.id", target = "productId")
-    @Mapping(source = "attributes", target = "attributes", qualifiedByName = "mapAttributes")
     ProductVariantDTO toDto(ProductVariant variant);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "product", ignore = true)
-    @Mapping(source = "productId", target = "product.id")
-    @Mapping(source = "attributes", target = "attributes", qualifiedByName = "mapAttributeEntities")
+
     ProductVariant toEntity(ProductVariantDTO dto);
 
     @Named("mapAttributes")

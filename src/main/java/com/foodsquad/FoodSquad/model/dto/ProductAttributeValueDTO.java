@@ -20,9 +20,5 @@ import java.util.UUID;
     @NotBlank(message = "Value cannot be blank")
     private String value;
 
-    private String displayName;
-
-    private String additionalData;
-
     private AttributeTypeDTO attributeType;
 }

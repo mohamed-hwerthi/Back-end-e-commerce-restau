@@ -11,10 +11,6 @@ public interface ProductVariantService {
 
     ProductVariantDTO getVariantById(UUID id);
 
-    List<ProductVariantDTO> getVariantsByProductId(UUID productId);
-
-    List<ProductVariantDTO> getAllVariants();
-
     ProductVariantDTO updateVariant(UUID id, ProductVariantDTO variantDTO);
 
     void deleteVariant(UUID id);

@@ -23,7 +23,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/products")
 @Slf4j
-@Tag(name = "5. Menu Item Management", description = "Menu Item Management API")
+@Tag(name = "5.Product Management", description = "Menu Item Management API")
 public class ProductController {
 
     private final ProductService ProductService;

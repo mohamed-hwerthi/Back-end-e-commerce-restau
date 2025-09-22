@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class})
 
 public interface ProductMapper {
-
+    @Mapping(target = "variants"  , ignore = true)
     Product toEntity(ProductDTO productDTO);
 
     ProductDTO toDto(Product product);

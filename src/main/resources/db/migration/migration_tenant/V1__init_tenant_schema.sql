@@ -199,3 +199,40 @@ CREATE TABLE IF NOT EXISTS category_promotions (
     CONSTRAINT fk_category_promotions_category FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE CASCADE,
     CONSTRAINT fk_category_promotions_promotion FOREIGN KEY(promotion_id) REFERENCES promotions(id) ON DELETE CASCADE
 );
+
+-- Product Attributes
+CREATE TABLE product_attributes (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    product_id UUID NOT NULL,
+    CONSTRAINT fk_product_attributes_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Product Attribute Values
+CREATE TABLE attribute_values (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    attribute_type_id UUID,
+    value VARCHAR(255) NOT NULL,
+    attribute_id UUID NOT NULL,
+    CONSTRAINT fk_attribute_values_attribute FOREIGN KEY(attribute_id) REFERENCES product_attributes(id) ON DELETE CASCADE
+);
+
+-- Product Variants
+CREATE TABLE product_variants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id UUID NOT NULL,
+    sku VARCHAR(255) UNIQUE,
+    price NUMERIC,
+    quantity INT DEFAULT 0,
+    CONSTRAINT fk_product_variants_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Variant Attributes (link between variant and attribute value)
+CREATE TABLE variant_attributes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    variant_id UUID NOT NULL,
+    attribute_value_id UUID NOT NULL,
+    CONSTRAINT fk_variant_attributes_variant FOREIGN KEY(variant_id) REFERENCES product_variants(id) ON DELETE CASCADE,
+    CONSTRAINT fk_variant_attributes_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
+    CONSTRAINT uq_variant_attribute UNIQUE (variant_id, attribute_value_id)
+);

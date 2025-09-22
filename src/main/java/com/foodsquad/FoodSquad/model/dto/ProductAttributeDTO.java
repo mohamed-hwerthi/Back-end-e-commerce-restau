@@ -7,13 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductAttributeDTO {
-    private Long id;
+    private UUID id;
     private String name;
     private Long productId;
     private List<ProductAttributeValue> values;

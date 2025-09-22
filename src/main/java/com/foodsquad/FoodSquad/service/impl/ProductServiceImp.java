@@ -60,12 +60,12 @@ public class ProductServiceImp implements ProductService {
 
     private final LocaleContext localeContext;
 
-    private ProductAttributeService productAttributeService;
+    private final  ProductAttributeService productAttributeService;
 
-    private ProductAttributeValueService productAttributeValueService;
+    private final  ProductAttributeValueService productAttributeValueService;
 
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext) {
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
@@ -78,9 +78,12 @@ public class ProductServiceImp implements ProductService {
         this.ProductDiscountPriceCalculator = ProductDiscountPriceCalculator;
         this.mediaService = mediaService;
         this.localeContext = localeContext;
+        this.productAttributeService = productAttributeService;
+        this.productAttributeValueService = productAttributeValueService;
     }
 
-  @Override
+    @Override
+    @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
         logger.debug("Creating product: {}", productDTO);
 
@@ -395,17 +398,21 @@ public class ProductServiceImp implements ProductService {
 
     private void manageVariantsAndAttributes(ProductDTO productDTO, Product savedProduct) {
         if (ObjectUtils.isEmpty(productDTO.getVariants())) return;
+
         for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
-            ProductVariant variant = createVariant(savedProduct, variantDTO);
+            ProductVariant variant = createVariant(savedProduct, variantDTO); // sets product link
 
             for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
                 ProductAttribute attribute = productAttributeService.findOrCreateAttribute(savedProduct, optionDTO.getAttributeName());
                 ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+
                 VariantAttribute variantAttribute = new VariantAttribute();
                 variantAttribute.setVariant(variant);
                 variantAttribute.setAttributeValue(value);
+
                 variant.getAttributes().add(variantAttribute);
             }
+
             savedProduct.getVariants().add(variant);
         }
     }
