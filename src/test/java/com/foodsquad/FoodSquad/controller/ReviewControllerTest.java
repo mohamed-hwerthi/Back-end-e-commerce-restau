@@ -62,7 +62,7 @@ class ReviewControllerTest {
         List<ReviewDTO> reviews = List.of(new ReviewDTO());
         when(reviewService.getReviewsByProductId(anyLong())).thenReturn(reviews);
 
-        mockMvc.perform(get("/api/reviews/menu-item/1"))
+        mockMvc.perform(get("/api/reviews/product/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }

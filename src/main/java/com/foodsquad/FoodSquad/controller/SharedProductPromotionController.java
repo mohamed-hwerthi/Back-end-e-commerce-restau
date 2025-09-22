@@ -37,7 +37,7 @@ public class SharedProductPromotionController {
     /**
      * Récupère la liste des items de menu liés à une promotion donnée.
      */
-    @GetMapping("/{promotionId}/menu-items")
+    @GetMapping("/{promotionId}/products")
     public ResponseEntity<List<ProductDTO>> findProductsRelatedToPromotion(@PathVariable UUID promotionId) {
         List<ProductDTO> products = promotionSharedService.findProductsRelatedToPromotion(promotionId);
         return ResponseEntity.ok(products);

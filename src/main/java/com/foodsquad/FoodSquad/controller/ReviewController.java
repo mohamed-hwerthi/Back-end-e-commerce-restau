@@ -39,7 +39,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "Get reviews by menu item ID", description = "Retrieve a list of reviews for a specific menu item by its unique ID.")
-    @GetMapping("/menu-item/{ProductId}")
+    @GetMapping("/product/{ProductId}")
     public ResponseEntity<List<ReviewDTO>> getReviewsByProductId(
             @Parameter(description = "ID of the menu item whose reviews to retrieve", example = "1")
             @PathVariable UUID ProductId) {

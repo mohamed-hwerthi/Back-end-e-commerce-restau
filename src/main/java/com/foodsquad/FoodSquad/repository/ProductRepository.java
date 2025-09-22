@@ -14,9 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-/*
-todo : Methode are commented   until we Fix in all the transaltions
- */
+
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("SELECT m FROM Product m JOIN m.categories c WHERE c.id = :categoryId")
@@ -31,15 +29,15 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findAllByCategoriesContaining(Category category);
 
     @Query(value = """
-            SELECT DISTINCT m.*
-            FROM menu_items m
-                     LEFT JOIN menu_item_categories mc ON m.id = mc.menu_item_id
-                     LEFT JOIN categories c ON mc.category_id = c.id
-            WHERE (:query IS NULL 
-                   OR m.title->>:lang ILIKE %:query%)
-              AND (:inStock IS NULL OR (:inStock = true AND m.quantity > 0) OR (:inStock = false AND m.quantity = 0))
-              AND (COALESCE(:categoryIds, NULL) IS NULL OR c.id = ANY(:categoryIds))
-            """, nativeQuery = true)
+        SELECT DISTINCT p.*
+        FROM products p
+                 LEFT JOIN product_categories pc ON p.id = pc.product_id
+                 LEFT JOIN categories c ON pc.category_id = c.id
+        WHERE (:query IS NULL 
+               OR p.title->>:lang ILIKE %:query%)
+          AND (:inStock IS NULL OR (:inStock = true AND p.quantity > 0) OR (:inStock = false AND p.quantity = 0))
+          AND (COALESCE(:categoryIds, NULL) IS NULL OR c.id = ANY(:categoryIds))
+        """, nativeQuery = true)
     Page<Product> searchByQueryAndFilters(
             @Param("query") String query,
             @Param("categoryIds") UUID[] categoryIds,
@@ -47,6 +45,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             @Param("lang") String lang,
             Pageable pageable
     );
+
 
 
 }

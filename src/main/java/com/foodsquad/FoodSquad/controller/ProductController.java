@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Validated
 @RestController
-@RequestMapping("/api/menu-items")
+@RequestMapping("/api/products")
 @Slf4j
 @Tag(name = "5. Menu Item Management", description = "Menu Item Management API")
 public class ProductController {
