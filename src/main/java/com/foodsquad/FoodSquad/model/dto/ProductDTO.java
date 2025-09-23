@@ -56,10 +56,11 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
 
     private TaxDTO tax;
+
+    private List<RequestVariantDTO>variants = new ArrayList<>() ;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
-
-    private List<ProductVariantDTO>variants = new ArrayList<>() ;
 
 
 

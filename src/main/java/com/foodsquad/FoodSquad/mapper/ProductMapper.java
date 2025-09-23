@@ -6,7 +6,6 @@ import com.foodsquad.FoodSquad.model.dto.ProductVariantDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.ProductVariant;
 import com.foodsquad.FoodSquad.model.entity.VariantAttribute;
-import com.foodsquad.FoodSquad.model.entity.VariantOptionDTO;
 import org.mapstruct.*;
 
 import java.util.LinkedHashMap;
@@ -39,54 +38,54 @@ public interface ProductMapper {
         dto.setAverageRating(averageRating);
         return dto;
     }
-
-    @AfterMapping
-    default void enrichWithVariantsAndAttributes(Product product, @MappingTarget ProductDTO dto) {
-        if (product.getVariants() == null || product.getVariants().isEmpty()) {
-            return;
-        }
-
-        dto.setVariants(
-                product.getVariants().stream()
-                        .map(this::mapVariantToDto)
-                        .toList()
-        );
-
-        List<ProductAttributeDTO> availableAttributes = product.getVariants().stream()
-                .flatMap(variant -> variant.getAttributes().stream())
-                .collect(Collectors.toMap(
-                        attr -> attr.getAttributeValue().getProductAttribute().getId(),
-                        attr -> attr.getAttributeValue().getProductAttribute().getName(),
-                        (existing, replacement) -> existing, // keep first if duplicate
-                        LinkedHashMap::new
-                ))
-                .entrySet().stream()
-                .map(entry -> new ProductAttributeDTO(entry.getKey(), entry.getValue()))
-                .toList();
-
-        dto.setAvailableAttributes(availableAttributes);
-    }
-
-
-    private ProductVariantDTO mapVariantToDto(ProductVariant variant) {
-        ProductVariantDTO dto = new ProductVariantDTO();
-        dto.setId(variant.getId());
-        dto.setSku(variant.getSku());
-        dto.setPrice(variant.getPrice());
-        dto.setQuantity(variant.getQuantity());
-        dto.setOptions(
-                variant.getAttributes().stream()
-                        .map(this::mapVariantOptionToDto)
-                        .toList()
-        );
-        return dto;
-    }
-
-    private VariantOptionDTO mapVariantOptionToDto(VariantAttribute attr) {
-        VariantOptionDTO dto = new VariantOptionDTO();
-        dto.setId(attr.getId());
-        dto.setValue(attr.getAttributeValue().getValue());
-        dto.setAttributeName(attr.getAttributeValue().getProductAttribute().getName());
-        return dto;
-    }
+//
+//    @AfterMapping
+//    default void enrichWithVariantsAndAttributes(Product product, @MappingTarget ProductDTO dto) {
+//        if (product.getVariants() == null || product.getVariants().isEmpty()) {
+//            return;
+//        }
+//
+//        dto.setVariants(
+//                product.getVariants().stream()
+//                        .map(this::mapVariantToDto)
+//                        .toList()
+//        );
+//
+//        List<ProductAttributeDTO> availableAttributes = product.getVariants().stream()
+//                .flatMap(variant -> variant.getAttributes().stream())
+//                .collect(Collectors.toMap(
+//                        attr -> attr.getAttributeValue().getProductAttribute().getId(),
+//                        attr -> attr.getAttributeValue().getProductAttribute().getName(),
+//                        (existing, replacement) -> existing, // keep first if duplicate
+//                        LinkedHashMap::new
+//                ))
+//                .entrySet().stream()
+//                .map(entry -> new ProductAttributeDTO(entry.getKey(), entry.getValue()))
+//                .toList();
+//
+//        dto.setAvailableAttributes(availableAttributes);
+//    }
+//
+//
+//    private ProductVariantDTO mapVariantToDto(ProductVariant variant) {
+//        ProductVariantDTO dto = new ProductVariantDTO();
+//        dto.setId(variant.getId());
+//        dto.setSku(variant.getSku());
+//        dto.setPrice(variant.getPrice());
+//        dto.setQuantity(variant.getQuantity());
+//        dto.setOptions(
+//                variant.getAttributes().stream()
+//                        .map(this::mapVariantOptionToDto)
+//                        .toList()
+//        );
+//        return dto;
+//    }
+//
+//    private VariantOptionDTO mapVariantOptionToDto(VariantAttribute attr) {
+//        VariantOptionDTO dto = new VariantOptionDTO();
+//        dto.setId(attr.getId());
+//        dto.setValue(attr.getAttributeValue().getValue());
+//        dto.setAttributeName(attr.getAttributeValue().getProductAttribute().getName());
+//        return dto;
+//    }
 }

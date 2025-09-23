@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS category_promotions (
 -- Product Attributes
 CREATE TABLE product_attributes (
     id UUID PRIMARY KEY,
-    name JSON NOT NULL UNIQUE ,
+    name JSON NOT NULL  ,
     product_id UUID NOT NULL,
     CONSTRAINT fk_product_attributes_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
 );

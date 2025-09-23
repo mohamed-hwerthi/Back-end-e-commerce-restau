@@ -378,31 +378,52 @@ public class ProductServiceImp implements ProductService {
     private void manageVariantsAndAttributes(ProductDTO productDTO, Product savedProduct) {
         if (ObjectUtils.isEmpty(productDTO.getVariants())) return;
 
-        for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
-            ProductVariant variant = createVariant(savedProduct, variantDTO);
+        productDTO.getVariants()
+                .forEach(variantDTO -> handleVariantDTO(savedProduct, variantDTO));
+    }
 
-            for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
-                ProductAttribute attribute = productAttributeService.findOrCreateAttribute(savedProduct, optionDTO.getAttributeName());
-                ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
-
-                VariantAttribute variantAttribute = new VariantAttribute();
-                variantAttribute.setVariant(variant);
-                variantAttribute.setAttributeValue(value);
-
-                variant.getAttributes().add(variantAttribute);
-            }
-
-            savedProduct.getVariants().add(variant);
+    private void handleVariantDTO(Product product, RequestVariantDTO variantDTO) {
+        ProductAttribute attribute = productAttributeService.findOrCreateAttribute(product, variantDTO.getName());
+        if (!ObjectUtils.isEmpty(variantDTO.getOptions())) {
+            variantDTO.getOptions().stream()
+                    .map(optionDTO -> createVariantWithAttribute(product, attribute, optionDTO))
+                    .forEach(product.getVariants()::add);
         }
     }
 
-    private ProductVariant createVariant(Product product, ProductVariantDTO variantDTO) {
+    private ProductVariant createVariantWithAttribute(Product product, ProductAttribute attribute, RequestVariantOptionDTO optionDTO) {
+        ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+        ProductVariant variant = buildProductVariant(product, optionDTO);
+        VariantAttribute variantAttribute = new VariantAttribute();
+        variantAttribute.setVariant(variant);
+        variantAttribute.setAttributeValue(value);
+        variant.getAttributes().add(variantAttribute);
+        return variant;
+    }
+
+    private ProductVariant buildProductVariant(Product product, RequestVariantOptionDTO optionDTO) {
         ProductVariant variant = new ProductVariant();
         variant.setProduct(product);
-        variant.setSku(variantDTO.getSku());
-        variant.setPrice(variantDTO.getPrice());
-        variant.setQuantity(variantDTO.getQuantity());
+        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
+        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
+        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
         return variant;
+    }
+
+    private String getOrGenerateSku(String sku) {
+        return sku != null ? sku : UUID.randomUUID().toString();
+    }
+
+    private BigDecimal getOrDefaultPrice(BigDecimal price) {
+        return price != null ? price : BigDecimal.ZERO;
+    }
+
+    private int getOrDefaultQuantity(String quantity) {
+        try {
+            return quantity != null ? Integer.parseInt(quantity) : 0;
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
 
@@ -429,7 +450,6 @@ public class ProductServiceImp implements ProductService {
 
         return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
     }
-
 
 
 }
