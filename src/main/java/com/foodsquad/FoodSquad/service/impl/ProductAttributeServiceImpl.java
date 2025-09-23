@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
+import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
 import com.foodsquad.FoodSquad.repository.ProductAttributeRepository;
@@ -18,7 +19,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     /**
      * Finds an attribute by name for a product, or creates a new one if it doesn't exist.
      */
-    public ProductAttribute findOrCreateAttribute(Product product, String attributeName) {
+    public ProductAttribute findOrCreateAttribute(Product product, LocalizedString attributeName) {
         return product.getAttributes().stream()
                 .filter(a -> a.getName().equals(attributeName))
                 .findFirst()
@@ -28,7 +29,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     /**
      * Creates and saves a new ProductAttribute for the given product.
      */
-    private ProductAttribute createAttribute(Product product, String attributeName) {
+    private ProductAttribute createAttribute(Product product, LocalizedString attributeName) {
         ProductAttribute newAttr = new ProductAttribute();
         newAttr.setName(attributeName);
         newAttr.setProduct(product);

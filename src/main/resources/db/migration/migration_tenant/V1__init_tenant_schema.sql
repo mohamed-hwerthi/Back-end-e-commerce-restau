@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS category_promotions (
 -- Product Attributes
 CREATE TABLE product_attributes (
     id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name JSON NOT NULL UNIQUE ,
     product_id UUID NOT NULL,
     CONSTRAINT fk_product_attributes_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
 );
@@ -211,7 +211,6 @@ CREATE TABLE product_attributes (
 -- Product Attribute Values
 CREATE TABLE attribute_values (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    attribute_type_id UUID,
     value VARCHAR(255) NOT NULL,
     attribute_id UUID NOT NULL,
     CONSTRAINT fk_attribute_values_attribute FOREIGN KEY(attribute_id) REFERENCES product_attributes(id) ON DELETE CASCADE

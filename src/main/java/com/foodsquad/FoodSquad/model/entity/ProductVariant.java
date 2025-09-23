@@ -31,6 +31,7 @@ public class ProductVariant {
 
     private Integer quantity = 0;
 
-    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<VariantAttribute> attributes = new ArrayList<>();
+
 }

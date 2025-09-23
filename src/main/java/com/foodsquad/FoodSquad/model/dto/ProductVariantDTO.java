@@ -9,10 +9,13 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class ProductVariantDTO {
+
+    private UUID id  ;
     @NotBlank(message = "price has to be not null ")
     @PositiveOrZero(message = "price has to be positive ")
     private BigDecimal price;

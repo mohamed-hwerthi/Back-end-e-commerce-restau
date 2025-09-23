@@ -17,11 +17,6 @@ public class ProductAttributeValue {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-
-    @ManyToOne
-    @JoinColumn(name = "attribute_type_id")
-    private AttributeType attributeType;
-
     private String value;
 
     @ManyToOne

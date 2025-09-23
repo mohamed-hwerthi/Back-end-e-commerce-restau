@@ -19,6 +19,12 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT m FROM Product m JOIN m.categories c WHERE c.id = :categoryId")
     Page<Product> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
+    @Query("SELECT p FROM Product p " +
+            "LEFT JOIN FETCH p.variants v " +
+            "LEFT JOIN FETCH v.attributes a " +
+            "LEFT JOIN FETCH a.attributeValue " +
+            "WHERE p.id = :id")
+    Optional<Product> findByIdWithVariantsAndAttributes(@Param("id") UUID id);
 
     Optional<Product> findByBarCode(String qrCode);
 

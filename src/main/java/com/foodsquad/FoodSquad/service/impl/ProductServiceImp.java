@@ -60,9 +60,9 @@ public class ProductServiceImp implements ProductService {
 
     private final LocaleContext localeContext;
 
-    private final  ProductAttributeService productAttributeService;
+    private final ProductAttributeService productAttributeService;
 
-    private final  ProductAttributeValueService productAttributeValueService;
+    private final ProductAttributeValueService productAttributeValueService;
 
 
     public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService) {
@@ -101,9 +101,6 @@ public class ProductServiceImp implements ProductService {
 
         return productMapper.toDto(savedProduct);
     }
-
-
-
 
 
     @Override
@@ -153,26 +150,12 @@ public class ProductServiceImp implements ProductService {
 
         logger.debug("Getting menu item by ID: {}", id);
 
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithVariantsAndAttributes(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
-        Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
-        if (salesCount == null) {
-            salesCount = 0;
-        }
-        long reviewCount = reviewRepository.countByProductId(product.getId());
-        Double averageRating = reviewRepository.findAverageRatingByProductId(product.getId());
-        if (averageRating == null) {
-            averageRating = 0.0;
-        }
-        averageRating = Math.round(averageRating * 10.0) / 10.0;
-
-        ProductDTO productDTO = productMapper.toProductDtoWithMoreInformation(product, salesCount, reviewCount, averageRating);
-
-        //  return verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(product, productDTO);
-        return productDTO;
-
+        return productMapper.toDto(product);
     }
- @Override
+
+    @Override
     public PaginatedResponseDTO<ProductDTO> getAllProducts(
             int page,
             int limit,
@@ -357,15 +340,11 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-
     @Override
     public List<Product> findByCategory(Category category) {
 
         return productRepository.findAllByCategoriesContaining(category);
     }
-
-
-
 
 
     private void checkDuplicateBarCode(ProductDTO productDTO) {
@@ -400,7 +379,7 @@ public class ProductServiceImp implements ProductService {
         if (ObjectUtils.isEmpty(productDTO.getVariants())) return;
 
         for (ProductVariantDTO variantDTO : productDTO.getVariants()) {
-            ProductVariant variant = createVariant(savedProduct, variantDTO); // sets product link
+            ProductVariant variant = createVariant(savedProduct, variantDTO);
 
             for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
                 ProductAttribute attribute = productAttributeService.findOrCreateAttribute(savedProduct, optionDTO.getAttributeName());
@@ -450,47 +429,6 @@ public class ProductServiceImp implements ProductService {
 
         return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
     }
-
-
-
-    /*
-    todo  : commented code that exsits in the product find all methode  :
-     */
-
-    //        List<ProductDTO> products = ProductPage.stream()
-//                .map(product -> {
-//                    Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
-//                    if (salesCount == null) {
-//                        salesCount = 0;
-//                    }
-//
-//                    long reviewCount = reviewRepository.countByProductId(product.getId());
-//                    Double averageRating = reviewRepository.findAverageRatingByProductId(product.getId());
-//                    if (averageRating == null) {
-//                        averageRating = 0.0;
-//                    }
-//                    averageRating = Math.round(averageRating * 10.0) / 10.0;
-//                    ProductDTO productDTO = productMapper.toProductDtoWithMoreInformation(
-//                            product, salesCount, reviewCount, averageRating
-//                    );
-//
-//                    return verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(product, productDTO);
-//                })
-//                .collect(Collectors.toList());
-
-//        if (priceSortDirection != null && !priceSortDirection.isEmpty()) {
-//            products.sort((a, b) -> {
-//                if (priceSortDirection.equalsIgnoreCase("asc")) {
-//                    return Double.compare(a.getPrice(), b.getPrice());
-//                } else {
-//                    return Double.compare(b.getPrice(), a.getPrice());
-//                }
-//            });
-//        } else if ("salesCount".equalsIgnoreCase(sortBy)) {
-//            products.sort((item1, item2) -> desc
-//                    ? item2.getSalesCount().compareTo(item1.getSalesCount())
-//                    : item1.getSalesCount().compareTo(item2.getSalesCount()));
-//        }
 
 
 

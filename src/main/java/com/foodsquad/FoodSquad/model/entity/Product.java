@@ -10,9 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "products")
@@ -85,14 +83,13 @@ public class Product {
     private List<Promotion> promotions = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductAttribute> attributes = new ArrayList<>();
-
+    private Set<ProductVariant> variants = new HashSet<>();
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductVariant> variants = new ArrayList<>();
+    private Set<ProductAttribute> attributes = new HashSet<>();
+
 
     @PrePersist
     protected void onCreate() {
-
         this.createdAt = LocalDateTime.now();
     }
 

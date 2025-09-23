@@ -21,7 +21,8 @@ public class ProductAttribute {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    private String name;
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private LocalizedString name;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
