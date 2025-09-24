@@ -434,7 +434,7 @@ public class ProductServiceImp implements ProductService {
     private void manageVariantsOnUpdate(ProductDTO productDTO, Product existingProduct) {
         removeDeletedVariants(productDTO, existingProduct);
         removeDeletedAttributes(productDTO, existingProduct);
-        updateOrCreateAttributes(productDTO, existingProduct);
+        updateOrCreateAttributesAndOptions(productDTO, existingProduct);
     }
 
     private void removeDeletedVariants(ProductDTO productDTO, Product existingProduct) {
@@ -455,7 +455,8 @@ public class ProductServiceImp implements ProductService {
         existingProduct.getAttributes().removeIf(attr -> !dtoAttributeIds.contains(attr.getId()));
     }
 
-    private void updateOrCreateAttributes(ProductDTO productDTO, Product existingProduct) {
+
+    private void updateOrCreateAttributesAndOptions(ProductDTO productDTO, Product existingProduct) {
         for (VariantDTO variantDTO : productDTO.getVariants()) {
             ProductAttribute attribute;
 
@@ -466,8 +467,41 @@ public class ProductServiceImp implements ProductService {
                 attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
                 existingProduct.getAttributes().add(attribute);
             }
+
+            // Now update or create the options for this attribute
+            updateOrCreateVariantOptions(existingProduct, variantDTO, attribute);
         }
     }
+
+    private void updateOrCreateVariantOptions(Product product, VariantDTO variantDTO, ProductAttribute attribute) {
+        for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
+            if (optionDTO.getProductVariantId() != null) {
+                // Update existing variant
+                product.getVariants().stream()
+                        .filter(v -> v.getId().equals(optionDTO.getProductVariantId()))
+                        .findFirst()
+                        .ifPresent(variant -> updateExistingOption(variant, optionDTO, attribute));
+            } else {
+                // Create new variant + attribute value
+                ProductVariant newVariant = createVariantWithAttribute(product, attribute, optionDTO);
+                product.getVariants().add(newVariant);
+            }
+        }
+    }
+
+    private void updateExistingOption(ProductVariant variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
+        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
+        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
+
+        if (optionDTO.getValue() != null) {
+            ProductAttributeValue newValue = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+
+            // Update the VariantAttribute relation
+            variant.getAttributes().forEach(attr -> attr.setAttributeValue(newValue));
+        }
+    }
+
 
     private ProductAttribute findExistingAttribute(Product product, VariantDTO variantDTO) {
         return product.getAttributes().stream()
