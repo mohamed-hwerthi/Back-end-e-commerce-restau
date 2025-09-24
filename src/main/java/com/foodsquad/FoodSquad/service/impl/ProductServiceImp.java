@@ -432,52 +432,58 @@ public class ProductServiceImp implements ProductService {
 
 
     private void manageVariantsOnUpdate(ProductDTO productDTO, Product existingProduct) {
+        removeDeletedVariants(productDTO, existingProduct);
+        removeDeletedAttributes(productDTO, existingProduct);
+        updateOrCreateAttributes(productDTO, existingProduct);
+    }
 
+    private void removeDeletedVariants(ProductDTO productDTO, Product existingProduct) {
         existingProduct.getVariants().removeIf(existingVariant ->
                 productDTO.getVariants().stream()
                         .flatMap(v -> v.getOptions().stream())
                         .noneMatch(opt -> opt.getProductVariantId() != null &&
                                 opt.getProductVariantId().equals(existingVariant.getId()))
         );
+    }
 
+    private void removeDeletedAttributes(ProductDTO productDTO, Product existingProduct) {
         List<UUID> dtoAttributeIds = productDTO.getVariants().stream()
                 .map(VariantDTO::getAttributeId)
                 .filter(Objects::nonNull)
                 .toList();
+
         existingProduct.getAttributes().removeIf(attr -> !dtoAttributeIds.contains(attr.getId()));
+    }
 
-
+    private void updateOrCreateAttributes(ProductDTO productDTO, Product existingProduct) {
         for (VariantDTO variantDTO : productDTO.getVariants()) {
             ProductAttribute attribute;
 
             if (variantDTO.getAttributeId() != null) {
-                attribute = existingProduct.getAttributes().stream()
-                        .filter(a -> a.getId().equals(variantDTO.getAttributeId()))
-                        .findFirst()
-                        .orElseThrow(() -> new EntityNotFoundException("Attribute not found"));
-
-                if (!attribute.getName().equals(variantDTO.getAttributeName())) {
-                    attribute.setName(variantDTO.getAttributeName());
-                    productAttributeService.createAttribute(attribute);
-                }
-
+                attribute = findExistingAttribute(existingProduct, variantDTO);
+                updateAttributeNameIfChanged(attribute, variantDTO);
             } else {
                 attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
                 existingProduct.getAttributes().add(attribute);
             }
         }
-
     }
-    private void updateExistingOption(ProductVariant variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
-        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
-        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
-        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
 
-        if (optionDTO.getValue() != null) {
-            ProductAttributeValue newValue = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
-            variant.getAttributes().forEach(attr -> attr.setAttributeValue(newValue));
+    private ProductAttribute findExistingAttribute(Product product, VariantDTO variantDTO) {
+        return product.getAttributes().stream()
+                .filter(a -> a.getId().equals(variantDTO.getAttributeId()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Attribute not found"));
+    }
+
+    private void updateAttributeNameIfChanged(ProductAttribute attribute, VariantDTO variantDTO) {
+        if (!attribute.getName().equals(variantDTO.getAttributeName())) {
+            attribute.setName(variantDTO.getAttributeName());
+            productAttributeService.createAttribute(attribute);
         }
     }
+
+
 
     private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion percentageDiscountPromotion) {
 
