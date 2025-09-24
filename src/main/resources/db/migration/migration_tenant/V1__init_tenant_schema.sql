@@ -71,7 +71,8 @@ CREATE TABLE products (
     purchase_price NUMERIC CHECK (purchase_price > 0),
     quantity INT CHECK (quantity >= 0) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    tax_id BIGINT,
+    tax_id BIGINT  ,
+    low_stock_threshold INT ,
     CONSTRAINT fk_products_tax FOREIGN KEY(tax_id) REFERENCES taxes(id)
 );
 

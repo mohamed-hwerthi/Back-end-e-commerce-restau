@@ -22,7 +22,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param ProductId The ID of the menu item.
      * @return The total quantity of the menu item.
      */
-    @Query(value = "SELECT SUM(quantity) FROM order_menu_items WHERE menu_item_id = :ProductId", nativeQuery = true)
+    @Query(value = "SELECT SUM(quantity) FROM order_products WHERE product_id = :ProductId", nativeQuery = true)
     Integer sumQuantityByProductId(@Param("ProductId") UUID ProductId);
 
     /**
@@ -54,12 +54,12 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     Page<Order> findOrdersByUserId(@Param("userId") UUID userId, Pageable pageable);
 
     /**
-     * Removes references to a menu item from the order_menu_items table.
+     * Removes references to a menu item from the order_products table.
      *
      * @param ProductId The ID of the menu item to remove references to.
      */
     @Modifying
-    @Query(value = "DELETE FROM order_menu_items WHERE menu_item_id = :ProductId", nativeQuery = true)
+    @Query(value = "DELETE FROM order_products WHERE product_id = :ProductId", nativeQuery = true)
     void removeProductReferences(@Param("ProductId") UUID ProductId);
 
 

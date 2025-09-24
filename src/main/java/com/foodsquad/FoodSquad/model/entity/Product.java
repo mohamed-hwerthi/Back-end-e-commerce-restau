@@ -45,6 +45,9 @@ public class Product {
     @Column(nullable = false, name = "purchase_price")
     @Positive(message = "Purchase price must be positive")
     private BigDecimal purchasePrice;
+    @Column(nullable = true, name = "low_stock_threshold")
+    @Min(value = 0, message = "Low stock threshold must be at least 0")
+    private int lowStockThreshold;
 
     @Column(nullable = false, name = "quantity")
     @Min(value = 0, message = "Quantity must be at least 0")

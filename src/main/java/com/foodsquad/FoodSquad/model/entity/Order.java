@@ -33,8 +33,8 @@ public class Order {
     private Boolean paid = false;
 
     @ElementCollection
-    @CollectionTable(name = "order_menu_items", joinColumns = @JoinColumn(name = "order_id"))
-    @MapKeyJoinColumn(name = "menu_item_id")
+    @CollectionTable(name = "order_products", joinColumns = @JoinColumn(name = "order_id"))
+    @MapKeyJoinColumn(name = "product_id")
     @Column(name = "quantity")
     private Map<Product, Integer> ProductsWithQuantity;
 

@@ -26,6 +26,7 @@ public class ProductDTO {
     private LocalizedString description;
 
     private String barCode;
+
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")
     private int quantity;
 
@@ -42,6 +43,11 @@ public class ProductDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long reviewCount;
+
+
+
+    @PositiveOrZero(message = "La quantité doit être positive ou zéro")
+    private int lowStockThreshold;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double averageRating;
