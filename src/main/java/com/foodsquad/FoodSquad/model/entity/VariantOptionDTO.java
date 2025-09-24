@@ -1,9 +1,7 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -11,10 +9,14 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RequestVariantOptionDTO {
+@AllArgsConstructor
+@Builder
+public class   VariantOptionDTO {
     private UUID id;
     private String value;
     private BigDecimal price;
+    private String sku  ;
     private String quantity;
-    private String sku;
+    private UUID productVariantId ;
+    private UUID variantAttributeID ;
 }

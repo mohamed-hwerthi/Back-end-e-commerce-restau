@@ -382,7 +382,7 @@ public class ProductServiceImp implements ProductService {
                 .forEach(variantDTO -> handleVariantDTO(savedProduct, variantDTO));
     }
 
-    private void handleVariantDTO(Product product, RequestVariantDTO variantDTO) {
+    private void handleVariantDTO(Product product, VariantDTO variantDTO) {
         ProductAttribute attribute = productAttributeService.findOrCreateAttribute(product, variantDTO.getName());
         if (!ObjectUtils.isEmpty(variantDTO.getOptions())) {
             variantDTO.getOptions().stream()
@@ -391,7 +391,7 @@ public class ProductServiceImp implements ProductService {
         }
     }
 
-    private ProductVariant createVariantWithAttribute(Product product, ProductAttribute attribute, RequestVariantOptionDTO optionDTO) {
+    private ProductVariant createVariantWithAttribute(Product product, ProductAttribute attribute, VariantOptionDTO optionDTO) {
         ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
         ProductVariant variant = buildProductVariant(product, optionDTO);
         VariantAttribute variantAttribute = new VariantAttribute();
@@ -401,7 +401,7 @@ public class ProductServiceImp implements ProductService {
         return variant;
     }
 
-    private ProductVariant buildProductVariant(Product product, RequestVariantOptionDTO optionDTO) {
+    private ProductVariant buildProductVariant(Product product, VariantOptionDTO optionDTO) {
         ProductVariant variant = new ProductVariant();
         variant.setProduct(product);
         variant.setSku(getOrGenerateSku(optionDTO.getSku()));

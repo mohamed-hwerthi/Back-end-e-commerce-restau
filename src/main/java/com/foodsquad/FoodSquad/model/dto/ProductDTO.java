@@ -54,10 +54,9 @@ public class ProductDTO {
     private boolean isPromoted;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-
     private TaxDTO tax;
 
-    private List<RequestVariantDTO>variants = new ArrayList<>() ;
+    private List<VariantDTO>variants = new ArrayList<>() ;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
