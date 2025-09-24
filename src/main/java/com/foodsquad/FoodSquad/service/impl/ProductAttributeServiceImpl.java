@@ -26,6 +26,14 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
                 .orElseGet(() -> createAttribute(product, attributeName));
     }
 
+    @Override
+    public ProductAttribute createAttribute(ProductAttribute productAttribute) {
+        log.info("Creating attribute: {}", productAttribute);
+        return productAttributeRepository.save(productAttribute);
+
+    }
+
+
     /**
      * Creates and saves a new ProductAttribute for the given product.
      */
@@ -38,4 +46,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         product.getAttributes().add(savedAttr);
         return savedAttr;
     }
+
+
+
 }

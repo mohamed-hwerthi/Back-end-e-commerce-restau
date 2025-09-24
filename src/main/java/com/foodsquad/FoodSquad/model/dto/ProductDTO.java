@@ -66,8 +66,7 @@ public class ProductDTO {
 
     private List<VariantDTO>variants = new ArrayList<>() ;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
+        private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
 
 
 

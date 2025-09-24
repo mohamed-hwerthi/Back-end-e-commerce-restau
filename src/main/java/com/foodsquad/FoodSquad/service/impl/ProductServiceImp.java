@@ -8,7 +8,6 @@ import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
-import com.foodsquad.FoodSquad.repository.TaxRepository;
 import com.foodsquad.FoodSquad.service.declaration.*;
 import com.foodsquad.FoodSquad.service.helpers.ProductDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,6 +28,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -45,7 +45,6 @@ public class ProductServiceImp implements ProductService {
 
     private final ModelMapper modelMapper;
 
-    private final TaxRepository taxRepository;
 
 
     private final ProductPromotionSharedService ProductPromotionSharedService;
@@ -65,13 +64,12 @@ public class ProductServiceImp implements ProductService {
     private final ProductAttributeValueService productAttributeValueService;
 
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, TaxRepository taxRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService) {
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
         this.modelMapper = modelMapper;
-        this.taxRepository = taxRepository;
         this.ProductPromotionSharedService = ProductPromotionSharedService;
         this.productMapper = productMapper;
         this.taxService = taxService;
@@ -180,32 +178,22 @@ public class ProductServiceImp implements ProductService {
         return new PaginatedResponseDTO<>(ProductPage.getContent().stream().map(productMapper::toDto).toList(), ProductPage.getTotalElements());
     }
 
-    @Transactional
     public ResponseEntity<ProductDTO> updateProduct(UUID id, ProductDTO productDTO) {
-
         logger.debug("Updating menu item with ID: {}", id);
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
 
-        if (productDTO.getTax() != null) {
-            Tax existingTax = existingProduct.getTax();
-            BigDecimal newPrice = productDTO.getPrice();
-            double newTaxRate = productDTO.getTax().getRate();
-            double existingTaxRate = (existingTax != null) ? existingTax.getRate() : 0;
-            BigDecimal existingPriceTTC = existingProduct.getPrice();
-            Tax tax = existingTax != null ? existingTax : new Tax();
-            tax.setRate(newTaxRate);
-            tax.setName(productDTO.getTax().getName());
-            tax = taxRepository.save(tax);
-            existingProduct.setTax(tax);
-        }
-
         productMapper.updateProductFromDto(productDTO, existingProduct);
+
+        manageVariantsOnUpdate(productDTO, existingProduct);
+
         Product savedProduct = productRepository.save(existingProduct);
-        ProductDTO responseDTO = modelMapper.map(savedProduct, ProductDTO.class);
+
+        ProductDTO responseDTO = productMapper.toDto(savedProduct);
 
         return ResponseEntity.ok(responseDTO);
     }
+
 
 
     @Override
@@ -253,6 +241,7 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product with id " + ProductId + " not found"));
 
         product.getMedias().removeIf(media -> media.getId().equals(mediaId));
+
 
         productRepository.save(product);
 
@@ -383,7 +372,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     private void handleVariantDTO(Product product, VariantDTO variantDTO) {
-        ProductAttribute attribute = productAttributeService.findOrCreateAttribute(product, variantDTO.getName());
+        ProductAttribute attribute = productAttributeService.findOrCreateAttribute(product, variantDTO.getAttributeName());
         if (!ObjectUtils.isEmpty(variantDTO.getOptions())) {
             variantDTO.getOptions().stream()
                     .map(optionDTO -> createVariantWithAttribute(product, attribute, optionDTO))
@@ -441,6 +430,55 @@ public class ProductServiceImp implements ProductService {
         return productDTO;
     }
 
+
+    private void manageVariantsOnUpdate(ProductDTO productDTO, Product existingProduct) {
+
+        existingProduct.getVariants().removeIf(existingVariant ->
+                productDTO.getVariants().stream()
+                        .flatMap(v -> v.getOptions().stream())
+                        .noneMatch(opt -> opt.getProductVariantId() != null &&
+                                opt.getProductVariantId().equals(existingVariant.getId()))
+        );
+
+        List<UUID> dtoAttributeIds = productDTO.getVariants().stream()
+                .map(VariantDTO::getAttributeId)
+                .filter(Objects::nonNull)
+                .toList();
+        existingProduct.getAttributes().removeIf(attr -> !dtoAttributeIds.contains(attr.getId()));
+
+
+        for (VariantDTO variantDTO : productDTO.getVariants()) {
+            ProductAttribute attribute;
+
+            if (variantDTO.getAttributeId() != null) {
+                attribute = existingProduct.getAttributes().stream()
+                        .filter(a -> a.getId().equals(variantDTO.getAttributeId()))
+                        .findFirst()
+                        .orElseThrow(() -> new EntityNotFoundException("Attribute not found"));
+
+                if (!attribute.getName().equals(variantDTO.getAttributeName())) {
+                    attribute.setName(variantDTO.getAttributeName());
+                    productAttributeService.createAttribute(attribute);
+                }
+
+            } else {
+                attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
+                existingProduct.getAttributes().add(attribute);
+            }
+        }
+
+    }
+    private void updateExistingOption(ProductVariant variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
+        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
+        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
+
+        if (optionDTO.getValue() != null) {
+            ProductAttributeValue newValue = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+            variant.getAttributes().forEach(attr -> attr.setAttributeValue(newValue));
+        }
+    }
+
     private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion percentageDiscountPromotion) {
 
         return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
@@ -452,6 +490,16 @@ public class ProductServiceImp implements ProductService {
     }
 
 
+
+
+
+
+
 }
+
+
+
+
+
 
 

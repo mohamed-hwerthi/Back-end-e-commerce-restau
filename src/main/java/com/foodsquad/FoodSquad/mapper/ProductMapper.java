@@ -31,6 +31,7 @@ public interface ProductMapper {
     List<ProductDTO> toDtoList(List<Product> products);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "variants", ignore = true)
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
     default ProductDTO toProductDtoWithMoreInformation(
@@ -78,8 +79,8 @@ public interface ProductMapper {
                     UUID attributeId = entry.getKey();
                     List<ProductVariant> variantsForAttribute = entry.getValue();
                     VariantDTO variantDTO = new VariantDTO();
-                    variantDTO.setId(attributeId);
-                    variantDTO.setName(
+                    variantDTO.setAttributeId(attributeId);
+                    variantDTO.setAttributeName(
                             variantsForAttribute.get(0).getAttributes()
                                     .get(0).getAttributeValue().getProductAttribute().getName()
                     );

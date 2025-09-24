@@ -7,6 +7,8 @@ import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
 public interface ProductAttributeService
 {
      ProductAttribute findOrCreateAttribute(Product product, LocalizedString attributeName) ;
+     ProductAttribute createAttribute(ProductAttribute productAttribute) ;
+
 
 
 

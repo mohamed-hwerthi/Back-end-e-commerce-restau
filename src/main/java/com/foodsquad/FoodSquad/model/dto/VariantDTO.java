@@ -13,8 +13,8 @@ import java.util.UUID;
 @Setter
 
 public class VariantDTO {
-    private UUID id  ;
-    private LocalizedString  name  ;
+    private UUID attributeId  ;
+    private LocalizedString  attributeName  ;
     private List<VariantOptionDTO> options  = new ArrayList<>() ;
 
 }

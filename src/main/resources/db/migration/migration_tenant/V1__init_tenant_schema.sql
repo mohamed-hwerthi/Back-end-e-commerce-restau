@@ -234,6 +234,6 @@ CREATE TABLE variant_attributes (
     variant_id UUID NOT NULL,
     attribute_value_id UUID NOT NULL,
     CONSTRAINT fk_variant_attributes_variant FOREIGN KEY(variant_id) REFERENCES product_variants(id) ON DELETE CASCADE,
-    CONSTRAINT fk_variant_attributes_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
+    CONSTRAINT fk_variant_attributes_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE NO ACTION,
     CONSTRAINT uq_variant_attribute UNIQUE (variant_id, attribute_value_id)
 );
