@@ -67,6 +67,7 @@ CREATE TABLE products (
     description jsonb,
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,
+    sku VARCHAR(255) UNIQUE,
     purchase_price NUMERIC CHECK (purchase_price > 0),
     quantity INT CHECK (quantity >= 0) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

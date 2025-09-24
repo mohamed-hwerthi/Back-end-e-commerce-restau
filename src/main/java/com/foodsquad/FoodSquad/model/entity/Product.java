@@ -39,6 +39,9 @@ public class Product {
     @Column(nullable = true, name = "code_bar", unique = true)
     private String barCode;
 
+    @Column(nullable = true, name = "sku", unique = true)
+    private String sku;
+
     @Column(nullable = false, name = "purchase_price")
     @Positive(message = "Purchase price must be positive")
     private BigDecimal purchasePrice;

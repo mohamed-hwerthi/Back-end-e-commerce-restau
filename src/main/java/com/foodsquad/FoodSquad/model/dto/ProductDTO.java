@@ -29,6 +29,8 @@ public class ProductDTO {
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")
     private int quantity;
 
+    private String sku  ;
+
     @Positive(message = "Purchase price must be positive")
     private BigDecimal purchasePrice;
 
