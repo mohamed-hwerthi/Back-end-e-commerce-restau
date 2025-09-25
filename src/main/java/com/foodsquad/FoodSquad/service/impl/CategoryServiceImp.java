@@ -130,10 +130,7 @@ public class CategoryServiceImp implements CategoryService {
         return categoryRepository.saveAll(categories);
     }
 
-
-    /*
-    todo   :calling to seach by the  name and the search  item has been removed temporally
-     */
+    
 
     @Override
     public PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(
