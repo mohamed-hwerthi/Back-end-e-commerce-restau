@@ -1,17 +1,19 @@
 package com.foodsquad.FoodSquad.model.dto;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
+import com.foodsquad.FoodSquad.dto.SupplementGroupDTO;
+
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -30,7 +32,7 @@ public class ProductDTO {
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")
     private int quantity;
 
-    private String sku  ;
+    private String sku;
 
     @Positive(message = "Purchase price must be positive")
     private BigDecimal purchasePrice;
@@ -44,8 +46,6 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long reviewCount;
 
-
-
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")
     private int lowStockThreshold;
 
@@ -53,7 +53,7 @@ public class ProductDTO {
     private Double averageRating;
     private List<CategoryDTO> categories = new ArrayList<>();
 
-    private BigDecimal discountedPrice ;
+    private BigDecimal discountedPrice;
 
     private List<MediaDTO> medias = new ArrayList<>();
 
@@ -64,10 +64,11 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private TaxDTO tax;
 
-    private List<VariantDTO>variants = new ArrayList<>() ;
+    private List<VariantDTO> variants = new ArrayList<>();
 
-        private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
+    private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
 
-
+    // product options group qnd product options :
+    private List<SupplementGroupDTO> supplementGroups = new ArrayList<>();
 
 }

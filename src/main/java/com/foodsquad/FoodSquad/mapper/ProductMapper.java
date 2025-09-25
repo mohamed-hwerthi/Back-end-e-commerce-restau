@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class}
+        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class }
 )
 public interface ProductMapper {
 

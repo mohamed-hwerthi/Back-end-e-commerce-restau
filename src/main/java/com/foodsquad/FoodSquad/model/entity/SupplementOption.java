@@ -3,8 +3,7 @@ package com.foodsquad.FoodSquad.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -13,6 +12,9 @@ import java.util.UUID;
 @Table(name = "supplement_options")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SupplementOption {
 
     @Id
@@ -20,12 +22,10 @@ public class SupplementOption {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @NotBlank(message = "Option name cannot be blank")
-    @Column(nullable = false)
-    private String name;
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private LocalizedString name;
 
     @Column(nullable = false)
-    @Min(value = 0, message = "Price must be at least 0")
     private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)

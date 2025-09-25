@@ -237,3 +237,21 @@ CREATE TABLE variant_attributes (
     CONSTRAINT fk_variant_attributes_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE NO ACTION,
     CONSTRAINT uq_variant_attribute UNIQUE (variant_id, attribute_value_id)
 );
+
+-- Supplement Groups Table
+CREATE TABLE supplement_groups (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name jsonb NOT NULL,
+    obligatory BOOLEAN NOT NULL,
+    product_id UUID NOT NULL,
+    CONSTRAINT fk_supplement_group_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Supplement Options Table
+CREATE TABLE supplement_options (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name jsonb NOT NULL,
+    price NUMERIC CHECK (price >= 0),
+    supplement_group_id UUID NOT NULL,
+    CONSTRAINT fk_supplement_option_group FOREIGN KEY (supplement_group_id) REFERENCES supplement_groups(id) ON DELETE CASCADE
+);

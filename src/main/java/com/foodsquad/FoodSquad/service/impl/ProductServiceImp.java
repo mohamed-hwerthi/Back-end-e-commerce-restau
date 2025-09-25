@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.service.impl;
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.exception.DuplicateProductException;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
+import com.foodsquad.FoodSquad.mapper.SupplementGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
@@ -12,7 +13,6 @@ import com.foodsquad.FoodSquad.service.declaration.*;
 import com.foodsquad.FoodSquad.service.helpers.ProductDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -42,11 +42,6 @@ public class ProductServiceImp implements ProductService {
 
     private final ReviewRepository reviewRepository;
 
-
-    private final ModelMapper modelMapper;
-
-
-
     private final ProductPromotionSharedService ProductPromotionSharedService;
 
     private final ProductMapper productMapper;
@@ -63,13 +58,14 @@ public class ProductServiceImp implements ProductService {
 
     private final ProductAttributeValueService productAttributeValueService;
 
+    private final  SupplementGroupMapper supplementGroupMapper;
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, ModelMapper modelMapper, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService) {
+
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
-        this.modelMapper = modelMapper;
         this.ProductPromotionSharedService = ProductPromotionSharedService;
         this.productMapper = productMapper;
         this.taxService = taxService;
@@ -78,20 +74,22 @@ public class ProductServiceImp implements ProductService {
         this.localeContext = localeContext;
         this.productAttributeService = productAttributeService;
         this.productAttributeValueService = productAttributeValueService;
+        this.supplementGroupMapper = supplementGroupMapper;
     }
 
     @Override
-    @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
         logger.debug("Creating product: {}", productDTO);
 
         checkDuplicateBarCode(productDTO);
 
-        Product product = productMapper.toEntity(productDTO);
+       Product product = productMapper.toEntity(productDTO);
 
         Product savedProduct = productRepository.save(product);
 
         manageProductTaxesIfPresent(productDTO, savedProduct);
+
+        manageSupplementGroups(productDTO, savedProduct);
 
         manageVariantsAndAttributes(productDTO, savedProduct);
 
@@ -515,6 +513,26 @@ public class ProductServiceImp implements ProductService {
             attribute.setName(variantDTO.getAttributeName());
             productAttributeService.createAttribute(attribute);
         }
+    }
+
+
+    private void manageSupplementGroups(ProductDTO productDTO, Product product) {
+        product.getSupplementGroups().clear();
+
+        if (ObjectUtils.isEmpty(productDTO.getSupplementGroups())) {
+            return;
+        }
+
+        List<SupplementGroup> groups = supplementGroupMapper.toEntityList(productDTO.getSupplementGroups());
+
+        groups.forEach(group -> {
+            group.setProduct(product);
+            if (!ObjectUtils.isEmpty(group.getSupplementOptions())) {
+                group.getSupplementOptions().forEach(option -> option.setSupplementGroup(group));
+            }
+        });
+
+        product.getSupplementGroups().addAll(groups);
     }
 
 
