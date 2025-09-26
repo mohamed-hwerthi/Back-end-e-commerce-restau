@@ -39,8 +39,6 @@ public class ProductVariantController {
     }
 
 
-
-
     @PutMapping("/{id}")
     @Operation(summary = "Update a product variant")
     public ResponseEntity<ProductVariantDTO> updateVariant(

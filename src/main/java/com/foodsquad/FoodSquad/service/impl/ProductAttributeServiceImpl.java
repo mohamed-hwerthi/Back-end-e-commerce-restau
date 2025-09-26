@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductAttributeServiceImpl implements ProductAttributeService {
 
-    private final ProductAttributeRepository productAttributeRepository ;
+    private final ProductAttributeRepository productAttributeRepository;
 
     /**
      * Finds an attribute by name for a product, or creates a new one if it doesn't exist.
@@ -46,7 +46,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         product.getAttributes().add(savedAttr);
         return savedAttr;
     }
-
 
 
 }

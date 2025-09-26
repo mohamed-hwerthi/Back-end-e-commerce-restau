@@ -43,7 +43,7 @@ public interface SupplementGroupService {
     /**
      * Update a supplement group.
      *
-     * @param id Supplement group ID.
+     * @param id                 Supplement group ID.
      * @param supplementGroupDTO Supplement group data.
      * @return Updated supplement group.
      */

@@ -29,6 +29,6 @@ public class ProductAttribute {
     private Product product;
 
     @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductAttributeValue> values = new ArrayList<>() ;
+    private List<ProductAttributeValue> values = new ArrayList<>();
 
 }

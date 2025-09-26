@@ -130,7 +130,6 @@ public class CategoryServiceImp implements CategoryService {
         return categoryRepository.saveAll(categories);
     }
 
-    
 
     @Override
     public PaginatedResponseDTO<CategoryDTO> findCategoriesByPageAndSearch(

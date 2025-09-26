@@ -1,19 +1,18 @@
 package com.foodsquad.FoodSquad.model.dto;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import com.foodsquad.FoodSquad.dto.SupplementGroupDTO;
-
+import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -35,7 +34,7 @@ public class ProductDTO {
     private String sku;
 
     @Positive(message = "Purchase price must be positive")
-    private BigDecimal purchasePrice ;
+    private BigDecimal purchasePrice;
 
     @PositiveOrZero(message = "Le prix  doit être positive ou zéro")
     private BigDecimal price;

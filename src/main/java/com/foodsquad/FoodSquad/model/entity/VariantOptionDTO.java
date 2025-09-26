@@ -11,12 +11,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class   VariantOptionDTO {
+public class VariantOptionDTO {
     private UUID id;
     private String value;
     private BigDecimal price;
-    private String sku  ;
+    private String sku;
     private String quantity;
-    private UUID productVariantId ;
-    private UUID variantAttributeID ;
+    private UUID productVariantId;
+    private UUID variantAttributeID;
 }

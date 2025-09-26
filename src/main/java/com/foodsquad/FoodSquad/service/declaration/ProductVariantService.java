@@ -2,7 +2,6 @@ package com.foodsquad.FoodSquad.service.declaration;
 
 import com.foodsquad.FoodSquad.model.dto.ProductVariantDTO;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface ProductVariantService {

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
- public class ProductAttributeValueDTO {
+public class ProductAttributeValueDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 

@@ -58,7 +58,7 @@ public class ProductServiceImp implements ProductService {
 
     private final ProductAttributeValueService productAttributeValueService;
 
-    private final  SupplementGroupMapper supplementGroupMapper;
+    private final SupplementGroupMapper supplementGroupMapper;
 
 
     public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper) {
@@ -84,7 +84,7 @@ public class ProductServiceImp implements ProductService {
 
         checkDuplicateBarCode(productDTO);
 
-       Product product = productMapper.toEntity(productDTO);
+        Product product = productMapper.toEntity(productDTO);
 
         Product savedProduct = productRepository.save(product);
 
@@ -192,7 +192,6 @@ public class ProductServiceImp implements ProductService {
 
         return ResponseEntity.ok(responseDTO);
     }
-
 
 
     @Override
@@ -537,7 +536,6 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-
     private boolean isPromotionDiscountTypeByPercentage(PercentageDiscountPromotion percentageDiscountPromotion) {
 
         return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_PERCENTAGE);
@@ -547,11 +545,6 @@ public class ProductServiceImp implements ProductService {
 
         return !ObjectUtils.isEmpty(percentageDiscountPromotion) && percentageDiscountPromotion.getDiscountType().equals(DiscountType.BY_AMOUNT);
     }
-
-
-
-
-
 
 
 }

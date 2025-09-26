@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 public class ProductVariantDTO {
 
-    private UUID id  ;
+    private UUID id;
     @NotBlank(message = "price has to be not null ")
     @PositiveOrZero(message = "price has to be positive ")
     private BigDecimal price;
