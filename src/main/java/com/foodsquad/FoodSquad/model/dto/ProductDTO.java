@@ -35,7 +35,7 @@ public class ProductDTO {
     private String sku;
 
     @Positive(message = "Purchase price must be positive")
-    private BigDecimal purchasePrice;
+    private BigDecimal purchasePrice ;
 
     @PositiveOrZero(message = "Le prix  doit être positive ou zéro")
     private BigDecimal price;
@@ -51,6 +51,7 @@ public class ProductDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double averageRating;
+
     private List<CategoryDTO> categories = new ArrayList<>();
 
     private BigDecimal discountedPrice;
@@ -58,17 +59,14 @@ public class ProductDTO {
     private List<MediaDTO> medias = new ArrayList<>();
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-
     private boolean isPromoted;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private TaxDTO tax;
 
     private List<VariantDTO> variants = new ArrayList<>();
 
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
 
-    // product options group qnd product options :
     private List<SupplementGroupDTO> supplementGroups = new ArrayList<>();
 
 }

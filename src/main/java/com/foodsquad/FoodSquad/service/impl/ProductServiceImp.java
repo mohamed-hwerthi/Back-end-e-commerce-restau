@@ -78,6 +78,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
         logger.debug("Creating product: {}", productDTO);
 
