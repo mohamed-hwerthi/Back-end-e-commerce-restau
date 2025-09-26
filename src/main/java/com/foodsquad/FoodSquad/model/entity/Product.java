@@ -98,6 +98,9 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SupplementGroup> supplementGroups = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomAttribute> customAttributes = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {

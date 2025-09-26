@@ -68,4 +68,6 @@ public class ProductDTO {
 
     private List<SupplementGroupDTO> supplementGroups = new ArrayList<>();
 
+    private List<CustomAttributeDTO> customAttributes = new ArrayList<>();
+
 }
