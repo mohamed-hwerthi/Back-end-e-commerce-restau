@@ -255,3 +255,15 @@ CREATE TABLE supplement_options (
     supplement_group_id UUID NOT NULL,
     CONSTRAINT fk_supplement_option_group FOREIGN KEY (supplement_group_id) REFERENCES supplement_groups(id) ON DELETE CASCADE
 );
+
+-- ========================================
+-- Create Custom Attributes Table
+-- ========================================
+CREATE TABLE IF NOT EXISTS custom_attributes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id UUID NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    type VARCHAR(20) NOT NULL, -- STRING, NUMBER, DECIMAL, BOOLEAN, DATE
+    CONSTRAINT fk_custom_attribute_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);

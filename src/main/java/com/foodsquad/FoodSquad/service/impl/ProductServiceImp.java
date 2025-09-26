@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.exception.DuplicateProductException;
+import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.mapper.SupplementGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
@@ -26,10 +27,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProductServiceImp implements ProductService {
@@ -60,8 +58,10 @@ public class ProductServiceImp implements ProductService {
 
     private final SupplementGroupMapper supplementGroupMapper;
 
+    private final CustomAttributeMapper customAttributeMapper;
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper) {
+
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
@@ -75,6 +75,7 @@ public class ProductServiceImp implements ProductService {
         this.productAttributeService = productAttributeService;
         this.productAttributeValueService = productAttributeValueService;
         this.supplementGroupMapper = supplementGroupMapper;
+        this.customAttributeMapper = customAttributeMapper;
     }
 
     @Override
@@ -93,6 +94,9 @@ public class ProductServiceImp implements ProductService {
         manageSupplementGroups(productDTO, savedProduct);
 
         manageVariantsAndAttributes(productDTO, savedProduct);
+
+        manageCustomAttributes(productDTO, savedProduct);
+
 
         savedProduct = productRepository.save(savedProduct);
 
@@ -533,6 +537,19 @@ public class ProductServiceImp implements ProductService {
         });
 
         product.getSupplementGroups().addAll(groups);
+    }
+
+
+    private void manageCustomAttributes(ProductDTO productDTO, Product product) {
+        if (productDTO.getCustomAttributes() != null && !productDTO.getCustomAttributes().isEmpty()) {
+            List<CustomAttribute> attributes = new ArrayList<>();
+            for (var dto : productDTO.getCustomAttributes()) {
+                CustomAttribute attribute = customAttributeMapper.toEntity(dto);
+                attribute.setProduct(product);
+                attributes.add(attribute);
+            }
+            product.setCustomAttributes(attributes);
+        }
     }
 
 
