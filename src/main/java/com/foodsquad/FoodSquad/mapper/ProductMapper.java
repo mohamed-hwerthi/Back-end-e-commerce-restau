@@ -35,6 +35,7 @@ public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "variants", ignore = true)
+    @Mapping(target="customAttributes.product" , ignore = true)
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
     default ProductDTO toProductDtoWithMoreInformation(
@@ -63,7 +64,7 @@ public interface ProductMapper {
                 .collect(Collectors.toMap(
                         attr -> attr.getAttributeValue().getProductAttribute().getId(),
                         attr -> attr.getAttributeValue().getProductAttribute().getName(),
-                        (existing, replacement) -> existing, // keep first if duplicate
+                        (existing, replacement) -> existing,
                         LinkedHashMap::new
                 ))
                 .entrySet().stream()

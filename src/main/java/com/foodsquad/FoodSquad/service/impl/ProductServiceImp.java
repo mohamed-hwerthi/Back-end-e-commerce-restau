@@ -8,6 +8,7 @@ import com.foodsquad.FoodSquad.mapper.SupplementGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
+import com.foodsquad.FoodSquad.repository.ProductAttributeRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.service.declaration.*;
@@ -59,9 +60,11 @@ public class ProductServiceImp implements ProductService {
     private final SupplementGroupMapper supplementGroupMapper;
 
     private final CustomAttributeMapper customAttributeMapper;
+    private final ProductAttributeRepository productAttributeRepository;
 
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper,
+                             ProductAttributeRepository productAttributeRepository) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
@@ -76,6 +79,7 @@ public class ProductServiceImp implements ProductService {
         this.productAttributeValueService = productAttributeValueService;
         this.supplementGroupMapper = supplementGroupMapper;
         this.customAttributeMapper = customAttributeMapper;
+        this.productAttributeRepository = productAttributeRepository;
     }
 
     @Override
@@ -188,7 +192,10 @@ public class ProductServiceImp implements ProductService {
 
         productMapper.updateProductFromDto(productDTO, existingProduct);
 
-        manageVariantsOnUpdate(productDTO, existingProduct);
+        //manageVariantsOnUpdate(productDTO, existingProduct)
+
+        manageProductCustomAttributesOnUpdate( existingProduct)  ;
+
 
         Product savedProduct = productRepository.save(existingProduct);
 
@@ -438,6 +445,17 @@ public class ProductServiceImp implements ProductService {
         removeDeletedAttributes(productDTO, existingProduct);
         updateOrCreateAttributesAndOptions(productDTO, existingProduct);
     }
+
+    private void manageProductCustomAttributesOnUpdate( Product exsistingProduct){
+         exsistingProduct.getCustomAttributes().forEach(
+                 customAttribute -> {
+                     customAttribute.setProduct(exsistingProduct);
+                 }
+         );
+
+    }
+
+
 
     private void removeDeletedVariants(ProductDTO productDTO, Product existingProduct) {
         existingProduct.getVariants().removeIf(existingVariant ->
