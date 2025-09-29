@@ -1,9 +1,9 @@
 package com.foodsquad.FoodSquad.model.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,10 +26,9 @@ public class Store {
     private String name;
 
 
-    @Column(name = "description", nullable = true, unique = false)
-    @JdbcTypeCode(SqlTypes.JSON)
-    private String description;
-
+    @Type(JsonType.class)
+    @Column(name = "about", length = 2048 , columnDefinition = "json", nullable = false)
+    private LocalizedString about;
 
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
@@ -37,8 +36,20 @@ public class Store {
     @Column(name = "address", nullable = true)
     private String address;
 
+    private String city  ;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
+
     @Column(name = "facebook_url", nullable = true)
     private String facebookUrl;
+
+    @Column(name = "email_contact" , nullable = true)
+    private String  emailContact ;
+
+    @Column(name = "whatsapp"  ,  nullable = false)
+    private String whatsapp ;
 
 
     @Column(name = "instagram_url", nullable = true)
@@ -50,8 +61,10 @@ public class Store {
     @Column(name = "website_url", nullable = true)
     private String websiteUrl;
 
-    @Column(name = "about", length = 2048, nullable = true)
-    private String about;
+    @Column(name = "postal_code" , nullable =true)
+    private String postalCode  ;
+
+
 
     @Column(name = "background_color", length = 10, nullable = true)
     private String backgroundColor;

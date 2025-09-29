@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS medias (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     path VARCHAR(1024) NOT NULL,
-    url VARCHAR(1024) NOT NULL,
+    url VARCHAR(1024) NOT NULL ,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     type VARCHAR(50) NOT NULL
 );
@@ -85,14 +85,17 @@ CREATE TABLE IF NOT EXISTS tokens (
 CREATE TABLE IF NOT EXISTS stores (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    description JSON  ,
     slug VARCHAR(255) NOT NULL,
     address VARCHAR(512),
+    city VARCHAR(255),
     facebook_url VARCHAR(512),
     instagram_url VARCHAR(512),
     linked_in_url VARCHAR(512),
     website_url VARCHAR(512),
-    about VARCHAR(2048),
+    postal_code VARCHAR(512) ,
+    email_contact VARCHAR(512) ,
+    whatsapp VARCHAR(512) ,
+    about JSON,
     background_color VARCHAR(10),
     template_name VARCHAR(255),
     accent_color VARCHAR(10),
@@ -109,7 +112,7 @@ CREATE TABLE IF NOT EXISTS stores (
     CONSTRAINT fk_store_logo_media FOREIGN KEY (logo_media_id) REFERENCES medias(id),
     CONSTRAINT fk_store_owner FOREIGN KEY (owner_id) REFERENCES "users"(id),
     CONSTRAINT fk_currency_id FOREIGN KEY (currency_id) REFERENCES currencies(id),
-    CONSTRAINT fk_store_country FOREIGN KEY (country_id) REFERENCES countries(id) ,
+    CONSTRAINT fk_store_country FOREIGN KEY (country_id) REFERENCES countries(id),
     CONSTRAINT fk_store_default_language FOREIGN KEY (default_language_id) REFERENCES languages(id)
-
 );
+

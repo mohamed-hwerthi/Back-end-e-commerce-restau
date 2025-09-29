@@ -71,9 +71,8 @@ public class StoreServiceImpl implements StoreService {
         log.info("Updating Store with id: {}", storeId);
         return storeRepository.findById(storeId)
                 .map(existing -> {
-                    Store updated = storeMapper.toEntity(storeDTO);
-                    updated.setId(existing.getId());
-                    Store saved = storeRepository.save(updated);
+                     storeMapper.updateStoreFields(storeDTO , existing);
+                    Store saved = storeRepository.save(existing                                                                                                                                                                                         );
                     log.info("Updated Store with id: {}", storeId);
                     return storeMapper.toDto(saved);
                 })

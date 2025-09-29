@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +25,6 @@ public class StoreDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
-    private String description;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String slug;
@@ -42,14 +42,19 @@ public class StoreDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+
     private String address;
+    private String postalCode  ;
 
     private String facebookUrl;
     private String instagramUrl;
     private String linkedInUrl;
     private String websiteUrl;
+    private String   whatsapp  ;
+    @Email(message = "email not valid")
+    private String emailContact   ;
 
-    private String about;
+    private LocalizedString about;
     private String backgroundColor;
     private String templateName;
     private String accentColor;
@@ -67,6 +72,10 @@ public class StoreDTO {
     private String encryptedStoreId;
 
     private LanguageDTO defaultLanguage;
+
+    private CountryDTO country  ;
+
+    private String city   ;
 
 
 }

@@ -2,8 +2,19 @@
 -- Insert Default Countries
 -- ========================================
 INSERT INTO countries (code, name, flag_url) VALUES
-('TN', '{"en":"Tunisia","fr":"Tunisie"}', 'data:image/png;base64,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'),
+('TN', '{"en":"Tunisia","fr":"Tunisie"}', 'data:image/png;base64,iVBORw0...'),
 ('FR', '{"en":"France","fr":"France"}', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRL52JovZOgF3-dTg7n2yjxwJt3NMCOMpI4yQ&s'),
-('US', '{"en":"United States","fr":"États-Unis"}','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAACuCAMAAAClZfCTAAAAFVBMVEX////OESTMAAXtur3uvcDNABXhiI3e3ENuAAABiUlEQVR4nO3asQ3DMBAEQVqk1H/JdgcTPgTvVHDY+Naata8PXHt44rQSUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRFQiKhGViEpEJaISUYmoRHSc6Exv3KPOcyvR/ZzZjeuaxUK/RsMTlyf+uxJRiahEVCIqEZWISkQlohJRiahEVCIqEZWISkQlohJRiahEVCIqEZWISkQlohJRiahEVCIqEZWISkRdsKgjH01fLd9wBx3WqZhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiElGJqERUIioRlYhKRCWiFyT6AlXQRZ39U6PdAAAAAElFTkSuQmC');
-
-
+('US', '{"en":"United States","fr":"États-Unis"}','data:image/png;base64,iVBORw0...'),
+('GB', '{"en":"United Kingdom","fr":"Royaume-Uni"}', 'https://flagcdn.com/gb.svg'),
+('DE', '{"en":"Germany","fr":"Allemagne"}', 'https://flagcdn.com/de.svg'),
+('ES', '{"en":"Spain","fr":"Espagne"}', 'https://flagcdn.com/es.svg'),
+('IT', '{"en":"Italy","fr":"Italie"}', 'https://flagcdn.com/it.svg'),
+('CA', '{"en":"Canada","fr":"Canada"}', 'https://flagcdn.com/ca.svg'),
+('MA', '{"en":"Morocco","fr":"Maroc"}', 'https://flagcdn.com/ma.svg'),
+('DZ', '{"en":"Algeria","fr":"Algérie"}', 'https://flagcdn.com/dz.svg'),
+('JP', '{"en":"Japan","fr":"Japon"}', 'https://flagcdn.com/jp.svg'),
+('CN', '{"en":"China","fr":"Chine"}', 'https://flagcdn.com/cn.svg'),
+('IN', '{"en":"India","fr":"Inde"}', 'https://flagcdn.com/in.svg'),
+('BR', '{"en":"Brazil","fr":"Brésil"}', 'https://flagcdn.com/br.svg'),
+('RU', '{"en":"Russia","fr":"Russie"}', 'https://flagcdn.com/ru.svg')
+ON CONFLICT (code) DO NOTHING;

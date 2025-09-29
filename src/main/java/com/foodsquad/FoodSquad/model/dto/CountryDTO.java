@@ -1,6 +1,8 @@
 package com.foodsquad.FoodSquad.model.dto;
 
+import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +17,8 @@ public class CountryDTO {
     @NotBlank(message = "Country code cannot be blank")
     private String code;
 
-    @NotBlank(message = "Country name cannot be blank")
-    private String name;
+    @NotEmpty(message = "Country name cannot be blank")
+    private LocalizedString name;
 
     private String flagUrl;
 }
