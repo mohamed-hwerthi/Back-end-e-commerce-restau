@@ -20,31 +20,28 @@ public interface CustomAttributeMapper {
         if (value == null) return null;
 
         try {
-            switch (type) {
-                case STRING:
-                    return value;
-
-                case NUMBER:
+            return switch (type) {
+                case STRING -> value;
+                case NUMBER -> {
                     Double.parseDouble(value);
-                    return value;
-
-                case DECIMAL:
+                    yield value;
+                }
+                case DECIMAL -> {
                     new java.math.BigDecimal(value);
-                    return value;
-
-                case BOOLEAN:
+                    yield value;
+                }
+                case BOOLEAN -> {
                     if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
                         throw new IllegalArgumentException("Invalid boolean value");
                     }
-                    return value.toLowerCase();
-
-                case DATE:
+                    yield value.toLowerCase();
+                }
+                case DATE -> {
                     java.time.LocalDate.parse(value);
-                    return value;
-
-                default:
-                    throw new IllegalArgumentException("Unknown type: " + type);
-            }
+                    yield value;
+                }
+                default -> throw new IllegalArgumentException("Unknown type: " + type);
+            };
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid value for type " + type + ": " + value, e);
         }

@@ -1,8 +1,10 @@
 package com.foodsquad.FoodSquad.model.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import java.util.UUID;
 
@@ -16,8 +18,9 @@ public class CustomAttribute {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String name;
+    @Type(JsonType.class)
+    @Column(name = "name", length = 2048 , columnDefinition = "json", nullable = false)
+    private LocalizedString name;
 
     @Column(nullable = false)
     private String value;
