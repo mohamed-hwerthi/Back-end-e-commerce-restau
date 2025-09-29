@@ -5,6 +5,8 @@ import com.foodsquad.FoodSquad.model.entity.CustomAttribute;
 import com.foodsquad.FoodSquad.model.entity.CustomAttributeType;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CustomAttributeMapper {
 
@@ -12,6 +14,15 @@ public interface CustomAttributeMapper {
     CustomAttribute toEntity(CustomAttributeDTO dto);
 
     CustomAttributeDTO toDto(CustomAttribute entity);
+
+    List<CustomAttribute> toEntityList(List<CustomAttributeDTO> dtoList);
+
+    List<CustomAttributeDTO> toDtoList(List<CustomAttribute> entityList);
+
+
+
+    @Mapping(target = "id" , ignore = true)
+    void updatePartialFields(@MappingTarget CustomAttribute customAttribute , CustomAttributeDTO  customAttributeDTO) ;
 
     /**
      * Convert value according to type

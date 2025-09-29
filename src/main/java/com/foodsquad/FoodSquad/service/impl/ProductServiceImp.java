@@ -60,6 +60,7 @@ public class ProductServiceImp implements ProductService {
     private final SupplementGroupMapper supplementGroupMapper;
 
     private final CustomAttributeMapper customAttributeMapper;
+
     private final ProductAttributeRepository productAttributeRepository;
 
 
@@ -194,8 +195,9 @@ public class ProductServiceImp implements ProductService {
 
         //manageVariantsOnUpdate(productDTO, existingProduct)
 
-        manageProductCustomAttributesOnUpdate( existingProduct)  ;
+        List<CustomAttribute> dtoAttributes =customAttributeMapper.toEntityList(productDTO.getCustomAttributes());
 
+        manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
 
         Product savedProduct = productRepository.save(existingProduct);
 
@@ -446,14 +448,30 @@ public class ProductServiceImp implements ProductService {
         updateOrCreateAttributesAndOptions(productDTO, existingProduct);
     }
 
-    private void manageProductCustomAttributesOnUpdate( Product exsistingProduct){
-         exsistingProduct.getCustomAttributes().forEach(
-                 customAttribute -> {
-                     customAttribute.setProduct(exsistingProduct);
-                 }
-         );
+    private void manageProductCustomAttributesOnUpdate(Product existingProduct, List<CustomAttribute> newAttributes) {
+        existingProduct.getCustomAttributes()
+                .removeIf(existingAttr -> newAttributes.stream()
+                        .noneMatch(newAttr -> newAttr.getId() != null && newAttr.getId().equals(existingAttr.getId())));
 
+        for (CustomAttribute newAttr : newAttributes) {
+            if (newAttr.getId() != null) {
+                existingProduct.getCustomAttributes().stream()
+                        .filter(e -> e.getId().equals(newAttr.getId()))
+                        .findFirst()
+                        .ifPresent(existing -> {
+                            existing.setName(newAttr.getName());
+                            existing.setValue(newAttr.getValue());
+                            existing.setType(newAttr.getType());
+                            existing.setProduct(existingProduct);
+
+                        });
+            } else {
+                newAttr.setProduct(existingProduct);
+                existingProduct.getCustomAttributes().add(newAttr);
+            }
+        }
     }
+
 
 
 
