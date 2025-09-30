@@ -2,7 +2,7 @@
 
 -- Taxes
 CREATE TABLE taxes (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255),
     rate DOUBLE PRECISION
 );
@@ -73,7 +73,7 @@ CREATE TABLE products (
     purchase_price NUMERIC CHECK (purchase_price > 0),
     quantity INT CHECK (quantity >= 0) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    tax_id BIGINT  ,
+    tax_id UUID  ,
     low_stock_threshold INT ,
     CONSTRAINT fk_products_tax FOREIGN KEY(tax_id) REFERENCES taxes(id) ,
     CONSTRAINT fk_products_parent FOREIGN KEY(parent_id) REFERENCES products(id) ON DELETE CASCADE

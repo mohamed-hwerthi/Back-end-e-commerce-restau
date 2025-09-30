@@ -34,7 +34,8 @@ public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "variants", ignore = true)
-    @Mapping(target="customAttributes.product" , ignore = true)
+    @Mapping(target = "tax", ignore = true)
+    @Mapping(target = "customAttributes" ,ignore = true)
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
     default ProductDTO toProductDtoWithMoreInformation(

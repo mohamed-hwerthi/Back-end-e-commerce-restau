@@ -188,12 +188,11 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
 
         productMapper.updateProductFromDto(productDTO, existingProduct);
-
-        //manageVariantsOnUpdate(productDTO, existingProduct)
+        manageVariantsOnUpdate(productDTO, existingProduct) ;
 
         List<CustomAttribute> dtoAttributes =customAttributeMapper.toEntityList(productDTO.getCustomAttributes());
-
         manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
+
 
         Product savedProduct = productRepository.save(existingProduct);
 
@@ -444,11 +443,55 @@ public class ProductServiceImp implements ProductService {
     }
 
 
+
     private void manageVariantsOnUpdate(ProductDTO productDTO, Product existingProduct) {
-        removeDeletedVariants(productDTO, existingProduct);
+        existingProduct.getVariants().removeIf(existingVariant ->
+                productDTO.getVariants().stream()
+                        .flatMap(v -> v.getOptions().stream())
+                        .noneMatch(opt -> opt.getProductVariantId() != null &&
+                                opt.getProductVariantId().equals(existingVariant.getId()))
+        );
+
         removeDeletedAttributes(productDTO, existingProduct);
-     //   updateOrCreateAttributesAndOptions(productDTO, existingProduct);
+        for (VariantDTO variantDTO : productDTO.getVariants()) {
+            ProductAttribute attribute;
+            if (variantDTO.getAttributeId() != null) {
+                attribute = findExistingAttribute(existingProduct, variantDTO);
+                updateAttributeNameIfChanged(attribute, variantDTO);
+            } else {
+                attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
+                existingProduct.getAttributes().add(attribute);
+            }
+            for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
+                if (optionDTO.getProductVariantId() != null) {
+                    existingProduct.getVariants().stream()
+                            .filter(v -> v.getId().equals(optionDTO.getProductVariantId()))
+                            .findFirst()
+                            .ifPresent(variant -> updateExistingVariant(variant, optionDTO, attribute));
+                } else {
+                    Product newVariant = buildVariant(existingProduct, optionDTO);
+                    ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+                    newVariant.getVariantAttributes().add(value);
+                    existingProduct.getVariants().add(newVariant);
+                }
+            }
+        }
+    }private void updateExistingVariant(Product variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
+        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
+        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
+
+        if (optionDTO.getValue() != null) {
+            ProductAttributeValue newValue = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+            variant.getVariantAttributes().clear();
+            variant.getVariantAttributes().add(newValue);
+        }
     }
+
+
+
+
+
 
     private void manageProductCustomAttributesOnUpdate(Product existingProduct, List<CustomAttribute> newAttributes) {
         existingProduct.getCustomAttributes()
@@ -496,51 +539,7 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-//    private void updateOrCreateAttributesAndOptions(ProductDTO productDTO, Product existingProduct) {
-//        for (VariantDTO variantDTO : productDTO.getVariants()) {
-//            ProductAttribute attribute;
-//
-//            if (variantDTO.getAttributeId() != null) {
-//                attribute = findExistingAttribute(existingProduct, variantDTO);
-//                updateAttributeNameIfChanged(attribute, variantDTO);
-//            } else {
-//                attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
-//                existingProduct.getAttributes().add(attribute);
-//            }
-//
-//            // Now update or create the options for this attribute
-//            updateOrCreateVariantOptions(existingProduct, variantDTO, attribute);
-//        }
-//    }
 
-//    private void updateOrCreateVariantOptions(Product product, VariantDTO variantDTO, ProductAttribute attribute) {
-//        for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
-//            if (optionDTO.getProductVariantId() != null) {
-//                // Update existing variant
-//                product.getVariants().stream()
-//                        .filter(v -> v.getId().equals(optionDTO.getProductVariantId()))
-//                        .findFirst()
-//                        .ifPresent(variant -> updateExistingOption(variant, optionDTO, attribute));
-//            } else {
-//                // Create new variant + attribute value
-//                ProductVariant newVariant = createVariantWithAttribute(product, attribute, optionDTO);
-//                product.getVariants().add(newVariant);
-//            }
-//        }
-//    }
-
-//    private void updateExistingOption(ProductVariant variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
-//        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
-//        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
-//        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
-//
-//        if (optionDTO.getValue() != null) {
-//            ProductAttributeValue newValue = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
-//
-//            // Update the VariantAttribute relation
-//            variant.getAttributes().forEach(attr -> attr.setAttributeValue(newValue));
-//        }
-//    }
 
 
     private ProductAttribute findExistingAttribute(Product product, VariantDTO variantDTO) {
@@ -553,7 +552,7 @@ public class ProductServiceImp implements ProductService {
     private void updateAttributeNameIfChanged(ProductAttribute attribute, VariantDTO variantDTO) {
         if (!attribute.getName().equals(variantDTO.getAttributeName())) {
             attribute.setName(variantDTO.getAttributeName());
-            productAttributeService.createAttribute(attribute);
+            productAttributeService.updateProductAttributeName(attribute.getId() , variantDTO.getAttributeName());
         }
     }
 
