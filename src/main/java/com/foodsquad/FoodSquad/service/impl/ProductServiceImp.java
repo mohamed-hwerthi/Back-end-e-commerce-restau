@@ -61,11 +61,9 @@ public class ProductServiceImp implements ProductService {
 
     private final CustomAttributeMapper customAttributeMapper;
 
-    private final ProductAttributeRepository productAttributeRepository;
 
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper,
-                             ProductAttributeRepository productAttributeRepository) {
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
@@ -80,7 +78,6 @@ public class ProductServiceImp implements ProductService {
         this.productAttributeValueService = productAttributeValueService;
         this.supplementGroupMapper = supplementGroupMapper;
         this.customAttributeMapper = customAttributeMapper;
-        this.productAttributeRepository = productAttributeRepository;
     }
 
     @Override
