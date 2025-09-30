@@ -257,13 +257,11 @@ CREATE TABLE IF NOT EXISTS custom_attributes (
     CONSTRAINT fk_custom_attribute_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
--- ========================================
--- Create Product Variant Attributes Join Table
--- ========================================
 CREATE TABLE IF NOT EXISTS product_variant_attributes (
     product_id UUID NOT NULL,
     attribute_value_id UUID NOT NULL,
-    CONSTRAINT fk_variant_product_join FOREIGN KEY(product_id) REFERENCES product_variants(id) ON DELETE CASCADE,
-    CONSTRAINT fk_variant_attr_value FOREIGN KEY(attribute_value_id) REFERENCES product_attribute_values(id) ON DELETE CASCADE,
+    CONSTRAINT fk_variant_product_join FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT fk_variant_attr_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
     PRIMARY KEY(product_id, attribute_value_id)
 );
+
