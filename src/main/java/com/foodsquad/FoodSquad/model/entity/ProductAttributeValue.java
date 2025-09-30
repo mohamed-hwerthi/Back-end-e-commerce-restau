@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -22,4 +24,7 @@ public class ProductAttributeValue {
     @ManyToOne
     @JoinColumn(name = "attribute_id")
     private ProductAttribute productAttribute;
+
+    @ManyToMany(mappedBy = "variantAttributes")
+    private Set<Product> products = new HashSet<>();
 }

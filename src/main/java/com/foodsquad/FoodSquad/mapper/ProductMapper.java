@@ -4,13 +4,12 @@ import com.foodsquad.FoodSquad.model.dto.ProductAttributeDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.VariantDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
-import com.foodsquad.FoodSquad.model.entity.ProductVariant;
-import com.foodsquad.FoodSquad.model.entity.VariantAttribute;
+import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
+import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
 import com.foodsquad.FoodSquad.model.entity.VariantOptionDTO;
 import org.mapstruct.*;
 import org.springframework.util.ObjectUtils;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class , CustomAttributeMapper.class}
+        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class , CustomAttributeMapper.class }
 )
 public interface ProductMapper {
 
@@ -58,42 +57,49 @@ public interface ProductMapper {
         dto.setVariants(buildVariants(product));
     }
 
-    private List<ProductAttributeDTO> buildAvailableAttributes(Product product) {
-        return product.getVariants().stream()
-                .flatMap(variant -> variant.getAttributes().stream())
-                .collect(Collectors.toMap(
-                        attr -> attr.getAttributeValue().getProductAttribute().getId(),
-                        attr -> attr.getAttributeValue().getProductAttribute().getName(),
-                        (existing, replacement) -> existing,
-                        LinkedHashMap::new
-                ))
-                .entrySet().stream()
-                .map(entry -> new ProductAttributeDTO(entry.getKey(), entry.getValue()))
-                .toList();
+    private List<ProductAttributeDTO> buildAvailableAttributes(Product product ) {
+        return product.getAttributes().stream().map(
+                productAttribute -> ProductAttributeDTO.builder()
+                            .id(productAttribute.getId())
+                            .name(productAttribute.getName())
+                            .build()
+        ) .toList() ;
     }
 
     private List<VariantDTO> buildVariants(Product product) {
-        Map<UUID, List<ProductVariant>> groupedByAttribute = product.getVariants().stream()
-                .collect(Collectors.groupingBy(variant ->
-                        variant.getAttributes().get(0).getAttributeValue().getProductAttribute().getId()
+        Map<UUID, List<Product>> groupedByAttribute = product.getVariants().stream()
+                .flatMap(variant -> variant.getVariantAttributes().stream()
+                        .map(attrValue -> Map.entry(attrValue.getProductAttribute().getId(), variant))
+                )
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())
                 ));
 
         return groupedByAttribute.entrySet().stream()
                 .map(entry -> {
                     UUID attributeId = entry.getKey();
-                    List<ProductVariant> variantsForAttribute = entry.getValue();
+                    List<Product> variantsForAttribute = entry.getValue();
+
                     VariantDTO variantDTO = new VariantDTO();
                     variantDTO.setAttributeId(attributeId);
-                    variantDTO.setAttributeName(
-                            variantsForAttribute.get(0).getAttributes()
-                                    .get(0).getAttributeValue().getProductAttribute().getName()
-                    );
+
+                    ProductAttribute attribute = variantsForAttribute.get(0).getVariantAttributes().stream()
+                            .filter(val -> val.getProductAttribute().getId().equals(attributeId))
+                            .findFirst()
+                            .map(ProductAttributeValue::getProductAttribute)
+                            .orElseThrow();
+
+                    variantDTO.setAttributeName(attribute.getName());
                     List<VariantOptionDTO> options = variantsForAttribute.stream()
                             .map(variant -> {
-                                VariantAttribute attr = variant.getAttributes().get(0);
+                                ProductAttributeValue attrValue = variant.getVariantAttributes().stream()
+                                        .filter(val -> val.getProductAttribute().getId().equals(attributeId))
+                                        .findFirst()
+                                        .orElseThrow();
+
                                 return VariantOptionDTO.builder()
-                                        .id(attr.getId())
-                                        .value(attr.getAttributeValue().getValue())
+                                        .id(attrValue.getId())
+                                        .value(attrValue.getValue())
                                         .price(variant.getPrice())
                                         .sku(variant.getSku())
                                         .quantity(String.valueOf(variant.getQuantity()))
@@ -108,6 +114,7 @@ public interface ProductMapper {
                 })
                 .toList();
     }
+
 
 
 }

@@ -23,12 +23,10 @@ public class Product {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
     private LocalizedString title;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", nullable = true)
     private LocalizedString description;
 
 
@@ -52,6 +50,10 @@ public class Product {
     @Column(nullable = false, name = "quantity")
     @Min(value = 0, message = "Quantity must be at least 0")
     private int quantity;
+
+    @Column(nullable = false , name = "is_variant")
+    private boolean isVariant = false;
+
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
@@ -92,14 +94,26 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductAttribute> attributes = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductVariant> variants = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Product parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Product> variants = new HashSet<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SupplementGroup> supplementGroups = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomAttribute> customAttributes = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_variant_attributes",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "attribute_value_id")
+    )
+    private Set<ProductAttributeValue> variantAttributes = new HashSet<>();
 
 
     @PrePersist

@@ -65,6 +65,8 @@ CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title jsonb NOT NULL,
     description jsonb,
+    parent_id UUID,
+    is_variant BOOLEAN NOT NULL DEFAULT FALSE,
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,
     sku VARCHAR(255) UNIQUE,
@@ -73,8 +75,11 @@ CREATE TABLE products (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     tax_id BIGINT  ,
     low_stock_threshold INT ,
-    CONSTRAINT fk_products_tax FOREIGN KEY(tax_id) REFERENCES taxes(id)
+    CONSTRAINT fk_products_tax FOREIGN KEY(tax_id) REFERENCES taxes(id) ,
+    CONSTRAINT fk_products_parent FOREIGN KEY(parent_id) REFERENCES products(id) ON DELETE CASCADE
+
 );
+
 
 -- Reviews
 CREATE TABLE reviews (
@@ -218,25 +223,9 @@ CREATE TABLE attribute_values (
     CONSTRAINT fk_attribute_values_attribute FOREIGN KEY(attribute_id) REFERENCES product_attributes(id) ON DELETE CASCADE
 );
 
--- Product Variants
-CREATE TABLE product_variants (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID NOT NULL,
-    sku VARCHAR(255) UNIQUE,
-    price NUMERIC,
-    quantity INT DEFAULT 0,
-    CONSTRAINT fk_product_variants_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
-);
 
--- Variant Attributes (link between variant and attribute value)
-CREATE TABLE variant_attributes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    variant_id UUID NOT NULL,
-    attribute_value_id UUID NOT NULL,
-    CONSTRAINT fk_variant_attributes_variant FOREIGN KEY(variant_id) REFERENCES product_variants(id) ON DELETE CASCADE,
-    CONSTRAINT fk_variant_attributes_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE NO ACTION,
-    CONSTRAINT uq_variant_attribute UNIQUE (variant_id, attribute_value_id)
-);
+
+
 
 -- Supplement Groups Table
 CREATE TABLE supplement_groups (
@@ -264,6 +253,17 @@ CREATE TABLE IF NOT EXISTS custom_attributes (
     product_id UUID NOT NULL,
     name jsonb NOT NULL,
     value VARCHAR(255) NOT NULL,
-    type VARCHAR(20) NOT NULL, -- STRING, NUMBER, DECIMAL, BOOLEAN, DATE
+    type VARCHAR(20) NOT NULL,
     CONSTRAINT fk_custom_attribute_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- ========================================
+-- Create Product Variant Attributes Join Table
+-- ========================================
+CREATE TABLE IF NOT EXISTS product_variant_attributes (
+    product_id UUID NOT NULL,
+    attribute_value_id UUID NOT NULL,
+    CONSTRAINT fk_variant_product_join FOREIGN KEY(product_id) REFERENCES product_variants(id) ON DELETE CASCADE,
+    CONSTRAINT fk_variant_attr_value FOREIGN KEY(attribute_value_id) REFERENCES product_attribute_values(id) ON DELETE CASCADE,
+    PRIMARY KEY(product_id, attribute_value_id)
 );
