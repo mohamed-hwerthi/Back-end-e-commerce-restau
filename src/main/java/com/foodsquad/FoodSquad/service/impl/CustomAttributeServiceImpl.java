@@ -2,8 +2,6 @@ package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.model.dto.CustomAttributeDTO;
-import com.foodsquad.FoodSquad.model.entity.CustomAttribute;
-import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.repository.CustomAttributeRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.service.declaration.CustomAttributeService;

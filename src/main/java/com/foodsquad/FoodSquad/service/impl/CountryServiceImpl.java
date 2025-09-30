@@ -1,8 +1,6 @@
 package com.foodsquad.FoodSquad.service.impl;
 
-import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.CountryMapper;
-import com.foodsquad.FoodSquad.mapper.LocalizedStringMapper;
 import com.foodsquad.FoodSquad.model.dto.CountryDTO;
 import com.foodsquad.FoodSquad.model.entity.Country;
 import com.foodsquad.FoodSquad.repository.CountryRepository;
