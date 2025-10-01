@@ -21,13 +21,10 @@ public class ProductOptionDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
-    @NotEmpty(message = "Option name cannot be blank")
-    private LocalizedString name;
-
     @Min(value = 0, message = "Price must be at least 0")
-    private BigDecimal price;
+        private BigDecimal overridePrice;
 
-    @NotBlank(message = "the option product can not be null ")
-    private   String  optionProductId ;
+    @NotBlank(message = "the linked product id cannot be blank ")
+    private   UUID  linkedProductId ;
 
 }

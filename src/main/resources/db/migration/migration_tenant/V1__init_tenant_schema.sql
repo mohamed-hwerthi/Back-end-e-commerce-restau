@@ -230,14 +230,12 @@ CREATE TABLE attribute_values (
 CREATE TABLE product_option_groups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name jsonb NOT NULL,
-    obligatory BOOLEAN NOT NULL,
     product_id UUID NOT NULL,
     CONSTRAINT fk_product_option_group_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
     CREATE TABLE product_options (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        name jsonb NOT NULL,
         override_price NUMERIC CHECK (override_price >= 0),
         product_option_group_id UUID NOT NULL,
         linked_product_id UUID NOT NULL,

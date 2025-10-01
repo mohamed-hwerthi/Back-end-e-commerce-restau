@@ -1,6 +1,8 @@
 package com.foodsquad.FoodSquad.service.impl;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
+import com.foodsquad.FoodSquad.dto.ProductOptionDTO;
+import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 import com.foodsquad.FoodSquad.exception.DuplicateProductException;
 import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
@@ -27,6 +29,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.IntStream;
+
+import static org.springframework.data.util.ClassUtils.ifPresent;
 
 @Slf4j
 @Service
@@ -583,17 +588,31 @@ public class ProductServiceImp implements ProductService {
             return;
         }
 
-        List<ProductOptionGroup> groups = supplementGroupMapper.toEntityList(productDTO.getProductOptionGroups());
+        List<ProductOptionGroup> groups = productDTO.getProductOptionGroups().stream().map(productOptionGroupDTO -> {
+                    ProductOptionGroup group = supplementGroupMapper.toEntity(productOptionGroupDTO);
+                    group.setProduct(product);
 
-        groups.forEach(group -> {
-            group.setProduct(product);
-            if (!ObjectUtils.isEmpty(group.getProductOptions())) {
-                group.getProductOptions().forEach(option -> option.setProductOptionGroup(group));
-            }
-        });
+                    if (!ObjectUtils.isEmpty(group.getProductOptions())) {
+                        IntStream.range(0, group.getProductOptions().size())
+                                .forEach(j -> {
+                                    ProductOption option = group.getProductOptions().get(j);
+                                    ProductOptionDTO optionDTO = productOptionGroupDTO.getProductOptions().get(j);
+
+                                    option.setProductOptionGroup(group);
+
+                                    if (StringUtils.hasText(optionDTO.getLinkedProductId().toString())) {
+                                        productRepository.findById(optionDTO.getLinkedProductId())
+                                                .ifPresent(option::setLinkedProduct);
+                                    }
+                                });
+                    }
+                    return group;
+                })
+                .toList();
 
         product.getProductOptionGroups().addAll(groups);
     }
+
 
     private void manageCustomAttributes(ProductDTO productDTO, Product product) {
         if (productDTO.getCustomAttributes() != null && !productDTO.getCustomAttributes().isEmpty()) {

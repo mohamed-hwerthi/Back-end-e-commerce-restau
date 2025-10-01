@@ -20,14 +20,11 @@ public class ProductOption {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(columnDefinition = "jsonb", nullable = true)
-    private LocalizedString name;
-
-    @Column(nullable = false)
+    @Column(nullable = false  ,  name="override_price")
     private BigDecimal overridePrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "option_group_id", nullable = false)
+    @JoinColumn(name = "product_option_group_id", nullable = false)
     private ProductOptionGroup  productOptionGroup;
 
     @ManyToOne(fetch = FetchType.LAZY)
