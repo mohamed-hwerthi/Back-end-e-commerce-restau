@@ -3,10 +3,7 @@ package com.foodsquad.FoodSquad.mapper;
 import com.foodsquad.FoodSquad.model.dto.ProductAttributeDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.VariantDTO;
-import com.foodsquad.FoodSquad.model.entity.Product;
-import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
-import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
-import com.foodsquad.FoodSquad.model.entity.VariantOptionDTO;
+import com.foodsquad.FoodSquad.model.entity.*;
 import org.mapstruct.*;
 import org.springframework.util.ObjectUtils;
 
@@ -17,7 +14,8 @@ import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class , CustomAttributeMapper.class }
+        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class , CustomAttributeMapper.class , ProductOptionGroupMapper.class
+        }
 )
 public interface ProductMapper {
 
