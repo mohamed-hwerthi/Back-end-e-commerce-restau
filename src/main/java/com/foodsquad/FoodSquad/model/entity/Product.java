@@ -49,7 +49,7 @@ public class Product {
     @Min(value = 0, message = "Quantity must be at least 0")
     private int quantity;
 
-    @Column(nullable = false , name = "is_variant")
+    @Column(nullable = false, name = "is_variant")
     private boolean isVariant = false;
 
 
@@ -100,10 +100,13 @@ public class Product {
     private Set<Product> variants = new HashSet<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SupplementGroup> supplementGroups = new ArrayList<>();
+    private List<ProductOptionGroup> productOptionGroups = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomAttribute> customAttributes = new ArrayList<>();
+
+    @Column(nullable = false  , name = "is_option")
+    private boolean isOption = false;
 
     @ManyToMany
     @JoinTable(

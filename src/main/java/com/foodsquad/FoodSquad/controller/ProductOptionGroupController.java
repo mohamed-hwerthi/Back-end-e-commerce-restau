@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.dto.SupplementGroupDTO;
-import com.foodsquad.FoodSquad.service.SupplementGroupService;
+import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
+import com.foodsquad.FoodSquad.service.declaration.ProductOptionGroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -16,12 +16,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/supplement-groups")
 @Tag(name = "Supplement Groups", description = "API for managing supplement groups")
-public class SupplementGroupController {
+public class ProductOptionGroupController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SupplementGroupController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductOptionGroupController.class);
 
     @Autowired
-    private SupplementGroupService supplementGroupService;
+    private ProductOptionGroupService supplementGroupService;
 
     /**
      * Get all supplement groups.
@@ -30,9 +30,9 @@ public class SupplementGroupController {
      */
     @GetMapping
     @Operation(summary = "Get all supplement groups")
-    public ResponseEntity<List<SupplementGroupDTO>> getAllSupplementGroups() {
+    public ResponseEntity<List<ProductOptionGroupDTO>> getAllProductOptionGroups() {
         logger.info("Fetching all supplement groups");
-        return ResponseEntity.ok(supplementGroupService.getAllSupplementGroups());
+        return ResponseEntity.ok(supplementGroupService.getAllProductOptionGroups());
     }
 
     /**
@@ -43,9 +43,9 @@ public class SupplementGroupController {
      */
     @PostMapping
     @Operation(summary = "Create a new supplement group")
-    public ResponseEntity<SupplementGroupDTO> createSupplementGroup(@RequestBody SupplementGroupDTO supplementGroupDTO) {
+    public ResponseEntity<ProductOptionGroupDTO> createProductOptionGroup(@RequestBody ProductOptionGroupDTO supplementGroupDTO) {
         logger.info("Creating a new supplement group: {}", supplementGroupDTO);
-        return ResponseEntity.ok(supplementGroupService.createSupplementGroup(supplementGroupDTO));
+        return ResponseEntity.ok(supplementGroupService.createProductOptionGroup(supplementGroupDTO));
     }
 
     /**
@@ -56,9 +56,9 @@ public class SupplementGroupController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a supplement group by ID")
-    public ResponseEntity<Void> deleteSupplementGroup(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteProductOptionGroup(@PathVariable UUID id) {
         logger.info("Deleting supplement group with ID: {}", id);
-        supplementGroupService.deleteSupplementGroup(id);
+        supplementGroupService.deleteProductOptionGroup(id);
         return ResponseEntity.noContent().build();
     }
 }

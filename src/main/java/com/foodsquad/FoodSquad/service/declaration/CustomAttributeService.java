@@ -7,8 +7,6 @@ import java.util.UUID;
 
 public interface CustomAttributeService {
 
-
-
     List<CustomAttributeDTO> findAll();
 
     CustomAttributeDTO findById(UUID id);

@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foodsquad.FoodSquad.dto.SupplementGroupDTO;
+import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -66,7 +66,7 @@ public class ProductDTO {
 
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
 
-    private List<SupplementGroupDTO> supplementGroups = new ArrayList<>();
+    private List<ProductOptionGroupDTO> productOptionGroups = new ArrayList<>();
 
     private List<CustomAttributeDTO> customAttributes = new ArrayList<>();
 

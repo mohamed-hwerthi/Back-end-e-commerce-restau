@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public interface ProductMapper {
 
     @Mapping(target = "variants", ignore = true)
-    @Mapping(target = "supplementGroups", ignore = true)
+    @Mapping(target = "productOptionGroups", ignore = true)
     @Mapping(target = "customAttributes", ignore = true)
     Product toEntity(ProductDTO productDTO);
 

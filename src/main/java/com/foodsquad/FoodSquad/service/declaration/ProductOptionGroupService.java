@@ -1,6 +1,6 @@
-package com.foodsquad.FoodSquad.service;
+package com.foodsquad.FoodSquad.service.declaration;
 
-import com.foodsquad.FoodSquad.dto.SupplementGroupDTO;
+import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,14 +8,14 @@ import java.util.UUID;
 /**
  * Service interface for managing supplement groups.
  */
-public interface SupplementGroupService {
+public interface ProductOptionGroupService {
 
     /**
      * Get all supplement groups.
      *
      * @return List of supplement groups.
      */
-    List<SupplementGroupDTO> getAllSupplementGroups();
+    List<ProductOptionGroupDTO> getAllProductOptionGroups();
 
     /**
      * Create a new supplement group.
@@ -23,14 +23,14 @@ public interface SupplementGroupService {
      * @param supplementGroupDTO Supplement group data.
      * @return Created supplement group.
      */
-    SupplementGroupDTO createSupplementGroup(SupplementGroupDTO supplementGroupDTO);
+    ProductOptionGroupDTO createProductOptionGroup(ProductOptionGroupDTO supplementGroupDTO);
 
     /**
      * Delete a supplement group by ID.
      *
      * @param id Supplement group ID.
      */
-    void deleteSupplementGroup(UUID id);
+    void deleteProductOptionGroup(UUID id);
 
     /**
      * Get a supplement group by ID.
@@ -38,7 +38,7 @@ public interface SupplementGroupService {
      * @param id Supplement group ID.
      * @return Supplement group data.
      */
-    SupplementGroupDTO getSupplementGroupById(UUID id);
+    ProductOptionGroupDTO getProductOptionGroupById(UUID id);
 
     /**
      * Update a supplement group.
@@ -47,13 +47,7 @@ public interface SupplementGroupService {
      * @param supplementGroupDTO Supplement group data.
      * @return Updated supplement group.
      */
-    SupplementGroupDTO updateSupplementGroup(UUID id, SupplementGroupDTO supplementGroupDTO);
+    ProductOptionGroupDTO updateProductOptionGroup(UUID id, ProductOptionGroupDTO supplementGroupDTO);
 
-    /**
-     * Get supplement groups by option name.
-     *
-     * @param optionName Option name.
-     * @return List of supplement groups.
-     */
-    List<SupplementGroupDTO> getSupplementGroupsByOption(String optionName);
+
 }

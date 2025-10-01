@@ -4,7 +4,7 @@ import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.exception.DuplicateProductException;
 import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
-import com.foodsquad.FoodSquad.mapper.SupplementGroupMapper;
+import com.foodsquad.FoodSquad.mapper.ProductOptionGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
@@ -54,13 +54,13 @@ public class ProductServiceImp implements ProductService {
 
     private final ProductAttributeValueService productAttributeValueService;
 
-    private final SupplementGroupMapper supplementGroupMapper;
+    private final ProductOptionGroupMapper supplementGroupMapper;
 
     private final CustomAttributeMapper customAttributeMapper;
 
 
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, SupplementGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
+    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, ProductOptionGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
 
         this.productRepository = ProductRepository;
         this.orderRepository = orderRepository;
@@ -90,7 +90,7 @@ public class ProductServiceImp implements ProductService {
 
         manageProductTaxesIfPresent(productDTO, savedProduct);
 
-        manageSupplementGroups(productDTO, savedProduct);
+        manageProductOptionGroups(productDTO, savedProduct);
 
         manageVariantsAndAttributes(productDTO, savedProduct);
 
@@ -554,25 +554,24 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-    private void manageSupplementGroups(ProductDTO productDTO, Product product) {
-        product.getSupplementGroups().clear();
+    private void manageProductOptionGroups(ProductDTO productDTO, Product product) {
+        product.getProductOptionGroups().clear();
 
-        if (ObjectUtils.isEmpty(productDTO.getSupplementGroups())) {
+        if (ObjectUtils.isEmpty(productDTO.getProductOptionGroups())) {
             return;
         }
 
-        List<SupplementGroup> groups = supplementGroupMapper.toEntityList(productDTO.getSupplementGroups());
+        List<ProductOptionGroup> groups = supplementGroupMapper.toEntityList(productDTO.getProductOptionGroups());
 
         groups.forEach(group -> {
             group.setProduct(product);
-            if (!ObjectUtils.isEmpty(group.getSupplementOptions())) {
-                group.getSupplementOptions().forEach(option -> option.setSupplementGroup(group));
+            if (!ObjectUtils.isEmpty(group.getProductOptions())) {
+                group.getProductOptions().forEach(option -> option.setProductOptionGroup(group));
             }
         });
 
-        product.getSupplementGroups().addAll(groups);
+        product.getProductOptionGroups().addAll(groups);
     }
-
 
     private void manageCustomAttributes(ProductDTO productDTO, Product product) {
         if (productDTO.getCustomAttributes() != null && !productDTO.getCustomAttributes().isEmpty()) {

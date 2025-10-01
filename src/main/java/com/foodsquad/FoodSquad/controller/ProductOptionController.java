@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.controller;
 
-import com.foodsquad.FoodSquad.dto.SupplementOptionDTO;
-import com.foodsquad.FoodSquad.service.SupplementOptionService;
+import com.foodsquad.FoodSquad.dto.ProductOptionDTO;
+import com.foodsquad.FoodSquad.service.ProductOptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/supplement-options")
+@RequestMapping("/api/product-options")
 @Tag(name = "Supplement Options", description = "API for managing supplement options")
-public class SupplementOptionController {
+public class ProductOptionController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SupplementOptionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductOptionController.class);
 
     @Autowired
-    private SupplementOptionService supplementOptionService;
+    private ProductOptionService supplementOptionService;
 
     /**
      * Get all supplement options.
@@ -30,9 +30,9 @@ public class SupplementOptionController {
      */
     @GetMapping
     @Operation(summary = "Get all supplement options")
-    public ResponseEntity<List<SupplementOptionDTO>> getAllSupplementOptions() {
+    public ResponseEntity<List<ProductOptionDTO>> getAllProductOptions() {
         logger.info("Fetching all supplement options");
-        return ResponseEntity.ok(supplementOptionService.getAllSupplementOptions());
+        return ResponseEntity.ok(supplementOptionService.getAllProductOptions());
     }
 
     /**
@@ -43,9 +43,9 @@ public class SupplementOptionController {
      */
     @PostMapping
     @Operation(summary = "Create a new supplement option")
-    public ResponseEntity<SupplementOptionDTO> createSupplementOption(@RequestBody SupplementOptionDTO supplementOptionDTO) {
+    public ResponseEntity<ProductOptionDTO> createProductOption(@RequestBody ProductOptionDTO supplementOptionDTO) {
         logger.info("Creating a new supplement option: {}", supplementOptionDTO);
-        return ResponseEntity.ok(supplementOptionService.createSupplementOption(supplementOptionDTO));
+        return ResponseEntity.ok(supplementOptionService.createProductOption(supplementOptionDTO));
     }
 
     /**
@@ -56,9 +56,9 @@ public class SupplementOptionController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a supplement option by ID")
-    public ResponseEntity<Void> deleteSupplementOption(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteProductOption(@PathVariable UUID id) {
         logger.info("Deleting supplement option with ID: {}", id);
-        supplementOptionService.deleteSupplementOption(id);
+        supplementOptionService.deleteProductOption(id);
         return ResponseEntity.noContent().build();
     }
 }

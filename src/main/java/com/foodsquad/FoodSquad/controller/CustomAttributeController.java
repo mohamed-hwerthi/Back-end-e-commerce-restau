@@ -31,15 +31,6 @@ public class CustomAttributeController {
 
     private final CustomAttributeService customAttributeService;
 
-    @Operation(summary = "Create a new custom attribute")
-    @ApiResponse(responseCode = "200", description = "Custom attribute created successfully")
-    @PostMapping
-    public ResponseEntity<CustomAttributeDTO> create(@RequestBody CustomAttributeDTO dto) {
-        logger.info("Received request to create CustomAttribute: {}", dto);
-        CustomAttributeDTO saved = customAttributeService.save(dto);
-        logger.info("Created CustomAttribute with id: {}", saved.getId());
-        return ResponseEntity.ok(saved);
-    }
 
     @Operation(summary = "Retrieve all custom attributes")
     @GetMapping
@@ -81,18 +72,5 @@ public class CustomAttributeController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Update a custom attribute by ID")
-    @ApiResponse(responseCode = "200", description = "Custom attribute updated successfully")
-    @ApiResponse(responseCode = "404", description = "Custom attribute not found")
-    @PutMapping("/{id}")
-    public ResponseEntity<CustomAttributeDTO> update(@PathVariable("id") UUID id, @RequestBody CustomAttributeDTO dto) {
-        logger.info("Received request to update CustomAttribute id: {}", id);
-        CustomAttributeDTO updated = customAttributeService.update(id, dto);
-        if (updated == null) {
-            logger.warn("CustomAttribute not found for update, id: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        logger.info("Updated CustomAttribute: {}", updated);
-        return ResponseEntity.ok(updated);
-    }
+
 }

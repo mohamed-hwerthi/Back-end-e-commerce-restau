@@ -67,6 +67,8 @@ CREATE TABLE products (
     description jsonb,
     parent_id UUID,
     is_variant BOOLEAN NOT NULL DEFAULT FALSE,
+is_option BOOLEAN NOT NULL DEFAULT FALSE,
+    is_supplement BOOLEAN NOT NULL DEFAULT FALSE,  -- new field
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,
     sku VARCHAR(255) UNIQUE,
@@ -74,6 +76,7 @@ CREATE TABLE products (
     quantity INT CHECK (quantity >= 0) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     tax_id UUID  ,
+
     low_stock_threshold INT ,
     CONSTRAINT fk_products_tax FOREIGN KEY(tax_id) REFERENCES taxes(id) ,
     CONSTRAINT fk_products_parent FOREIGN KEY(parent_id) REFERENCES products(id) ON DELETE CASCADE
@@ -224,26 +227,28 @@ CREATE TABLE attribute_values (
 );
 
 
-
-
-
--- Supplement Groups Table
-CREATE TABLE supplement_groups (
+CREATE TABLE product_option_groups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name jsonb NOT NULL,
     obligatory BOOLEAN NOT NULL,
     product_id UUID NOT NULL,
-    CONSTRAINT fk_supplement_group_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    CONSTRAINT fk_product_option_group_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
--- Supplement Options Table
-CREATE TABLE supplement_options (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name jsonb NOT NULL,
-    price NUMERIC CHECK (price >= 0),
-    supplement_group_id UUID NOT NULL,
-    CONSTRAINT fk_supplement_option_group FOREIGN KEY (supplement_group_id) REFERENCES supplement_groups(id) ON DELETE CASCADE
-);
+    CREATE TABLE product_options (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name jsonb NOT NULL,
+        override_price NUMERIC CHECK (override_price >= 0),
+        product_option_group_id UUID NOT NULL,
+        linked_product_id UUID NOT NULL,
+        CONSTRAINT fk_product_option_group FOREIGN KEY (product_option_group_id) REFERENCES product_option_groups(id) ON DELETE CASCADE,
+        CONSTRAINT fk_product_option_linked_product FOREIGN KEY (linked_product_id) REFERENCES products(id) ON DELETE CASCADE
+    );
+
+
+
+
+
 
 -- ========================================
 -- Create Custom Attributes Table
