@@ -28,6 +28,10 @@ public class ProductDTO {
 
     private String barCode;
 
+    private boolean isOption;
+
+    private boolean isVariant;
+
     @PositiveOrZero(message = "La quantité doit être positive ou zéro")
     private int quantity;
 
