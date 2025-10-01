@@ -27,7 +27,7 @@ public class ProductDTO {
     private LocalizedString description;
 
     private String barCode;
-
+    @JsonProperty("isOption")
     private boolean isOption;
 
     private boolean isVariant;

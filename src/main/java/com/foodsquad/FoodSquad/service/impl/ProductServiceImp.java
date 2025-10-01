@@ -178,7 +178,7 @@ public class ProductServiceImp implements ProductService {
         }
         return new PaginatedResponseDTO<>(ProductPage.getContent().stream().map(productMapper::toDto).toList(), ProductPage.getTotalElements());
     }
-
+   @Override
     public ResponseEntity<ProductDTO> updateProduct(UUID id, ProductDTO productDTO) {
         log.debug("Updating menu item with ID: {}", id);
         Product existingProduct = productRepository.findById(id)
@@ -212,6 +212,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Transactional
+    @Override
     public ResponseEntity<Map<String, String>> deleteProduct(UUID id) {
 
         Product product = productRepository.findById(id)
@@ -223,6 +224,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Transactional
+    @Override
     public ResponseEntity<Map<String, String>> deleteProductsByIds(List<UUID> ids) {
 
         List<Product> products = productRepository.findAllById(ids);
@@ -283,6 +285,9 @@ public class ProductServiceImp implements ProductService {
         return ResponseEntity.ok(ProductDTOs);
     }
 
+
+
+
     @Override
     public ProductDTO findByBarCode(String barCode) {
 
@@ -337,6 +342,23 @@ public class ProductServiceImp implements ProductService {
 
         return productRepository.findAllByCategoriesContaining(category);
     }
+    @Override
+    public List<ProductDTO> getAllProductOptions() {
+        log.debug("Fetching all products that are marked as options");
+
+        List<Product> optionProducts = productRepository.findByIsOptionTrue();
+
+        if (optionProducts.isEmpty()) {
+            log.info("No option products found in the database");
+        } else {
+            log.info("Found {} option products", optionProducts.size());
+        }
+
+        return optionProducts.stream()
+                .map(productMapper::toDto)
+                .toList();
+    }
+
 
 
     private void checkDuplicateBarCode(ProductDTO productDTO) {

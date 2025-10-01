@@ -25,6 +25,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     List<Product> findAllByPromotionsContaining(Promotion promotion);
 
+    List<Product> findByIsOptionTrue();
+
     List<Product> findAllByCategoriesContaining(Category category);
 
     @Query(value = """

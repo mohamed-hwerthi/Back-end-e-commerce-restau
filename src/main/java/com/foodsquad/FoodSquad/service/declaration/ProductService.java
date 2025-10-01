@@ -52,5 +52,7 @@ public interface ProductService {
 
     void deleteMediaForProduct(UUID ProductId, UUID mediaId);
 
+    List<ProductDTO>getAllProductOptions() ;
+
 
 }
