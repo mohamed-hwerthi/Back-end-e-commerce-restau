@@ -6,7 +6,7 @@ import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.TokenRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
-import com.foodsquad.FoodSquad.service.impl.AuthService;
+import com.foodsquad.FoodSquad.service.admin.impl.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

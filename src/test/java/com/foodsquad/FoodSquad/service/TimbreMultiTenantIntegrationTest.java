@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.service;
 
 import com.foodsquad.FoodSquad.model.dto.TimbreDTO;
-import com.foodsquad.FoodSquad.service.declaration.TimbreService;
+import com.foodsquad.FoodSquad.service.admin.dec.TimbreService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

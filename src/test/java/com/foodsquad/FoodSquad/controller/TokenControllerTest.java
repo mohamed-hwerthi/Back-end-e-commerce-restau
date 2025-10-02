@@ -1,8 +1,9 @@
 package com.foodsquad.FoodSquad.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foodsquad.FoodSquad.service.impl.AuthService;
-import com.foodsquad.FoodSquad.service.impl.TokenService;
+import com.foodsquad.FoodSquad.controller.admin.TokenController;
+import com.foodsquad.FoodSquad.service.admin.impl.AuthService;
+import com.foodsquad.FoodSquad.service.admin.impl.TokenService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;

@@ -53,6 +53,7 @@ public class Product {
 
     @Column(name = "is_variant", nullable = false)
     private boolean isVariant = false;
+    
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();

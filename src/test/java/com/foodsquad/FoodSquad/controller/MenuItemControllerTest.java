@@ -1,6 +1,8 @@
 package com.foodsquad.FoodSquad.controller;
 
+import com.foodsquad.FoodSquad.controller.admin.ProductController;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
+import com.foodsquad.FoodSquad.service.admin.dec.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,7 +22,7 @@ import static org.mockito.Mockito.*;
 class ProductControllerTest {
 
     @Mock
-    private com.foodsquad.FoodSquad.service.declaration.ProductService ProductService;
+    private ProductService ProductService;
 
     @InjectMocks
     private ProductController ProductController;

@@ -1,7 +1,8 @@
 package com.foodsquad.FoodSquad.controller;
 
+import com.foodsquad.FoodSquad.controller.admin.ReviewController;
 import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
-import com.foodsquad.FoodSquad.service.impl.ReviewService;
+import com.foodsquad.FoodSquad.service.admin.impl.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

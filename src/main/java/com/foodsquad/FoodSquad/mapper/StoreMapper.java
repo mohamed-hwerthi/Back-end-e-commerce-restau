@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.mapper;
 
 import com.foodsquad.FoodSquad.model.dto.StoreDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientStoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,4 +25,7 @@ public interface StoreMapper {
     @Mapping(target = "slug", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     void updateStoreFields(StoreDTO dto, @MappingTarget Store entity);
+     @Mapping(target = "countryName" , source = "country.name")
+
+     ClientStoreDTO toClientStoreDTO(Store store) ;
 }

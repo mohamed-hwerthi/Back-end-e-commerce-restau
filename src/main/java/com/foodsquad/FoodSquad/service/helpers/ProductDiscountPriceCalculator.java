@@ -4,7 +4,7 @@ package com.foodsquad.FoodSquad.service.helpers;
 import com.foodsquad.FoodSquad.model.dto.DiscountType;
 import com.foodsquad.FoodSquad.model.entity.PercentageDiscountPromotion;
 import com.foodsquad.FoodSquad.model.entity.Product;
-import com.foodsquad.FoodSquad.service.declaration.ProductPromotionSharedService;
+import com.foodsquad.FoodSquad.service.admin.dec.ProductPromotionSharedService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

@@ -4,7 +4,7 @@ import com.foodsquad.FoodSquad.model.entity.Token;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.TokenRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
-import com.foodsquad.FoodSquad.service.impl.TokenService;
+import com.foodsquad.FoodSquad.service.admin.impl.TokenService;
 import com.foodsquad.FoodSquad.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

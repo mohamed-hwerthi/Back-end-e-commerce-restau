@@ -1,10 +1,11 @@
 package com.foodsquad.FoodSquad.controller;
 
+import com.foodsquad.FoodSquad.controller.admin.UserController;
 import com.foodsquad.FoodSquad.model.dto.UserRegistrationDTO;
 import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.UserUpdateDTO;
-import com.foodsquad.FoodSquad.service.impl.AuthService;
-import com.foodsquad.FoodSquad.service.impl.UserServiceImpl;
+import com.foodsquad.FoodSquad.service.admin.impl.AuthService;
+import com.foodsquad.FoodSquad.service.admin.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
