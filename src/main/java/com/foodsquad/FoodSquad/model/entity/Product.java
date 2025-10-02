@@ -105,7 +105,7 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomAttribute> customAttributes = new ArrayList<>();
 
-    @Column(nullable = false  , name = "is_option")
+    @Column(nullable = false, name = "is_option")
     private boolean isOption = false;
 
     @ManyToMany

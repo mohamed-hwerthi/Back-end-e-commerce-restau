@@ -19,7 +19,7 @@ public class CustomAttribute {
     private UUID id;
 
     @Type(JsonType.class)
-    @Column(name = "name", length = 2048 , columnDefinition = "json", nullable = false)
+    @Column(name = "name", length = 2048, columnDefinition = "json", nullable = false)
     private LocalizedString name;
 
     @Column(nullable = false)

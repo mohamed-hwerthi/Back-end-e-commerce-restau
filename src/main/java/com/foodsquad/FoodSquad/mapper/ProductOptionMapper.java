@@ -9,9 +9,10 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProductOptionMapper {
-    @Mapping(target = "linkedProduct.id"  ,source = "linkedProductId")
+    @Mapping(target = "linkedProduct.id", source = "linkedProductId")
     ProductOption toEntity(ProductOptionDTO dto);
-    @Mapping(target = "linkedProductId"  ,source = "linkedProduct.id")
+
+    @Mapping(target = "linkedProductId", source = "linkedProduct.id")
     ProductOptionDTO toDto(ProductOption entity);
 
     List<ProductOption> toEntityList(List<ProductOptionDTO> dtos);

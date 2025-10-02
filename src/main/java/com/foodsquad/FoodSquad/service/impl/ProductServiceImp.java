@@ -31,8 +31,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static org.springframework.data.util.ClassUtils.ifPresent;
-
 @Slf4j
 @Service
 public class ProductServiceImp implements ProductService {
@@ -62,7 +60,6 @@ public class ProductServiceImp implements ProductService {
     private final ProductOptionGroupMapper supplementGroupMapper;
 
     private final CustomAttributeMapper customAttributeMapper;
-
 
 
     public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, ProductOptionGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
@@ -183,7 +180,8 @@ public class ProductServiceImp implements ProductService {
         }
         return new PaginatedResponseDTO<>(ProductPage.getContent().stream().map(productMapper::toDto).toList(), ProductPage.getTotalElements());
     }
-   @Override
+
+    @Override
     public ResponseEntity<ProductDTO> updateProduct(UUID id, ProductDTO productDTO) {
         log.debug("Updating menu item with ID: {}", id);
         Product existingProduct = productRepository.findById(id)
@@ -191,10 +189,10 @@ public class ProductServiceImp implements ProductService {
 
         productMapper.updateProductFromDto(productDTO, existingProduct);
 
-        manageVariantsOnUpdate(productDTO, existingProduct) ;
-        manageProductOptionGroupsOnUpdate(productDTO , existingProduct);
+        manageVariantsOnUpdate(productDTO, existingProduct);
+        manageProductOptionGroupsOnUpdate(productDTO, existingProduct);
 
-        List<CustomAttribute> dtoAttributes =customAttributeMapper.toEntityList(productDTO.getCustomAttributes());
+        List<CustomAttribute> dtoAttributes = customAttributeMapper.toEntityList(productDTO.getCustomAttributes());
         manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
 
 
@@ -293,8 +291,6 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-
-
     @Override
     public ProductDTO findByBarCode(String barCode) {
 
@@ -349,6 +345,7 @@ public class ProductServiceImp implements ProductService {
 
         return productRepository.findAllByCategoriesContaining(category);
     }
+
     @Override
     public List<ProductDTO> getAllProductOptions() {
         log.debug("Fetching all products that are marked as options");
@@ -365,7 +362,6 @@ public class ProductServiceImp implements ProductService {
                 .map(productMapper::toDto)
                 .toList();
     }
-
 
 
     private void checkDuplicateBarCode(ProductDTO productDTO) {
@@ -469,7 +465,6 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-
     private void manageVariantsOnUpdate(ProductDTO productDTO, Product existingProduct) {
         existingProduct.getVariants().removeIf(existingVariant ->
                 productDTO.getVariants().stream()
@@ -502,7 +497,9 @@ public class ProductServiceImp implements ProductService {
                 }
             }
         }
-    }private void updateExistingVariant(Product variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+    }
+
+    private void updateExistingVariant(Product variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
         variant.setSku(getOrGenerateSku(optionDTO.getSku()));
         variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
         variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
@@ -513,10 +510,6 @@ public class ProductServiceImp implements ProductService {
             variant.getVariantAttributes().add(newValue);
         }
     }
-
-
-
-
 
 
     private void manageProductCustomAttributesOnUpdate(Product existingProduct, List<CustomAttribute> newAttributes) {
@@ -544,8 +537,6 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-
-
     private void removeDeletedVariants(ProductDTO productDTO, Product existingProduct) {
         existingProduct.getVariants().removeIf(existingVariant ->
                 productDTO.getVariants().stream()
@@ -565,9 +556,6 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-
-
-
     private ProductAttribute findExistingAttribute(Product product, VariantDTO variantDTO) {
         return product.getAttributes().stream()
                 .filter(a -> a.getId().equals(variantDTO.getAttributeId()))
@@ -578,7 +566,7 @@ public class ProductServiceImp implements ProductService {
     private void updateAttributeNameIfChanged(ProductAttribute attribute, VariantDTO variantDTO) {
         if (!attribute.getName().equals(variantDTO.getAttributeName())) {
             attribute.setName(variantDTO.getAttributeName());
-            productAttributeService.updateProductAttributeName(attribute.getId() , variantDTO.getAttributeName());
+            productAttributeService.updateProductAttributeName(attribute.getId(), variantDTO.getAttributeName());
         }
     }
 
@@ -688,7 +676,6 @@ public class ProductServiceImp implements ProductService {
             }
         }
     }
-
 
 
     private void manageCustomAttributes(ProductDTO productDTO, Product product) {

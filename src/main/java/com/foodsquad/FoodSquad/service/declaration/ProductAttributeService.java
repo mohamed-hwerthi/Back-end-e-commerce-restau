@@ -12,7 +12,7 @@ public interface ProductAttributeService {
 
     ProductAttribute createAttribute(ProductAttribute productAttribute);
 
-    ProductAttributeDTO  updateProductAttributeName(UUID productAttributeId , LocalizedString name )  ;
+    ProductAttributeDTO updateProductAttributeName(UUID productAttributeId, LocalizedString name);
 
 
 }

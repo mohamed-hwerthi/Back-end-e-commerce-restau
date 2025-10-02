@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ProductAttributeServiceImpl implements ProductAttributeService {
 
     private final ProductAttributeRepository productAttributeRepository;
-    private final ProductAttributeMapper productAttributeMapper ;
+    private final ProductAttributeMapper productAttributeMapper;
 
     /**
      * Finds an attribute by name for a product, or creates a new one if it doesn't exist.
@@ -60,7 +60,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     }
 
 
-
     /**
      * Creates and saves a new ProductAttribute for the given product.
      */
@@ -73,7 +72,6 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
         product.getAttributes().add(savedAttr);
         return savedAttr;
     }
-
 
 
 }

@@ -19,6 +19,6 @@ public class ProductOptionGroupDTO {
 
     @NotEmpty(message = "Group name cannot be blank")
     private LocalizedString name;
-    @NotEmpty(message =  "Group must have at leat one option ")
+    @NotEmpty(message = "Group must have at leat one option ")
     private List<ProductOptionDTO> productOptions = new ArrayList<>();
 }

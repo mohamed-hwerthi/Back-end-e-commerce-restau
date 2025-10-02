@@ -3,7 +3,10 @@ package com.foodsquad.FoodSquad.mapper;
 import com.foodsquad.FoodSquad.model.dto.ProductAttributeDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.VariantDTO;
-import com.foodsquad.FoodSquad.model.entity.*;
+import com.foodsquad.FoodSquad.model.entity.Product;
+import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
+import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
+import com.foodsquad.FoodSquad.model.entity.VariantOptionDTO;
 import org.mapstruct.*;
 import org.springframework.util.ObjectUtils;
 
@@ -14,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class , CustomAttributeMapper.class , ProductOptionGroupMapper.class
+        uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class, CustomAttributeMapper.class, ProductOptionGroupMapper.class
         }
 )
 public interface ProductMapper {
@@ -25,7 +28,6 @@ public interface ProductMapper {
     Product toEntity(ProductDTO productDTO);
 
     @Mapping(target = "variants", ignore = true)
-
     ProductDTO toDto(Product product);
 
     List<ProductDTO> toDtoList(List<Product> products);
@@ -33,7 +35,7 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "variants", ignore = true)
     @Mapping(target = "tax", ignore = true)
-    @Mapping(target = "customAttributes" ,ignore = true)
+    @Mapping(target = "customAttributes", ignore = true)
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
     default ProductDTO toProductDtoWithMoreInformation(
@@ -56,13 +58,13 @@ public interface ProductMapper {
         dto.setVariants(buildVariants(product));
     }
 
-    private List<ProductAttributeDTO> buildAvailableAttributes(Product product ) {
+    private List<ProductAttributeDTO> buildAvailableAttributes(Product product) {
         return product.getAttributes().stream().map(
                 productAttribute -> ProductAttributeDTO.builder()
-                            .id(productAttribute.getId())
-                            .name(productAttribute.getName())
-                            .build()
-        ) .toList() ;
+                        .id(productAttribute.getId())
+                        .name(productAttribute.getName())
+                        .build()
+        ).toList();
     }
 
     private List<VariantDTO> buildVariants(Product product) {
@@ -113,7 +115,6 @@ public interface ProductMapper {
                 })
                 .toList();
     }
-
 
 
 }

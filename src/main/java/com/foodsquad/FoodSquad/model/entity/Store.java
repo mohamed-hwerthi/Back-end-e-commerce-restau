@@ -25,9 +25,8 @@ public class Store {
     @Column(name = "name", nullable = false)
     private String name;
 
-
     @Type(JsonType.class)
-    @Column(name = "about", length = 2048 , columnDefinition = "json", nullable = false)
+    @Column(name = "about", columnDefinition = "json")
     private LocalizedString about;
 
     @Column(name = "slug", nullable = false, unique = true)
@@ -36,7 +35,7 @@ public class Store {
     @Column(name = "address")
     private String address;
 
-    private String city  ;
+    private String city;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id", nullable = false)
@@ -46,11 +45,10 @@ public class Store {
     private String facebookUrl;
 
     @Column(name = "email_contact")
-    private String  emailContact ;
+    private String emailContact;
 
-    @Column(name = "whatsapp"  )
-    private String whatsapp ;
-
+    @Column(name = "whatsapp")
+    private String whatsapp;
 
     @Column(name = "instagram_url")
     private String instagramUrl;
@@ -61,10 +59,8 @@ public class Store {
     @Column(name = "website_url")
     private String websiteUrl;
 
-    @Column(name = "postal_code" )
-    private String postalCode  ;
-
-
+    @Column(name = "postal_code")
+    private String postalCode;
 
     @Column(name = "background_color")
     private String backgroundColor;
@@ -75,38 +71,35 @@ public class Store {
     @Column(name = "accent_color")
     private String accentColor;
 
-
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "activity_sector_id"  , nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "activity_sector_id", nullable = false)
     private ActivitySector activitySector;
-
 
     @OneToOne
     @JoinColumn(name = "logo_media_id")
     private Media logo;
 
-    @OneToOne
-    @JoinColumn(name = "currency_id" , nullable = false)
+    @OneToOne(optional = false)
+    @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
 
-    @OneToOne
-    @JoinColumn(name = "owner_id" , nullable = false)
+    @OneToOne(optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "default_language_id" , nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "default_language_id", nullable = false)
     private Language defaultLanguage;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
-
-
 }
+

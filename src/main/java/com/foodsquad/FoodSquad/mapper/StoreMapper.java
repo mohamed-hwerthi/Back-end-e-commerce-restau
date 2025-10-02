@@ -22,6 +22,6 @@ public interface StoreMapper {
     @Mapping(target = "defaultLanguage", ignore = true)
     @Mapping(target = "owner", ignore = true)
     @Mapping(target = "slug", ignore = true)
-    @Mapping(target = "createdAt" , ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     void updateStoreFields(StoreDTO dto, @MappingTarget Store entity);
 }

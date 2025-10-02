@@ -24,10 +24,9 @@ public class CustomAttributeServiceImpl implements CustomAttributeService {
     private final CustomAttributeMapper mapper;
 
 
-
     @Override
     public List<CustomAttributeDTO> findAll() {
-        logger. info("Fetching all CustomAttributes");
+        logger.info("Fetching all CustomAttributes");
         List<CustomAttributeDTO> result = repository.findAll().stream()
                 .map(mapper::toDto)
                 .toList();

@@ -20,9 +20,8 @@ public interface CustomAttributeMapper {
     List<CustomAttributeDTO> toDtoList(List<CustomAttribute> entityList);
 
 
-
-    @Mapping(target = "id" , ignore = true)
-    void updatePartialFields(@MappingTarget CustomAttribute customAttribute , CustomAttributeDTO  customAttributeDTO) ;
+    @Mapping(target = "id", ignore = true)
+    void updatePartialFields(@MappingTarget CustomAttribute customAttribute, CustomAttributeDTO customAttributeDTO);
 
     /**
      * Convert value according to type

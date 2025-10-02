@@ -30,16 +30,16 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findAllByCategoriesContaining(Category category);
 
     @Query(value = """
-        SELECT DISTINCT p.*
-        FROM products p
-                 LEFT JOIN product_categories pc ON p.id = pc.product_id
-                 LEFT JOIN categories c ON pc.category_id = c.id
-        WHERE (:query IS NULL 
-               OR p.title->>:lang ILIKE %:query%)
-          AND (:inStock IS NULL OR (:inStock = true AND p.quantity > 0) OR (:inStock = false AND p.quantity = 0))
-          AND (COALESCE(:categoryIds, NULL) IS NULL OR c.id = ANY(:categoryIds))
-          AND p.is_variant = false
-        """, nativeQuery = true)
+            SELECT DISTINCT p.*
+            FROM products p
+                     LEFT JOIN product_categories pc ON p.id = pc.product_id
+                     LEFT JOIN categories c ON pc.category_id = c.id
+            WHERE (:query IS NULL 
+                   OR p.title->>:lang ILIKE %:query%)
+              AND (:inStock IS NULL OR (:inStock = true AND p.quantity > 0) OR (:inStock = false AND p.quantity = 0))
+              AND (COALESCE(:categoryIds, NULL) IS NULL OR c.id = ANY(:categoryIds))
+              AND p.is_variant = false
+            """, nativeQuery = true)
     Page<Product> searchByQueryAndFilters(
             @Param("query") String query,
             @Param("categoryIds") UUID[] categoryIds,
@@ -47,7 +47,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             @Param("lang") String lang,
             Pageable pageable
     );
-
 
 
 }

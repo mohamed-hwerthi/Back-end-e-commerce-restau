@@ -17,9 +17,9 @@ public class ProductOptionDTO {
     private UUID id;
 
     @Min(value = 0, message = "Price must be at least 0")
-        private BigDecimal overridePrice;
+    private BigDecimal overridePrice;
 
     @NotBlank(message = "the linked product id cannot be blank ")
-    private   UUID  linkedProductId ;
+    private UUID linkedProductId;
 
 }
