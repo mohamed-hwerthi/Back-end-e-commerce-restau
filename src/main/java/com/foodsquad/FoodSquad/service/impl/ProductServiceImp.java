@@ -190,7 +190,9 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
 
         productMapper.updateProductFromDto(productDTO, existingProduct);
+
         manageVariantsOnUpdate(productDTO, existingProduct) ;
+        manageProductOptionGroupsOnUpdate(productDTO , existingProduct);
 
         List<CustomAttribute> dtoAttributes =customAttributeMapper.toEntityList(productDTO.getCustomAttributes());
         manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
@@ -583,7 +585,6 @@ public class ProductServiceImp implements ProductService {
 
     private void manageProductOptionGroups(ProductDTO productDTO, Product product) {
         product.getProductOptionGroups().clear();
-
         if (ObjectUtils.isEmpty(productDTO.getProductOptionGroups())) {
             return;
         }
@@ -612,6 +613,82 @@ public class ProductServiceImp implements ProductService {
 
         product.getProductOptionGroups().addAll(groups);
     }
+
+    private void manageProductOptionGroupsOnUpdate(ProductDTO productDTO, Product existingProduct) {
+        // Remove groups not present in DTO
+        existingProduct.getProductOptionGroups().removeIf(existingGroup ->
+                productDTO.getProductOptionGroups().stream()
+                        .noneMatch(dtoGroup -> dtoGroup.getId() != null && dtoGroup.getId().equals(existingGroup.getId()))
+        );
+
+        // Iterate through DTO groups
+        for (ProductOptionGroupDTO dtoGroup : productDTO.getProductOptionGroups()) {
+            if (dtoGroup.getId() != null) {
+                // Existing group -> update
+                existingProduct.getProductOptionGroups().stream()
+                        .filter(g -> g.getId().equals(dtoGroup.getId()))
+                        .findFirst()
+                        .ifPresent(existingGroup -> {
+                            existingGroup.setName(dtoGroup.getName());
+                            existingGroup.setProduct(existingProduct);
+                            manageProductOptionsOnUpdate(dtoGroup, existingGroup, existingProduct);
+                        });
+            } else {
+                // New group -> add
+                ProductOptionGroup newGroup = supplementGroupMapper.toEntity(dtoGroup);
+                newGroup.setProduct(existingProduct);
+
+                // Ensure options are linked
+                for (ProductOption option : newGroup.getProductOptions()) {
+                    option.setProductOptionGroup(newGroup);
+                    if (option.getLinkedProduct() != null) {
+                        productRepository.findById(option.getLinkedProduct().getId())
+                                .ifPresent(option::setLinkedProduct);
+                    }
+                }
+
+                existingProduct.getProductOptionGroups().add(newGroup);
+            }
+        }
+    }
+
+    private void manageProductOptionsOnUpdate(ProductOptionGroupDTO dtoGroup, ProductOptionGroup existingGroup, Product existingProduct) {
+        existingGroup.getProductOptions().removeIf(existingOption ->
+                dtoGroup.getProductOptions().stream()
+                        .noneMatch(dtoOpt -> dtoOpt.getId() != null && dtoOpt.getId().equals(existingOption.getId()))
+        );
+
+        for (ProductOptionDTO dtoOpt : dtoGroup.getProductOptions()) {
+            if (dtoOpt.getId() != null) {
+                existingGroup.getProductOptions().stream()
+                        .filter(opt -> opt.getId().equals(dtoOpt.getId()))
+                        .findFirst()
+                        .ifPresent(existingOption -> {
+                            existingOption.setOverridePrice(dtoOpt.getOverridePrice());
+
+                            if (dtoOpt.getLinkedProductId() != null) {
+                                productRepository.findById(dtoOpt.getLinkedProductId())
+                                        .ifPresent(existingOption::setLinkedProduct);
+                            } else {
+                                existingOption.setLinkedProduct(null);
+                            }
+                            existingOption.setProductOptionGroup(existingGroup);
+                        });
+            } else {
+                ProductOption.ProductOptionBuilder builder = ProductOption.builder()
+                        .overridePrice(dtoOpt.getOverridePrice())
+                        .productOptionGroup(existingGroup);
+
+                if (dtoOpt.getLinkedProductId() != null) {
+                    productRepository.findById(dtoOpt.getLinkedProductId())
+                            .ifPresent(builder::linkedProduct);
+                }
+
+                existingGroup.getProductOptions().add(builder.build());
+            }
+        }
+    }
+
 
 
     private void manageCustomAttributes(ProductDTO productDTO, Product product) {

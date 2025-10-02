@@ -18,7 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductOptionDTO {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
     @Min(value = 0, message = "Price must be at least 0")

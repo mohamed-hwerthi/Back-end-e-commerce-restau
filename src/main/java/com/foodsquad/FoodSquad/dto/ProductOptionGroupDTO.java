@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -16,13 +15,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductOptionGroupDTO {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
     @NotEmpty(message = "Group name cannot be blank")
     private LocalizedString name;
-
-    private boolean obligatory;
 
     private List<ProductOptionDTO> productOptions = new ArrayList<>();
 }
