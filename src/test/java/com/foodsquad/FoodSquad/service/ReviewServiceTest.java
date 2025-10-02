@@ -93,7 +93,7 @@ class ReviewServiceTest {
         review.setComment("Great food!");
         review.setRating(5);
 
-        when(reviewRepository.findByProductId(ProductId)).thenReturn(Arrays.asList(review));
+        when(reviewRepository.findByProductId(ProductId)).thenReturn(List.of(review));
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(new ReviewDTO());
 
         // Act
@@ -112,7 +112,7 @@ class ReviewServiceTest {
         review.setComment("Great food!");
         review.setRating(5);
 
-        when(reviewRepository.findByUserIdOrderByCreatedAtDesc(eq(userId), any(Pageable.class))).thenReturn(Arrays.asList(review));
+        when(reviewRepository.findByUserIdOrderByCreatedAtDesc(eq(userId), any(Pageable.class))).thenReturn(List.of(review));
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(new ReviewDTO());
 
         // Act

@@ -174,7 +174,7 @@ public class AuthController {
         logger.debug("Access & refresh tokens generated for store owner: {}", storeOwner.getEmail());
         return ResponseEntity.ok(Map.of(
                 "accessToken", accessToken,
-                "storeId", storeOwner.getStoreId().toString()
+                "storeId", storeOwner.getStoreId()
         ));
     }
 

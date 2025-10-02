@@ -103,15 +103,13 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         Throwable mostSpecificCause = ex.getMostSpecificCause();
         String errorMessage = "Invalid JSON input";
-        if (mostSpecificCause instanceof InvalidFormatException) {
-            InvalidFormatException ife = (InvalidFormatException) mostSpecificCause;
+        if (mostSpecificCause instanceof InvalidFormatException ife) {
             String fieldName = ife.getPath().stream()
                     .map(JsonMappingException.Reference::getFieldName)
                     .findFirst()
                     .orElse("Unknown field");
             errorMessage = "Invalid value for field '" + fieldName + "'";
-        } else if (mostSpecificCause instanceof MismatchedInputException) {
-            MismatchedInputException mie = (MismatchedInputException) mostSpecificCause;
+        } else if (mostSpecificCause instanceof MismatchedInputException mie) {
             String fieldName = mie.getPath().stream()
                     .map(JsonMappingException.Reference::getFieldName)
                     .findFirst()

@@ -54,7 +54,7 @@ class UserServiceTest {
         user.setRole(UserRole.EMPLOYEE);
 
         Page<User> userPage = mock(Page.class);
-        when(userPage.stream()).thenReturn(Arrays.asList(user).stream());
+        when(userPage.stream()).thenReturn(List.of(user).stream());
         when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
         when(orderRepository.countByUserId("1")).thenReturn(10L);
 
