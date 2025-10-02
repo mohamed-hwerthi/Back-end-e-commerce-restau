@@ -1,8 +1,8 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,61 +24,59 @@ public class Product {
     @Column(columnDefinition = "jsonb", nullable = false)
     private LocalizedString title;
 
-    @Column(columnDefinition = "jsonb", nullable = true)
+    @Column(columnDefinition = "jsonb")
     private LocalizedString description;
 
-
     @Column(nullable = false)
-    @Min(value = 0, message = "Quantity must be at least 0")
+    @PositiveOrZero(message = "Price must be zero or positive")
     private BigDecimal price;
 
-    @Column(nullable = true, name = "code_bar", unique = true)
+    @Column(name = "code_bar", unique = true)
     private String barCode;
 
-    @Column(nullable = true, name = "sku", unique = true)
+    @Column(name = "sku", unique = true)
     private String sku;
 
-    @Column(nullable = false, name = "purchase_price")
-    @Positive(message = "Purchase price must be positive")
+    @Column(name = "purchase_price", nullable = false)
+    @Positive(message = "Purchase price must be greater than zero")
     private BigDecimal purchasePrice;
-    @Column(nullable = true, name = "low_stock_threshold")
-    @Min(value = 0, message = "Low stock threshold must be at least 0")
+
+    @Column(name = "low_stock_threshold")
+    @PositiveOrZero(message = "Low stock threshold must be zero or positive")
     private int lowStockThreshold;
 
-    @Column(nullable = false, name = "quantity")
-    @Min(value = 0, message = "Quantity must be at least 0")
+    @Column(name = "quantity", nullable = false)
+    @PositiveOrZero(message = "Quantity must be zero or positive")
     private int quantity;
 
-    @Column(nullable = false, name = "is_variant")
+    @Column(name = "is_variant", nullable = false)
     private boolean isVariant = false;
-
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
-    @Column(nullable = false, name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "tax_id", referencedColumnName = "id")
     private Tax tax;
+
     @ManyToMany
     @JoinTable(
             name = "product_categories",
             joinColumns = @JoinColumn(name = "product_id"),
-
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private List<Category> categories = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
-            name = " product_medias",
+            name = "product_medias",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "media_id")
     )
     private List<Media> medias = new ArrayList<>();
-
 
     @ManyToMany
     @JoinTable(
@@ -87,7 +85,6 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "promotion_id")
     )
     private List<Promotion> promotions = new ArrayList<>();
-
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductAttribute> attributes = new HashSet<>();
@@ -105,7 +102,7 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomAttribute> customAttributes = new ArrayList<>();
 
-    @Column(nullable = false, name = "is_option")
+    @Column(name = "is_option", nullable = false)
     private boolean isOption = false;
 
     @ManyToMany
@@ -116,11 +113,9 @@ public class Product {
     )
     private Set<ProductAttributeValue> variantAttributes = new HashSet<>();
 
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
-
 }
+

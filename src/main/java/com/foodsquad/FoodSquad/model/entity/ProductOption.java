@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ public class ProductOption {
     private UUID id;
 
     @Column(nullable = false, name = "override_price")
+    @PositiveOrZero(message = "override price must be positive or zero")
     private BigDecimal overridePrice;
 
     @ManyToOne(fetch = FetchType.LAZY)

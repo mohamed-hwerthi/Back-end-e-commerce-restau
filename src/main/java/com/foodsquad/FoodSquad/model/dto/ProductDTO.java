@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
+    @NotEmpty(message = "title   cannot empty ")
     private LocalizedString title;
 
     private LocalizedString description;
