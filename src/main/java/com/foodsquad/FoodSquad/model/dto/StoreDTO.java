@@ -22,19 +22,18 @@ public class StoreDTO {
 
     private UUID id;
 
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = "Store name is required")
     private String name;
-
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String slug;
 
-    @NotBlank(message = "PhonePhone number  is required")
+    @NotBlank(message = "Phone number is required")
     @Size(min = 8, max = 15, message = "Phone number must be between 8 and 15 characters")
     private String phoneNumber;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
+    @Email(message = "Email must be valid")
     private String email;
 
     @NotBlank(message = "Password is required")
@@ -42,17 +41,17 @@ public class StoreDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-
     private String address;
-    private String postalCode  ;
+    private String postalCode;
 
     private String facebookUrl;
     private String instagramUrl;
     private String linkedInUrl;
     private String websiteUrl;
-    private String   whatsapp  ;
-    @Email(message = "email not valid")
-    private String emailContact   ;
+    private String whatsapp;
+
+    @Email(message = "Contact email must be valid")
+    private String emailContact;
 
     private LocalizedString about;
     private String backgroundColor;
@@ -64,6 +63,7 @@ public class StoreDTO {
 
     @NotNull(message = "Activity sector is required")
     private ActivitySectorDTO activitySector;
+
     private MediaDTO logo;
 
     @NotNull(message = "Currency is required")
@@ -71,11 +71,12 @@ public class StoreDTO {
 
     private String encryptedStoreId;
 
+    @NotNull(message = "Default language is required")
     private LanguageDTO defaultLanguage;
 
-    private CountryDTO country  ;
+    @NotNull(message = "Country is required")
+    private CountryDTO country;
 
-    private String city   ;
-
-
+    @NotBlank(message = "City is required")
+    private String city;
 }

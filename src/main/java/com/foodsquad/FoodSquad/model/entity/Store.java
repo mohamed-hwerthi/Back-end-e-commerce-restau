@@ -22,7 +22,7 @@ public class Store {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "name", nullable = false, unique = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
 
@@ -33,7 +33,7 @@ public class Store {
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
-    @Column(name = "address", nullable = true)
+    @Column(name = "address")
     private String address;
 
     private String city  ;
@@ -42,37 +42,37 @@ public class Store {
     @JoinColumn(name = "country_id", nullable = false)
     private Country country;
 
-    @Column(name = "facebook_url", nullable = true)
+    @Column(name = "facebook_url")
     private String facebookUrl;
 
-    @Column(name = "email_contact" , nullable = true)
+    @Column(name = "email_contact")
     private String  emailContact ;
 
-    @Column(name = "whatsapp"  ,  nullable = false)
+    @Column(name = "whatsapp"  )
     private String whatsapp ;
 
 
-    @Column(name = "instagram_url", nullable = true)
+    @Column(name = "instagram_url")
     private String instagramUrl;
 
-    @Column(name = "linked_in_url", nullable = true)
+    @Column(name = "linked_in_url")
     private String linkedInUrl;
 
-    @Column(name = "website_url", nullable = true)
+    @Column(name = "website_url")
     private String websiteUrl;
 
-    @Column(name = "postal_code" , nullable =true)
+    @Column(name = "postal_code" )
     private String postalCode  ;
 
 
 
-    @Column(name = "background_color", length = 10, nullable = true)
+    @Column(name = "background_color")
     private String backgroundColor;
 
-    @Column(name = "template_name", nullable = true)
+    @Column(name = "template_name")
     private String templateName;
 
-    @Column(name = "accent_color", length = 10, nullable = true)
+    @Column(name = "accent_color")
     private String accentColor;
 
 
@@ -83,7 +83,7 @@ public class Store {
     private LocalDateTime createdAt;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "activity_sector_id")
+    @JoinColumn(name = "activity_sector_id"  , nullable = false)
     private ActivitySector activitySector;
 
 
@@ -92,15 +92,15 @@ public class Store {
     private Media logo;
 
     @OneToOne
-    @JoinColumn(name = "currency_id")
+    @JoinColumn(name = "currency_id" , nullable = false)
     private Currency currency;
 
     @OneToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id" , nullable = false)
     private User owner;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "default_language_id")
+    @JoinColumn(name = "default_language_id" , nullable = false)
     private Language defaultLanguage;
 
     @PrePersist

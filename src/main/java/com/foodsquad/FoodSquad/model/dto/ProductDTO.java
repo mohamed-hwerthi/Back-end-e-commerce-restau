@@ -27,20 +27,21 @@ public class ProductDTO {
     private LocalizedString description;
 
     private String barCode;
+
     @JsonProperty("isOption")
     private boolean isOption;
 
     private boolean isVariant;
 
-    @PositiveOrZero(message = "La quantité doit être positive ou zéro")
+    @PositiveOrZero(message = "Quantity must be zero or a positive number")
     private int quantity;
 
     private String sku;
 
-    @Positive(message = "Purchase price must be positive")
+    @Positive(message = "Purchase price must be greater than zero")
     private BigDecimal purchasePrice;
 
-    @PositiveOrZero(message = "Le prix  doit être positive ou zéro")
+    @PositiveOrZero(message = "Price must be zero or a positive number")
     private BigDecimal price;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -49,7 +50,7 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long reviewCount;
 
-    @PositiveOrZero(message = "La quantité doit être positive ou zéro")
+    @PositiveOrZero(message = "Low stock threshold must be zero or a positive number")
     private int lowStockThreshold;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -73,5 +74,4 @@ public class ProductDTO {
     private List<ProductOptionGroupDTO> productOptionGroups = new ArrayList<>();
 
     private List<CustomAttributeDTO> customAttributes = new ArrayList<>();
-
 }
