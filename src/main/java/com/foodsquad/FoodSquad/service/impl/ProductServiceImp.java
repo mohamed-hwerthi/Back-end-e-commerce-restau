@@ -82,26 +82,27 @@ public class ProductServiceImp implements ProductService {
     @Override
     @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
-        log.debug("Creating product: {}", productDTO);
+        log.debug("Creating product with data: {}", productDTO);
 
         checkDuplicateBarCode(productDTO);
 
         Product product = productMapper.toEntity(productDTO);
+        log.debug("Mapped ProductDTO to Product entity");
 
         Product savedProduct = productRepository.save(product);
+        log.debug("Saved product with ID: {}", savedProduct.getId());
 
         manageProductTaxesIfPresent(productDTO, savedProduct);
-
         manageProductOptionGroups(productDTO, savedProduct);
-
         manageVariantsAndAttributes(productDTO, savedProduct);
-
         manageCustomAttributes(productDTO, savedProduct);
 
-
         savedProduct = productRepository.save(savedProduct);
+        log.debug("Final product saved with ID: {}", savedProduct.getId());
 
-        return productMapper.toDto(savedProduct);
+        ProductDTO responseDTO = productMapper.toDto(savedProduct);
+        log.debug("Returning ProductDTO: {}", responseDTO);
+        return responseDTO;
     }
 
 
@@ -110,13 +111,15 @@ public class ProductServiceImp implements ProductService {
             ProductFilterByCategoryAndQueryRequestDTO filterRequest,
             Pageable pageable
     ) {
+        log.debug("Searching products with filter request: {}", filterRequest);
+
         String query = filterRequest.getQuery();
         UUID[] categoryIds = filterRequest.getCategoriesIds() != null
                 ? filterRequest.getCategoriesIds().toArray(new UUID[0])
                 : null;
-        Boolean inStock = filterRequest.getInStock() != null ? filterRequest.getInStock() : null;
+        Boolean inStock = filterRequest.getInStock();
 
-        Page<Product> ProductPage = productRepository.searchByQueryAndFilters(
+        Page<Product> productPage = productRepository.searchByQueryAndFilters(
                 query,
                 categoryIds,
                 inStock,
@@ -124,37 +127,48 @@ public class ProductServiceImp implements ProductService {
                 pageable
         );
 
-        List<ProductDTO> ProductDTOs = ProductPage.getContent().stream()
+        List<ProductDTO> productDTOs = productPage.getContent().stream()
                 .map(productMapper::toDto)
                 .toList();
 
-        return new PaginatedResponseDTO<>(ProductDTOs, ProductPage.getTotalElements());
+        log.debug("Found {} products matching the filters", productDTOs.size());
+        return new PaginatedResponseDTO<>(productDTOs, productPage.getTotalElements());
     }
-
 
     @Override
     public PaginatedResponseDTO<ProductDTO> searchProductsByQuery(String query, Pageable pageable) {
-        log.debug("Searching menu items by query: {}", query);
-        Page<Product> ProductPage = productRepository.findAll(pageable);
-        List<Product> products = ProductPage.getContent();
-        List<ProductDTO> ProductDTOs = products.stream()
+        log.debug("Searching products by query: {}", query);
+
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<ProductDTO> productDTOs = productPage.getContent().stream()
                 .map(product -> {
                     ProductDTO dto = productMapper.toDto(product);
                     return verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(product, dto);
                 })
                 .toList();
-        return new PaginatedResponseDTO<>(ProductDTOs, ProductPage.getTotalElements());
 
-
+        log.debug("Found {} products for query '{}'", productDTOs.size(), query);
+        return new PaginatedResponseDTO<>(productDTOs, productPage.getTotalElements());
     }
 
+
+    @Override
     public ProductDTO getProductById(UUID id) {
+        log.debug("Fetching product by ID: {}", id);
 
-        log.debug("Getting menu item by ID: {}", id);
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
-        return productMapper.toDto(product);
+                .orElseThrow(() -> {
+                    log.warn("Product not found with ID: {}", id);
+                    return new EntityNotFoundException("Product not found for ID: " + id);
+                });
+
+        ProductDTO productDTO = productMapper.toDto(product);
+        log.debug("Product found: {}", productDTO);
+
+        return productDTO;
     }
+
 
     @Override
     public PaginatedResponseDTO<ProductDTO> getAllProducts(
@@ -166,39 +180,62 @@ public class ProductServiceImp implements ProductService {
             String isDefault,
             String priceSortDirection
     ) {
-        log.debug("Getting all menu items with some filters");
+        log.debug("Fetching products with filters - page: {}, limit: {}, sortBy: {}, desc: {}, categoryId: {}, isDefault: {}, priceSortDirection: {}",
+                page, limit, sortBy, desc, categoryId, isDefault, priceSortDirection);
 
         String sortField = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
-
         Sort.Direction direction = desc ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, limit, Sort.by(direction, sortField));
-        Page<Product> ProductPage;
+
+        Page<Product> productPage;
+
         if (categoryId != null) {
-            ProductPage = productRepository.findByCategoryId(categoryId, pageable);
+            log.debug("Filtering products by category ID: {}", categoryId);
+            productPage = productRepository.findByCategoryId(categoryId, pageable);
         } else {
-            ProductPage = productRepository.findAll(pageable);
+            log.debug("Fetching all products without category filter");
+            productPage = productRepository.findAll(pageable);
         }
-        return new PaginatedResponseDTO<>(ProductPage.getContent().stream().map(productMapper::toDto).toList(), ProductPage.getTotalElements());
+
+        List<ProductDTO> productDTOs = productPage.getContent().stream()
+                .map(productMapper::toDto)
+                .toList();
+
+        log.debug("Fetched {} products, total elements: {}", productDTOs.size(), productPage.getTotalElements());
+
+        return new PaginatedResponseDTO<>(productDTOs, productPage.getTotalElements());
     }
+
 
     @Override
     public ResponseEntity<ProductDTO> updateProduct(UUID id, ProductDTO productDTO) {
-        log.debug("Updating menu item with ID: {}", id);
-        Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
+        log.debug("Starting update for Product with ID: {}", id);
 
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Product not found for ID: {}", id);
+                    return new EntityNotFoundException("Product not found for ID: " + id);
+                });
+        log.debug("Existing product fetched: {}", existingProduct.getId());
+
+        log.debug("Updating product fields from DTO");
         productMapper.updateProductFromDto(productDTO, existingProduct);
 
+        log.debug("Updating product variants");
         manageVariantsOnUpdate(productDTO, existingProduct);
+
+        log.debug("Updating product option groups");
         manageProductOptionGroupsOnUpdate(productDTO, existingProduct);
 
+        log.debug("Updating custom attributes");
         List<CustomAttribute> dtoAttributes = customAttributeMapper.toEntityList(productDTO.getCustomAttributes());
         manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
 
-
+        log.debug("Saving updated product");
         Product savedProduct = productRepository.save(existingProduct);
 
         ProductDTO responseDTO = productMapper.toDto(savedProduct);
+        log.debug("Product updated successfully: {}", responseDTO.getId());
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -395,43 +432,44 @@ public class ProductServiceImp implements ProductService {
     private void manageVariantsAndAttributes(ProductDTO productDTO, Product parentProduct) {
         if (ObjectUtils.isEmpty(productDTO.getVariants())) return;
 
-        for (VariantDTO variantDTO : productDTO.getVariants()) {
-            if (!ObjectUtils.isEmpty(variantDTO.getOptions())) {
-                for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
-                    ProductAttribute attribute = productAttributeService.findOrCreateAttribute(
-                            parentProduct,
-                            variantDTO.getAttributeName()
-                    );
-
-                    ProductAttributeValue value = productAttributeValueService.findOrCreateValue(
-                            attribute,
-                            optionDTO.getValue()
-                    );
-
-                    Product variant = buildVariant(parentProduct, optionDTO);
-                    variant.getVariantAttributes().add(value);
-
-                    parentProduct.getVariants().add(variant);
-                }
-            }
-        }
+        productDTO.getVariants().stream()
+                .filter(variantDTO -> !ObjectUtils.isEmpty(variantDTO.getOptions()))
+                .forEach(variantDTO -> processVariantDTO(variantDTO, parentProduct));
     }
 
-    private Product buildVariant(Product parentProduct, VariantOptionDTO optionDTO) {
-        Product variant = new Product();
-        variant.setParent(parentProduct);
-        variant.setVariant(true);
-        variant.setSku(getOrGenerateSku(optionDTO.getSku()));
-        variant.setPrice(getOrDefaultPrice(optionDTO.getPrice()));
-        variant.setTitle(parentProduct.getTitle());
-        variant.setDescription(parentProduct.getDescription());
-        variant.setQuantity(getOrDefaultQuantity(optionDTO.getQuantity()));
-        variant.setPurchasePrice(parentProduct.getPurchasePrice());
-        variant.setLowStockThreshold(parentProduct.getLowStockThreshold());
-        variant.setTax(parentProduct.getTax());
+    private void processVariantDTO(VariantDTO variantDTO, Product parentProduct) {
+        ProductAttribute attribute = getOrCreateAttributeOnSave(parentProduct, variantDTO);
+
+        variantDTO.getOptions().stream()
+                .map(optionDTO -> buildVariantWithAttribute(parentProduct, optionDTO, attribute))
+                .forEach(parentProduct.getVariants()::add);
+    }
+
+    private ProductAttribute getOrCreateAttributeOnSave(Product parentProduct, VariantDTO variantDTO) {
+        return productAttributeService.findOrCreateAttribute(parentProduct, variantDTO.getAttributeName());
+    }
+
+    private Product buildVariantWithAttribute(Product parentProduct, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+        Product variant = buildVariant(parentProduct, optionDTO);
+        ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+        variant.getVariantAttributes().add(value);
         return variant;
     }
 
+    private Product buildVariant(Product parentProduct, VariantOptionDTO optionDTO) {
+        return Product.builder()
+                .parent(parentProduct)
+                .isVariant(true)
+                .sku(getOrGenerateSku(optionDTO.getSku()))
+                .price(getOrDefaultPrice(optionDTO.getPrice()))
+                .title(parentProduct.getTitle())
+                .description(parentProduct.getDescription())
+                .quantity(getOrDefaultQuantity(optionDTO.getQuantity()))
+                .purchasePrice(parentProduct.getPurchasePrice())
+                .lowStockThreshold(parentProduct.getLowStockThreshold())
+                .tax(parentProduct.getTax())
+                .build();
+    }
 
     private String getOrGenerateSku(String sku) {
         return sku != null ? sku : UUID.randomUUID().toString();
@@ -466,38 +504,52 @@ public class ProductServiceImp implements ProductService {
 
 
     private void manageVariantsOnUpdate(ProductDTO productDTO, Product existingProduct) {
-        existingProduct.getVariants().removeIf(existingVariant ->
-                productDTO.getVariants().stream()
-                        .flatMap(v -> v.getOptions().stream())
-                        .noneMatch(opt -> opt.getProductVariantId() != null &&
-                                opt.getProductVariantId().equals(existingVariant.getId()))
-        );
-
+        removeDeletedVariants(productDTO, existingProduct);
         removeDeletedAttributes(productDTO, existingProduct);
+
         for (VariantDTO variantDTO : productDTO.getVariants()) {
-            ProductAttribute attribute;
-            if (variantDTO.getAttributeId() != null) {
-                attribute = findExistingAttribute(existingProduct, variantDTO);
-                updateAttributeNameIfChanged(attribute, variantDTO);
+            ProductAttribute attribute = getOrCreateAttribute(existingProduct, variantDTO);
+            processVariantOptions(existingProduct, variantDTO, attribute);
+        }
+    }
+
+
+    private ProductAttribute getOrCreateAttribute(Product existingProduct, VariantDTO variantDTO) {
+        if (variantDTO.getAttributeId() != null) {
+            ProductAttribute attribute = findExistingAttribute(existingProduct, variantDTO);
+            updateAttributeNameIfChanged(attribute, variantDTO);
+            return attribute;
+        } else {
+            ProductAttribute attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
+            existingProduct.getAttributes().add(attribute);
+            return attribute;
+        }
+    }
+
+    private void processVariantOptions(Product existingProduct, VariantDTO variantDTO, ProductAttribute attribute) {
+        for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
+            if (optionDTO.getProductVariantId() != null) {
+                updateExistingVariantOption(existingProduct, optionDTO, attribute);
             } else {
-                attribute = productAttributeService.findOrCreateAttribute(existingProduct, variantDTO.getAttributeName());
-                existingProduct.getAttributes().add(attribute);
-            }
-            for (VariantOptionDTO optionDTO : variantDTO.getOptions()) {
-                if (optionDTO.getProductVariantId() != null) {
-                    existingProduct.getVariants().stream()
-                            .filter(v -> v.getId().equals(optionDTO.getProductVariantId()))
-                            .findFirst()
-                            .ifPresent(variant -> updateExistingVariant(variant, optionDTO, attribute));
-                } else {
-                    Product newVariant = buildVariant(existingProduct, optionDTO);
-                    ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
-                    newVariant.getVariantAttributes().add(value);
-                    existingProduct.getVariants().add(newVariant);
-                }
+                addNewVariant(existingProduct, optionDTO, attribute);
             }
         }
     }
+
+    private void updateExistingVariantOption(Product existingProduct, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+        existingProduct.getVariants().stream()
+                .filter(v -> v.getId().equals(optionDTO.getProductVariantId()))
+                .findFirst()
+                .ifPresent(variant -> updateExistingVariant(variant, optionDTO, attribute));
+    }
+
+    private void addNewVariant(Product existingProduct, VariantOptionDTO optionDTO, ProductAttribute attribute) {
+        Product newVariant = buildVariant(existingProduct, optionDTO);
+        ProductAttributeValue value = productAttributeValueService.findOrCreateValue(attribute, optionDTO.getValue());
+        newVariant.getVariantAttributes().add(value);
+        existingProduct.getVariants().add(newVariant);
+    }
+
 
     private void updateExistingVariant(Product variant, VariantOptionDTO optionDTO, ProductAttribute attribute) {
         variant.setSku(getOrGenerateSku(optionDTO.getSku()));
@@ -513,27 +565,42 @@ public class ProductServiceImp implements ProductService {
 
 
     private void manageProductCustomAttributesOnUpdate(Product existingProduct, List<CustomAttribute> newAttributes) {
-        existingProduct.getCustomAttributes()
-                .removeIf(existingAttr -> newAttributes.stream()
-                        .noneMatch(newAttr -> newAttr.getId() != null && newAttr.getId().equals(existingAttr.getId())));
+        removeDeletedCustomAttributes(existingProduct, newAttributes);
+        updateOrAddCustomAttributes(existingProduct, newAttributes);
+    }
 
+    private void removeDeletedCustomAttributes(Product existingProduct, List<CustomAttribute> newAttributes) {
+        existingProduct.getCustomAttributes().removeIf(existingAttr ->
+                newAttributes.stream()
+                        .noneMatch(newAttr -> newAttr.getId() != null && newAttr.getId().equals(existingAttr.getId()))
+        );
+    }
+
+    private void updateOrAddCustomAttributes(Product existingProduct, List<CustomAttribute> newAttributes) {
         for (CustomAttribute newAttr : newAttributes) {
             if (newAttr.getId() != null) {
-                existingProduct.getCustomAttributes().stream()
-                        .filter(e -> e.getId().equals(newAttr.getId()))
-                        .findFirst()
-                        .ifPresent(existing -> {
-                            existing.setName(newAttr.getName());
-                            existing.setValue(newAttr.getValue());
-                            existing.setType(newAttr.getType());
-                            existing.setProduct(existingProduct);
-
-                        });
+                updateExistingCustomAttribute(existingProduct, newAttr);
             } else {
-                newAttr.setProduct(existingProduct);
-                existingProduct.getCustomAttributes().add(newAttr);
+                addNewCustomAttribute(existingProduct, newAttr);
             }
         }
+    }
+
+    private void updateExistingCustomAttribute(Product existingProduct, CustomAttribute newAttr) {
+        existingProduct.getCustomAttributes().stream()
+                .filter(e -> e.getId().equals(newAttr.getId()))
+                .findFirst()
+                .ifPresent(existing -> {
+                    existing.setName(newAttr.getName());
+                    existing.setValue(newAttr.getValue());
+                    existing.setType(newAttr.getType());
+                    existing.setProduct(existingProduct);
+                });
+    }
+
+    private void addNewCustomAttribute(Product existingProduct, CustomAttribute newAttr) {
+        newAttr.setProduct(existingProduct);
+        existingProduct.getCustomAttributes().add(newAttr);
     }
 
 
@@ -573,72 +640,99 @@ public class ProductServiceImp implements ProductService {
 
     private void manageProductOptionGroups(ProductDTO productDTO, Product product) {
         product.getProductOptionGroups().clear();
+
         if (ObjectUtils.isEmpty(productDTO.getProductOptionGroups())) {
             return;
         }
 
-        List<ProductOptionGroup> groups = productDTO.getProductOptionGroups().stream().map(productOptionGroupDTO -> {
-                    ProductOptionGroup group = supplementGroupMapper.toEntity(productOptionGroupDTO);
-                    group.setProduct(product);
-
-                    if (!ObjectUtils.isEmpty(group.getProductOptions())) {
-                        IntStream.range(0, group.getProductOptions().size())
-                                .forEach(j -> {
-                                    ProductOption option = group.getProductOptions().get(j);
-                                    ProductOptionDTO optionDTO = productOptionGroupDTO.getProductOptions().get(j);
-
-                                    option.setProductOptionGroup(group);
-
-                                    if (StringUtils.hasText(optionDTO.getLinkedProductId().toString())) {
-                                        productRepository.findById(optionDTO.getLinkedProductId())
-                                                .ifPresent(option::setLinkedProduct);
-                                    }
-                                });
-                    }
-                    return group;
-                })
+        List<ProductOptionGroup> groups = productDTO.getProductOptionGroups().stream()
+                .map(dtoGroup -> mapToEntityGroup(dtoGroup, product))
                 .toList();
 
         product.getProductOptionGroups().addAll(groups);
     }
 
+    private ProductOptionGroup mapToEntityGroup(ProductOptionGroupDTO dtoGroup, Product product) {
+        ProductOptionGroup group = supplementGroupMapper.toEntity(dtoGroup);
+        group.setProduct(product);
+
+        if (!ObjectUtils.isEmpty(group.getProductOptions())) {
+            initializeProductOptions(dtoGroup, group);
+        }
+
+        return group;
+    }
+
+    private void initializeProductOptions(ProductOptionGroupDTO dtoGroup, ProductOptionGroup group) {
+        IntStream.range(0, group.getProductOptions().size())
+                .forEach(index -> {
+                    ProductOption option = group.getProductOptions().get(index);
+                    ProductOptionDTO optionDTO = dtoGroup.getProductOptions().get(index);
+
+                    option.setProductOptionGroup(group);
+                    linkProductIfPresent(option, optionDTO);
+                });
+    }
+
+    private void linkProductIfPresent(ProductOption option, ProductOptionDTO optionDTO) {
+        if (optionDTO.getLinkedProductId() != null) {
+            productRepository.findById(optionDTO.getLinkedProductId())
+                    .ifPresent(option::setLinkedProduct);
+        }
+    }
+
+
     private void manageProductOptionGroupsOnUpdate(ProductDTO productDTO, Product existingProduct) {
-        // Remove groups not present in DTO
+        removeDeletedGroups(productDTO, existingProduct);
+        updateExistingGroups(productDTO, existingProduct);
+        addNewGroups(productDTO, existingProduct);
+    }
+
+    private void removeDeletedGroups(ProductDTO productDTO, Product existingProduct) {
         existingProduct.getProductOptionGroups().removeIf(existingGroup ->
                 productDTO.getProductOptionGroups().stream()
                         .noneMatch(dtoGroup -> dtoGroup.getId() != null && dtoGroup.getId().equals(existingGroup.getId()))
         );
+    }
 
-        // Iterate through DTO groups
+    private void updateExistingGroups(ProductDTO productDTO, Product existingProduct) {
         for (ProductOptionGroupDTO dtoGroup : productDTO.getProductOptionGroups()) {
             if (dtoGroup.getId() != null) {
-                // Existing group -> update
                 existingProduct.getProductOptionGroups().stream()
                         .filter(g -> g.getId().equals(dtoGroup.getId()))
                         .findFirst()
-                        .ifPresent(existingGroup -> {
-                            existingGroup.setName(dtoGroup.getName());
-                            existingGroup.setProduct(existingProduct);
-                            manageProductOptionsOnUpdate(dtoGroup, existingGroup, existingProduct);
-                        });
-            } else {
-                // New group -> add
+                        .ifPresent(existingGroup -> updateGroup(dtoGroup, existingGroup, existingProduct));
+            }
+        }
+    }
+
+    private void updateGroup(ProductOptionGroupDTO dtoGroup, ProductOptionGroup existingGroup, Product existingProduct) {
+        existingGroup.setName(dtoGroup.getName());
+        existingGroup.setProduct(existingProduct);
+        manageProductOptionsOnUpdate(dtoGroup, existingGroup, existingProduct);
+    }
+
+    private void addNewGroups(ProductDTO productDTO, Product existingProduct) {
+        for (ProductOptionGroupDTO dtoGroup : productDTO.getProductOptionGroups()) {
+            if (dtoGroup.getId() == null) {
                 ProductOptionGroup newGroup = supplementGroupMapper.toEntity(dtoGroup);
                 newGroup.setProduct(existingProduct);
-
-                // Ensure options are linked
-                for (ProductOption option : newGroup.getProductOptions()) {
-                    option.setProductOptionGroup(newGroup);
-                    if (option.getLinkedProduct() != null) {
-                        productRepository.findById(option.getLinkedProduct().getId())
-                                .ifPresent(option::setLinkedProduct);
-                    }
-                }
-
+                initializeProductOptions(newGroup);
                 existingProduct.getProductOptionGroups().add(newGroup);
             }
         }
     }
+
+    private void initializeProductOptions(ProductOptionGroup newGroup) {
+        for (ProductOption option : newGroup.getProductOptions()) {
+            option.setProductOptionGroup(newGroup);
+            if (option.getLinkedProduct() != null) {
+                productRepository.findById(option.getLinkedProduct().getId())
+                        .ifPresent(option::setLinkedProduct);
+            }
+        }
+    }
+
 
     private void manageProductOptionsOnUpdate(ProductOptionGroupDTO dtoGroup, ProductOptionGroup existingGroup, Product existingProduct) {
         existingGroup.getProductOptions().removeIf(existingOption ->
