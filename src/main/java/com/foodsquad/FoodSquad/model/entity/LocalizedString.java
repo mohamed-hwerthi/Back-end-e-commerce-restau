@@ -16,7 +16,7 @@ import static com.foodsquad.FoodSquad.config.utils.Constant.EN_LOCALE;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocalizedString {
+public class  LocalizedString {
 
     private Map<String, String> translations = new HashMap<>();
 

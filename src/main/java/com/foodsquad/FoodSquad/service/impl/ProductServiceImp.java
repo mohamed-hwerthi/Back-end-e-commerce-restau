@@ -468,6 +468,7 @@ public class ProductServiceImp implements ProductService {
                 .purchasePrice(parentProduct.getPurchasePrice())
                 .lowStockThreshold(parentProduct.getLowStockThreshold())
                 .tax(parentProduct.getTax())
+                .variantAttributes(new HashSet<>())
                 .build();
     }
 
@@ -639,7 +640,7 @@ public class ProductServiceImp implements ProductService {
 
 
     private void manageProductOptionGroups(ProductDTO productDTO, Product product) {
-        product.getProductOptionGroups().clear();
+
 
         if (ObjectUtils.isEmpty(productDTO.getProductOptionGroups())) {
             return;

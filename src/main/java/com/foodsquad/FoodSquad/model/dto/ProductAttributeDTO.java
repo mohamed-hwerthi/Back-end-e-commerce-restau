@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.model.dto;
 
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
+import com.foodsquad.FoodSquad.validation.annotations.NotEmptyLocalizedString;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class ProductAttributeDTO {
 
     private UUID id;
-    @NotEmpty(message = "product attribute name cannot be null ")
+    @NotEmptyLocalizedString(message = "product attribute must have at  lest one translated field  ")
     private LocalizedString name;
 
 }

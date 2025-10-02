@@ -64,7 +64,7 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        public CategoryDTO createCategory(CategoryDTO categoryDTO) {
         log.info("Creating new category: {}", categoryDTO.getName());
         Category category = categoryMapper.toEntity(categoryDTO);
         Category savedCategory = categoryRepository.save(category);

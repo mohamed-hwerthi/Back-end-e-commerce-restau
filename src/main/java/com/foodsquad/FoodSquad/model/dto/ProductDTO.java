@@ -3,7 +3,9 @@ package com.foodsquad.FoodSquad.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
-import jakarta.validation.constraints.NotEmpty;
+import com.foodsquad.FoodSquad.validation.annotations.NotEmptyLocalizedString;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
@@ -23,7 +25,7 @@ public class ProductDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
-    @NotEmpty(message = "title   cannot empty ")
+    @NotEmptyLocalizedString(message = "product title must have at leat one translated field")
     private LocalizedString title;
 
     private LocalizedString description;
@@ -44,6 +46,7 @@ public class ProductDTO {
     private BigDecimal purchasePrice;
 
     @PositiveOrZero(message = "Price must be zero or a positive number")
+    @NotNull
     private BigDecimal price;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -68,7 +71,7 @@ public class ProductDTO {
     private boolean isPromoted;
 
     private TaxDTO tax;
-
+     @Valid
     private List<VariantDTO> variants = new ArrayList<>();
 
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();

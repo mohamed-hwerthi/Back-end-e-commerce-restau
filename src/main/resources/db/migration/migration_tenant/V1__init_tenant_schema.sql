@@ -67,7 +67,7 @@ CREATE TABLE products (
     description jsonb,
     parent_id UUID,
     is_variant BOOLEAN NOT NULL DEFAULT FALSE,
-is_option BOOLEAN NOT NULL DEFAULT FALSE,
+    is_option BOOLEAN NOT NULL DEFAULT FALSE,
     is_supplement BOOLEAN NOT NULL DEFAULT FALSE,  -- new field
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,

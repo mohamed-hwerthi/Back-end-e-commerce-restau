@@ -2,6 +2,8 @@ package com.foodsquad.FoodSquad.model.dto;
 
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import com.foodsquad.FoodSquad.model.entity.VariantOptionDTO;
+import com.foodsquad.FoodSquad.validation.annotations.NotEmptyLocalizedString;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +16,14 @@ import java.util.UUID;
 @Setter
 
 public class VariantDTO {
+
     private UUID attributeId;
-    @NotEmpty(message = "variant attribute name cannot not  be null")
+
+    @NotEmptyLocalizedString(message = "variant attribute name must have at leat one translated  field ")
     private LocalizedString attributeName;
-    @NotEmpty(message = "variant  options  cannot be empty ")
+
+    @NotEmpty(message = "One Variant mut have at leat one Option")
+    @Valid
     private List<VariantOptionDTO> options = new ArrayList<>();
 
 }
