@@ -23,7 +23,7 @@ public class ClientProductDTO {
 
     private UUID id;
 
-    private LocalizedString title;
+        private LocalizedString title;
 
     private LocalizedString description;
 
