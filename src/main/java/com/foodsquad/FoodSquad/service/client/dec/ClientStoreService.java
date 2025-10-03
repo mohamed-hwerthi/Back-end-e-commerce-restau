@@ -15,8 +15,8 @@ public interface ClientStoreService {
     /**
      * Retrieves a store by its ID for client-facing purposes.
      *
-     * @param storeId the UUID of the store
+     * @param slug the UUID of the store
      * @return ClientStoreDTO containing public store information
      */
-    ClientStoreDTO getStoreInformation();
+    ClientStoreDTO getStoreBySlug(String slug );
 }

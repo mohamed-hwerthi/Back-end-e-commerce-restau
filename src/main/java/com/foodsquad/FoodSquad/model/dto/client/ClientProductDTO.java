@@ -29,6 +29,10 @@ public class ClientProductDTO {
 
     private BigDecimal price;
 
+    private  String isPromoted  ;
+
+    private  BigDecimal discountedPrice ;
+
     private boolean inStock;
 
     private List<MediaDTO> medias;

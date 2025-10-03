@@ -33,9 +33,9 @@ public class ClientStoreServiceImpl implements ClientStoreService {
 
 
     @Override
-    public ClientStoreDTO getStoreInformation() {
+    public ClientStoreDTO getStoreBySlug(String slug) {
         log.info("Fetching client store data ");
-        Store store = storeRepository.findBySlug(StoreSlugContext.getCurrentStoreSlug())
+        Store store = storeRepository.findBySlug(slug)
                 .orElseThrow(() -> {
                     log.error("Store not found");
                     return new EntityNotFoundException("Store not found");

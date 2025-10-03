@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/uploads/**", "/images/**").permitAll()
                         .requestMatchers("/api/invoice/**").permitAll()
                         .requestMatchers("/api/currencies/**").permitAll()
+                        .requestMatchers("/api/countries/**").permitAll()
                         .requestMatchers("/api/languages/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/promotions/**").permitAll()

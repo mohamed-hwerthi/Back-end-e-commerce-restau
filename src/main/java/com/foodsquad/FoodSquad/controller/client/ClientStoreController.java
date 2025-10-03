@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.controller.client;
 
 
+import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientStoreDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientStoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,18 +30,22 @@ public class ClientStoreController {
     /**
      * Get a store by ID for the client (storefront).
      *
+     * @param slug the UUID of the store
      * @return ClientStoreDTO with public store information
      */
-    @Operation(summary = "Get store by ID for storefront", description = "Returns public store information for clients")
+    @Operation(
+            summary = "Find store by slug",
+            description = "Retrieves the store information by store slug"
+    )
+    @GetMapping("/by-slug/{slug}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Store retrieved successfully"),
+            @ApiResponse(responseCode = "200", description = "Store found"),
             @ApiResponse(responseCode = "404", description = "Store not found")
     })
-    @GetMapping("")
-    public ResponseEntity<ClientStoreDTO> getStoreById() {
-        log.info("Received request to fetch storeId");
-        ClientStoreDTO storeDTO = clientStoreService.getStoreInformation();
-        log.info("Returning store data:{}" ,storeDTO);
-        return ResponseEntity.ok(storeDTO);
+    public ResponseEntity<ClientStoreDTO> getStoreBySlug(@PathVariable String slug) {
+        log.info("Received request to get store by slug: {}", slug);
+        ClientStoreDTO clientStoreDTO =  clientStoreService.getStoreBySlug(slug);
+        log.info("Found store with ID: {}", clientStoreDTO.toString());
+        return ResponseEntity.ok(clientStoreDTO);
     }
 }
