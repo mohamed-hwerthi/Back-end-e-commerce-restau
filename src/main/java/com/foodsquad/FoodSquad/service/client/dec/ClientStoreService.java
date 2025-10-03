@@ -18,5 +18,5 @@ public interface ClientStoreService {
      * @param storeId the UUID of the store
      * @return ClientStoreDTO containing public store information
      */
-    ClientStoreDTO getStoreById(UUID storeId);
+    ClientStoreDTO getStoreInformation();
 }

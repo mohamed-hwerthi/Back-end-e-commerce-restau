@@ -29,7 +29,6 @@ public class ClientStoreController {
     /**
      * Get a store by ID for the client (storefront).
      *
-     * @param storeId the UUID of the store
      * @return ClientStoreDTO with public store information
      */
     @Operation(summary = "Get store by ID for storefront", description = "Returns public store information for clients")
@@ -37,11 +36,11 @@ public class ClientStoreController {
             @ApiResponse(responseCode = "200", description = "Store retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Store not found")
     })
-    @GetMapping("/{storeId}")
-    public ResponseEntity<ClientStoreDTO> getStoreById(@PathVariable UUID storeId) {
-        log.info("Received request to fetch storeId={}", storeId);
-        ClientStoreDTO storeDTO = clientStoreService.getStoreById(storeId);
-        log.info("Returning store data for storeId={}", storeId);
+    @GetMapping("")
+    public ResponseEntity<ClientStoreDTO> getStoreById() {
+        log.info("Received request to fetch storeId");
+        ClientStoreDTO storeDTO = clientStoreService.getStoreInformation();
+        log.info("Returning store data:{}" ,storeDTO);
         return ResponseEntity.ok(storeDTO);
     }
 }

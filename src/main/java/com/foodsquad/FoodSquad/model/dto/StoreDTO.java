@@ -74,9 +74,7 @@ public class StoreDTO {
     @NotNull(message = "Default language is required")
     private LanguageDTO defaultLanguage;
 
-    @NotNull(message = "Country is required")
     private CountryDTO country;
 
-    @NotBlank(message = "City is required")
     private String city;
 }
