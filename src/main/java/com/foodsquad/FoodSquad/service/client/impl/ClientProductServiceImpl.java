@@ -1,6 +1,7 @@
 
 package com.foodsquad.FoodSquad.service.client.impl;
 
+import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
@@ -25,7 +26,11 @@ import java.util.UUID;
 public class ClientProductServiceImpl implements ClientProductService {
 
     private final ProductRepository productRepository;
+
     private final ProductMapper productMapper;
+
+    private final LocaleContext localeContext;
+
 
     @Override
     public ClientProductDTO getById(UUID id) {
@@ -39,41 +44,37 @@ public class ClientProductServiceImpl implements ClientProductService {
     public PaginatedResponseDTO<ProductDTO> getAllProducts(
             int page,
             int limit,
-            String sortBy,
-            boolean desc,
+            String query,
             UUID categoryId,
-            String isDefault,
             String priceSortDirection
     ) {
-        log.debug("Fetching products with filters - page: {}, limit: {}, sortBy: {}, desc: {}, categoryId: {}, isDefault: {}, priceSortDirection: {}",
-                page, limit, sortBy, desc, categoryId, isDefault, priceSortDirection);
+        log.debug("Fetching products - page={}, limit={}, query={}, categoryId={}, priceSortDirection={}, lang={}",
+                page, limit, query, categoryId, priceSortDirection);
 
-        // Determine sorting
         Sort sort;
-
         if (priceSortDirection != null && !priceSortDirection.isBlank()) {
-            Sort.Direction priceDirection = priceSortDirection.equalsIgnoreCase("desc")
+            Sort.Direction direction = priceSortDirection.equalsIgnoreCase("desc")
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
-            sort = Sort.by(priceDirection, "price");
-            log.debug("Sorting by price in {} order", priceDirection);
+            sort = Sort.by(direction, "price");
+        } else {
+            sort = Sort.by(Sort.Direction.DESC, "createdAt");
         }
-        else {
-            String sortField = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
-            Sort.Direction direction = desc ? Sort.Direction.DESC : Sort.Direction.ASC;
-            sort = Sort.by(direction, sortField);
-            log.debug("Sorting by field '{}' in {} order", sortField, direction);
-        }
+
 
         Pageable pageable = PageRequest.of(page, limit, sort);
-
         Page<Product> productPage;
 
-        if (categoryId != null) {
-            log.debug("Filtering products by category ID: {}", categoryId);
+        boolean hasQuery = query != null && !query.isBlank();
+        boolean hasCategory = categoryId != null;
+
+        if (hasQuery && hasCategory) {
+            productPage = productRepository.searchByJsonLanguageAndCategory(query, localeContext.getLocale(), categoryId, pageable);
+        } else if (hasQuery) {
+            productPage = productRepository.searchByJsonLanguage(query, localeContext.getLocale()           , pageable);
+        } else if (hasCategory) {
             productPage = productRepository.findByCategoryId(categoryId, pageable);
         } else {
-            log.debug("Fetching all products without category filter");
             productPage = productRepository.findAll(pageable);
         }
 
@@ -81,10 +82,10 @@ public class ClientProductServiceImpl implements ClientProductService {
                 .map(productMapper::toDto)
                 .toList();
 
-        log.debug("Fetched {} products, total elements: {}", productDTOs.size(), productPage.getTotalElements());
-
         return new PaginatedResponseDTO<>(productDTOs, productPage.getTotalElements());
     }
+
+
 
     @Override
     public List<ClientProductDTO> findByCategory(UUID categoryId) {

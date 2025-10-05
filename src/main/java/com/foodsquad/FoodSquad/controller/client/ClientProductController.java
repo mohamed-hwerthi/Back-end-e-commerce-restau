@@ -28,7 +28,13 @@ public class ClientProductController {
 
     private final ClientProductService clientProductService;
 
-    @Operation(summary = "Get all menu items", description = "Retrieve a list of menu items with optional filters and sorting.")
+    @Operation(
+            summary = "Get all products for storefront",
+            description = "Retrieve paginated products with optional search, category filtering, and price sorting."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+    })
     @GetMapping
     public ResponseEntity<PaginatedResponseDTO<ProductDTO>> getAllProducts(
             @Parameter(description = "Page number, starting from 0", example = "0")
@@ -37,25 +43,31 @@ public class ClientProductController {
             @Parameter(description = "Number of items per page", example = "10")
             @RequestParam(defaultValue = "10") int limit,
 
-            @Parameter(description = "Sort by field, e.g., 'salesCount' or 'price'", example = "salesCount", required = false)
-            @RequestParam(required = false) String sortBy,
+            @Parameter(description = "Search query to filter products by name or description", example = "pizza", required = false)
+            @RequestParam(required = false) String query,
 
-            @Parameter(description = "Sort direction: true for descending, false for ascending")
-            @RequestParam(required = false) boolean desc,
+            @Parameter(description = "Filter by category ID", example = "550e8400-e29b-41d4-a716-446655440000")
+            @RequestParam(required = false, name = "categoryFilter") UUID categoryFilter,
 
-            @Parameter(description = "Filter by categoryId , params is named categoryFilter but it contains the category Id '", required = false)
-            @RequestParam(required = false) UUID categoryFilter,
-
-            @Parameter(description = "Filter by default status: 'true' for default items, 'false' for non-default items", required = false)
-            @RequestParam(required = false) String isDefault,
-
-            @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
+            @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", example = "asc")
             @RequestParam(required = false) String priceSortDirection
     ) {
-        log.debug("Request to get all menu items: page={}, limit={}, sortBy={}, desc={}, categoryFilter={}, isDefault={}, priceSortDirection={}",
-                page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
-        PaginatedResponseDTO<ProductDTO> response = clientProductService.getAllProducts(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
-        log.info("Fetched menu items page {} with limit {} successfully", page, limit);
+        log.debug(
+                "Request to get products: page={}, limit={}, query={}, categoryFilter={}, priceSortDirection={}",
+                page, limit, query, categoryFilter, priceSortDirection
+        );
+
+        PaginatedResponseDTO<ProductDTO> response = clientProductService.getAllProducts(
+                page,
+                limit,
+                query,
+                categoryFilter,
+                priceSortDirection
+        );
+
+        log.info("Fetched {} products successfully (page={}, limit={})",
+                response.getItems().size(), page, limit);
+
         return ResponseEntity.ok(response);
     }
 
