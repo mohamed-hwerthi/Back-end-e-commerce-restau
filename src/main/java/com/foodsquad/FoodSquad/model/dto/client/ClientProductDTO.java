@@ -1,12 +1,15 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
+import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 import com.foodsquad.FoodSquad.model.dto.MediaDTO;
+import com.foodsquad.FoodSquad.model.dto.VariantDTO;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +26,7 @@ public class ClientProductDTO {
 
     private UUID id;
 
-        private LocalizedString title;
+    private LocalizedString title;
 
     private LocalizedString description;
 
@@ -38,4 +41,9 @@ public class ClientProductDTO {
     private List<MediaDTO> medias;
 
     private List<ClientCategoryDTO> categories;
+
+    private List<VariantDTO> variants;
+
+    private List<ProductOptionGroupDTO> productOptionGroups;
+
 }

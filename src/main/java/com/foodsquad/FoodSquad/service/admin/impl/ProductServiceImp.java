@@ -8,6 +8,7 @@ import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.mapper.ProductOptionGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
@@ -171,21 +172,18 @@ public class ProductServiceImp implements ProductService {
 
 
     @Override
-    public PaginatedResponseDTO<ProductDTO> getAllProducts(
+    public PaginatedResponseDTO<ClientProductDTO> getAllProducts(
             int page,
             int limit,
-            String sortBy,
             boolean desc,
             UUID categoryId,
-            String isDefault,
             String priceSortDirection
     ) {
         log.debug("Fetching products with filters - page: {}, limit: {}, sortBy: {}, desc: {}, categoryId: {}, isDefault: {}, priceSortDirection: {}",
-                page, limit, sortBy, desc, categoryId, isDefault, priceSortDirection);
+                page, limit, desc, categoryId, priceSortDirection);
 
-        String sortField = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
         Sort.Direction direction = desc ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, limit, Sort.by(direction, sortField));
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(direction));
 
         Page<Product> productPage;
 
@@ -197,8 +195,8 @@ public class ProductServiceImp implements ProductService {
             productPage = productRepository.findAll(pageable);
         }
 
-        List<ProductDTO> productDTOs = productPage.getContent().stream()
-                .map(productMapper::toDto)
+        List<ClientProductDTO> productDTOs = productPage.getContent().stream()
+                .map(productMapper::toClientProductDTO)
                 .toList();
 
         log.debug("Fetched {} products, total elements: {}", productDTOs.size(), productPage.getTotalElements());

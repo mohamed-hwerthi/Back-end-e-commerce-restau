@@ -24,7 +24,7 @@ public class Product {
     private UUID id;
 
     @Column(columnDefinition = "jsonb", nullable = false)
-    private LocalizedString title;
+            private LocalizedString title;
 
     @Column(columnDefinition = "jsonb")
     private LocalizedString description;

@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.controller.admin;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductFilterByCategoryAndQueryRequestDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
 import com.foodsquad.FoodSquad.service.admin.dec.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -63,7 +64,7 @@ public class ProductController {
 
     @Operation(summary = "Get all menu items", description = "Retrieve a list of menu items with optional filters and sorting.")
     @GetMapping
-    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> getAllProducts(
+    public ResponseEntity<PaginatedResponseDTO<ClientProductDTO>> getAllProducts(
             @Parameter(description = "Page number, starting from 0", example = "0")
             @RequestParam(defaultValue = "0") int page,
 
@@ -79,15 +80,12 @@ public class ProductController {
             @Parameter(description = "Filter by categoryId , params is named categoryFilter but it contains the category Id '", required = false)
             @RequestParam(required = false) UUID categoryFilter,
 
-            @Parameter(description = "Filter by default status: 'true' for default items, 'false' for non-default items", required = false)
-            @RequestParam(required = false) String isDefault,
-
             @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
             @RequestParam(required = false) String priceSortDirection
     ) {
         log.debug("Request to get all menu items: page={}, limit={}, sortBy={}, desc={}, categoryFilter={}, isDefault={}, priceSortDirection={}",
-                page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
-        PaginatedResponseDTO<ProductDTO> response = productService.getAllProducts(page, limit, sortBy, desc, categoryFilter, isDefault, priceSortDirection);
+                page, limit, sortBy, desc, categoryFilter, priceSortDirection);
+        PaginatedResponseDTO<ClientProductDTO> response = productService.getAllProducts(page, limit, desc, categoryFilter, priceSortDirection);
         log.info("Fetched menu items page {} with limit {} successfully", page, limit);
         return ResponseEntity.ok(response);
     }

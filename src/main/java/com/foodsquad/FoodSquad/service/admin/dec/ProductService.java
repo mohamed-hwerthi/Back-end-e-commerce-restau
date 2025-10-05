@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.service.admin.dec;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductFilterByCategoryAndQueryRequestDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
@@ -43,13 +44,12 @@ public interface ProductService {
      * @param sortBy             the field to sort by
      * @param desc               whether sorting should be descending
      * @param categoryId         filter by category UUID
-     * @param isDefault          optional filter for default status
      * @param priceSortDirection direction of price sorting ("asc" or "desc")
      * @return a paginated response containing {@link ProductDTO} objects
      */
-    PaginatedResponseDTO<ProductDTO> getAllProducts(int page, int limit, String sortBy,
-                                                    boolean desc, UUID categoryId,
-                                                    String isDefault, String priceSortDirection);
+    PaginatedResponseDTO<ClientProductDTO> getAllProducts(int page, int limit,
+                                                          boolean desc, UUID categoryId,
+                                                          String priceSortDirection);
 
     /**
      * Updates an existing product.
