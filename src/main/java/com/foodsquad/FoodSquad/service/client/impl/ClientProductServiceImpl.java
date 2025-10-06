@@ -51,16 +51,14 @@ public class ClientProductServiceImpl implements ClientProductService {
         log.debug("Fetching products - page={}, limit={}, query={}, categoryId={}, priceSortDirection={}, lang={}",
                 page, limit, query, categoryId, priceSortDirection);
 
-        Sort sort;
+        Sort sort = Sort.unsorted();
+
         if (priceSortDirection != null && !priceSortDirection.isBlank()) {
             Sort.Direction direction = priceSortDirection.equalsIgnoreCase("desc")
                     ? Sort.Direction.DESC
                     : Sort.Direction.ASC;
             sort = Sort.by(direction, "price");
-        } else {
-            sort = Sort.by(Sort.Direction.DESC, "createdAt");
         }
-
 
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Product> productPage;
