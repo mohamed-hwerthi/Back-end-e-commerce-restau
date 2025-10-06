@@ -230,22 +230,22 @@ public class ProductServiceImp implements ProductService {
         manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
 
         log.debug("Saving updated product");
-        Product savedProduct = productRepository.save(existingProduct);
+            Product savedProduct = productRepository.save(existingProduct);
 
         ProductDTO responseDTO = productMapper.toDto(savedProduct);
         log.debug("Product updated successfully: {}", responseDTO.getId());
 
-        return ResponseEntity.ok(responseDTO);
-    }
-
-
-    @Override
-    public ProductDTO decrementProductQuantity(UUID ProductId, int quantity) {
-
-        Product product = productRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
-        if (product.getQuantity() < quantity) {
-            throw new EntityNotFoundException("Product quantity is not enough");
+            return ResponseEntity.ok(responseDTO);
         }
+
+
+        @Override
+        public ProductDTO decrementProductQuantity(UUID ProductId, int quantity) {
+
+            Product product = productRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
+            if (product.getQuantity() < quantity) {
+                throw new EntityNotFoundException("Product quantity is not enough");
+            }
         product.setQuantity(product.getQuantity() - quantity);
         return productMapper.toDto(productRepository.save(product));
 

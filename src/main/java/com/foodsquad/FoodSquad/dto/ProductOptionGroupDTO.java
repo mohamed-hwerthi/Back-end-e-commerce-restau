@@ -2,10 +2,9 @@ package com.foodsquad.FoodSquad.dto;
 
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import com.foodsquad.FoodSquad.validation.annotations.NotEmptyLocalizedString;
+import jakarta.annotation.security.DenyAll;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ProductOptionGroupDTO {
 
     private UUID id;
