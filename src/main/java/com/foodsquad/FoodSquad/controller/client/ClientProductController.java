@@ -2,7 +2,7 @@ package com.foodsquad.FoodSquad.controller.client;
 
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,7 +77,7 @@ public class ClientProductController {
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ClientProductDTO> findById(@PathVariable UUID id) {
+    public ResponseEntity<ClientProductListDTO> findById(@PathVariable UUID id) {
         log.info("Client request: get product id={}", id);
         return ResponseEntity.ok(clientProductService.getById(id));
     }
@@ -87,7 +87,7 @@ public class ClientProductController {
             @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
     })
     @GetMapping("/by-category/{categoryId}")
-    public ResponseEntity<List<ClientProductDTO>> findByCategory(@PathVariable UUID categoryId) {
+    public ResponseEntity<List<ClientProductListDTO>> findByCategory(@PathVariable UUID categoryId) {
         log.info("Client request: list products by categoryId={}", categoryId);
         return ResponseEntity.ok(clientProductService.findByCategory(categoryId));
     }

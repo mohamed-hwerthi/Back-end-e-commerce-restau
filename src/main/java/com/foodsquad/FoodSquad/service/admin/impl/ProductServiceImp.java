@@ -8,7 +8,7 @@ import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.mapper.ProductOptionGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
 import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
@@ -172,7 +172,7 @@ public class ProductServiceImp implements ProductService {
 
 
     @Override
-    public PaginatedResponseDTO<ClientProductDTO> getAllProducts(
+    public PaginatedResponseDTO<ClientProductListDTO> getAllProducts(
             int page,
             int limit,
             boolean desc,
@@ -195,7 +195,7 @@ public class ProductServiceImp implements ProductService {
             productPage = productRepository.findAll(pageable);
         }
 
-        List<ClientProductDTO> productDTOs = productPage.getContent().stream()
+        List<ClientProductListDTO> productDTOs = productPage.getContent().stream()
                 .map(productMapper::toClientProductDTO)
                 .toList();
 

@@ -2,7 +2,7 @@ package com.foodsquad.FoodSquad.service.client.dec;
 
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,10 +13,10 @@ import java.util.UUID;
  */
 public interface ClientProductService {
 
-    ClientProductDTO getById(UUID id);
+    ClientProductListDTO getById(UUID id);
 
     PaginatedResponseDTO<ProductDTO> getAllProducts(int page, int limit , String query ,
                                                      UUID categoryId,
                                                     String priceSortDirection);
-    List<ClientProductDTO> findByCategory(UUID categoryId);
+    List<ClientProductListDTO> findByCategory(UUID categoryId);
 }

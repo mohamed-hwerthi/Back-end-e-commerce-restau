@@ -3,7 +3,7 @@ package com.foodsquad.FoodSquad.mapper;
 import com.foodsquad.FoodSquad.model.dto.ProductAttributeDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.VariantDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
 import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
@@ -40,7 +40,7 @@ public interface ProductMapper {
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
     @Mapping(target = "variants", ignore = true)
-    ClientProductDTO toClientProductDTO(Product product);
+    ClientProductListDTO toClientProductDTO(Product product);
 
     default ProductDTO toProductDtoWithMoreInformation(
             Product product, int salesCount, long reviewCount, double averageRating

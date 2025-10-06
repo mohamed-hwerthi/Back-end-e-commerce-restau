@@ -3,7 +3,7 @@ package com.foodsquad.FoodSquad.service.admin.dec;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductFilterByCategoryAndQueryRequestDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Promotion;
@@ -47,7 +47,7 @@ public interface ProductService {
      * @param priceSortDirection direction of price sorting ("asc" or "desc")
      * @return a paginated response containing {@link ProductDTO} objects
      */
-    PaginatedResponseDTO<ClientProductDTO> getAllProducts(int page, int limit,
+    PaginatedResponseDTO<ClientProductListDTO> getAllProducts(int page, int limit,
                                                           boolean desc, UUID categoryId,
                                                           String priceSortDirection);
 

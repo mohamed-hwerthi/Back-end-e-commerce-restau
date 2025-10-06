@@ -22,7 +22,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-public class ClientProductDTO {
+public class ClientProductListDTO {
 
     private UUID id;
 
@@ -41,9 +41,5 @@ public class ClientProductDTO {
     private List<MediaDTO> medias;
 
     private List<ClientCategoryDTO> categories;
-
-    private List<VariantDTO> variants;
-
-    private List<ProductOptionGroupDTO> productOptionGroups;
 
 }

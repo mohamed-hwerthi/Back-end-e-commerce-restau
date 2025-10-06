@@ -5,7 +5,7 @@ import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.service.client.dec.ClientProductService;
@@ -33,7 +33,7 @@ public class ClientProductServiceImpl implements ClientProductService {
 
 
     @Override
-    public ClientProductDTO getById(UUID id) {
+    public ClientProductListDTO getById(UUID id) {
         log.info("Fetching client product by id={}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -86,7 +86,7 @@ public class ClientProductServiceImpl implements ClientProductService {
 
 
     @Override
-    public List<ClientProductDTO> findByCategory(UUID categoryId) {
+    public List<ClientProductListDTO> findByCategory(UUID categoryId) {
           return null  ;
     }
 }
