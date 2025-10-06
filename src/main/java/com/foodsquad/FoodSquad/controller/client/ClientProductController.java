@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.controller.client;
 
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDetailDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,7 +78,7 @@ public class ClientProductController {
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ClientProductListDTO> findById(@PathVariable UUID id) {
+    public ResponseEntity<ClientProductDetailDTO> findById(@PathVariable UUID id) {
         log.info("Client request: get product id={}", id);
         return ResponseEntity.ok(clientProductService.getById(id));
     }

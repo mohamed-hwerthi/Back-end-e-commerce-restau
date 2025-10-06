@@ -196,7 +196,7 @@ public class ProductServiceImp implements ProductService {
         }
 
         List<ClientProductListDTO> productDTOs = productPage.getContent().stream()
-                .map(productMapper::toClientProductDTO)
+                .map(productMapper::toClientProductListDTO)
                 .toList();
 
         log.debug("Fetched {} products, total elements: {}", productDTOs.size(), productPage.getTotalElements());

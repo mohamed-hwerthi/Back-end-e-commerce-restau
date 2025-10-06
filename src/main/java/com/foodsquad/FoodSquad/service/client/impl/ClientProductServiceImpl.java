@@ -5,6 +5,7 @@ import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDetailDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
@@ -15,7 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service ;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,11 +34,11 @@ public class ClientProductServiceImpl implements ClientProductService {
 
 
     @Override
-    public ClientProductListDTO getById(UUID id) {
-        log.info("Fetching client product by id={}", id);
+    public ClientProductDetailDTO getById(UUID id) {
+        log.info("Fetching client product by id={}", id)  ;
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        return (productMapper.toClientProductDTO(product));
+        return productMapper.toClientProductDetailDTO(product);
     }
 
     @Override

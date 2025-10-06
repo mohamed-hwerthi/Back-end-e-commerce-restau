@@ -41,7 +41,6 @@ public interface ProductService {
      *
      * @param page               the page number (0-based index)
      * @param limit              the number of items per page
-     * @param sortBy             the field to sort by
      * @param desc               whether sorting should be descending
      * @param categoryId         filter by category UUID
      * @param priceSortDirection direction of price sorting ("asc" or "desc")

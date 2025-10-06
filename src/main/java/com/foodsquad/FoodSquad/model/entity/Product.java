@@ -81,6 +81,12 @@ public class Product {
     )
     private List<Media> medias = new ArrayList<>();
 
+    //  todo   :check for track  inventory  :
+
+
+//    @Column(name = "track_inventory", nullable = false)
+//    private boolean trackInventory =  false;
+
     @ManyToMany
     @JoinTable(
             name = "product_promotions",
@@ -104,6 +110,8 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomAttribute> customAttributes = new ArrayList<>();
+
+
 
     @Column(name = "is_option", nullable = false)
     private boolean isOption = false;
