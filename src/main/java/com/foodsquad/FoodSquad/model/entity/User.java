@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.model.entity;
+°package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

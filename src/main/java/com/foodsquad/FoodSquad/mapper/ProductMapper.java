@@ -99,7 +99,7 @@ public interface ProductMapper {
 
         return groupedByAttribute.entrySet().stream()
                 .map(entry -> {
-                    UUID attributeId = entry.getKey();
+                            UUID attributeId = entry.getKey();
                     List<Product> variantsForAttribute = entry.getValue();
 
                     VariantDTO variantDTO = new VariantDTO();

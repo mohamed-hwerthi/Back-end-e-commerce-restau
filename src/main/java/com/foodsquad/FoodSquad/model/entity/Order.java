@@ -1,46 +1,54 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "CHAR(36)")
-    private String id;
+    private UUID id;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @Column(nullable = false)
-    private BigDecimal totalCost;
+    private LocalDateTime orderDate;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id")
+    private OrderStatus status;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
+
     @Column(nullable = false)
-    private OrderStatus status = OrderStatus.PENDING;
+    private BigDecimal totalAmount;
 
-    @Column(nullable = false, name = "created_at")
-    private LocalDateTime createdAt;
+    public void updateStatus(OrderStatus newStatus) {
+        this.status = newStatus;
+    }
 
-    @Column(nullable = false)
-    private Boolean paid = false;
-
-    @ElementCollection
-    @CollectionTable(name = "order_products", joinColumns = @JoinColumn(name = "order_id"))
-    @MapKeyJoinColumn(name = "product_id")
-    @Column(name = "quantity")
-    private Map<Product, Integer> ProductsWithQuantity;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-
+    public void calculateTotal() {
+        totalAmount = orderItems.stream()
+                .map(OrderItem::calculateItemTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

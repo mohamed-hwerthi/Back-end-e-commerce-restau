@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
-import com.foodsquad.FoodSquad.dto.ProductOptionGroupDTO;
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import lombok.*;
 
