@@ -2,7 +2,6 @@ package com.foodsquad.FoodSquad.dto;
 
 import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import com.foodsquad.FoodSquad.validation.annotations.NotEmptyLocalizedString;
-import jakarta.annotation.security.DenyAll;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 

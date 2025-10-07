@@ -1,6 +1,4 @@
 package com.foodsquad.FoodSquad.service.admin.dec;
 
-public interface UserService {
-
-
+public interface OrderService {
 }

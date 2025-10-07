@@ -25,8 +25,9 @@ public interface StoreMapper {
     @Mapping(target = "slug", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     void updateStoreFields(StoreDTO dto, @MappingTarget Store entity);
-     @Mapping(target = "countryName" , source = "country.name")
-     @Mapping(target = "email" , source = "owner.email")
-     @Mapping(target = "phoneNumber" , source = "owner.phoneNumber")
-     ClientStoreDTO toClientStoreDTO(Store store) ;
+
+    @Mapping(target = "countryName", source = "country.name")
+    @Mapping(target = "email", source = "owner.email")
+    @Mapping(target = "phoneNumber", source = "owner.phoneNumber")
+    ClientStoreDTO toClientStoreDTO(Store store);
 }

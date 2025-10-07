@@ -1,4 +1,4 @@
-°package com.foodsquad.FoodSquad.model.entity;
+package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -50,8 +50,6 @@ public class User implements UserDetails {
     @Column(name = "created_at", nullable = true, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Token> tokens = new ArrayList<>();

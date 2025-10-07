@@ -24,7 +24,7 @@ public class Product {
     private UUID id;
 
     @Column(columnDefinition = "jsonb", nullable = false)
-            private LocalizedString title;
+    private LocalizedString title;
 
     @Column(columnDefinition = "jsonb")
     private LocalizedString description;
@@ -53,7 +53,7 @@ public class Product {
 
     @Column(name = "is_variant", nullable = false)
     private boolean isVariant = false;
-    
+
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
@@ -110,7 +110,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomAttribute> customAttributes = new ArrayList<>();
-
 
 
     @Column(name = "is_option", nullable = false)

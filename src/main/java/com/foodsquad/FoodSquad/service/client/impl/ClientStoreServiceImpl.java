@@ -1,7 +1,6 @@
 package com.foodsquad.FoodSquad.service.client.impl;
 
 
-import com.foodsquad.FoodSquad.config.context.StoreSlugContext;
 import com.foodsquad.FoodSquad.mapper.StoreMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientStoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
@@ -11,8 +10,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 /**
  * Implementation of ClientStoreService.
@@ -30,8 +27,6 @@ public class ClientStoreServiceImpl implements ClientStoreService {
     private final StoreMapper storeMapper;
 
 
-
-
     @Override
     public ClientStoreDTO getStoreBySlug(String slug) {
         log.info("Fetching client store data ");
@@ -42,7 +37,7 @@ public class ClientStoreServiceImpl implements ClientStoreService {
                 });
 
         ClientStoreDTO dto = storeMapper.toClientStoreDTO(store);
-        log.info("Returning client store DTO :{}" , dto);
+        log.info("Returning client store DTO :{}", dto);
         return dto;
     }
 }

@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.service.admin.impl;
 
+import com.foodsquad.FoodSquad.mapper.ReviewMapper;
 import com.foodsquad.FoodSquad.model.dto.ReviewDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.model.entity.Review;
@@ -7,8 +8,7 @@ import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.repository.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,19 +22,17 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
 
-    @Autowired
-    private ProductRepository ProductRepository;
+    private final ProductRepository ProductRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ReviewMapper reviewMapper;
+
 
     private User getCurrentUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -55,13 +53,13 @@ public class ReviewService {
         review.setUser(user);
 
         Review savedReview = reviewRepository.save(review);
-        return modelMapper.map(savedReview, ReviewDTO.class);
+        return reviewMapper.toDto(savedReview);
     }
 
     public List<ReviewDTO> getReviewsByProductId(UUID ProductId) {
         return reviewRepository.findByProductId(ProductId)
                 .stream()
-                .map(review -> modelMapper.map(review, ReviewDTO.class))
+                .map(reviewMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -69,7 +67,7 @@ public class ReviewService {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdOn"));
         return reviewRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .stream()
-                .map(review -> modelMapper.map(review, ReviewDTO.class))
+                .map(reviewMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -77,7 +75,7 @@ public class ReviewService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdOn"));
         Page<Review> reviewsPage = reviewRepository.findAll(pageable);
         return reviewsPage.stream()
-                .map(review -> modelMapper.map(review, ReviewDTO.class))
+                .map(reviewMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -89,7 +87,7 @@ public class ReviewService {
         existingReview.setRating(reviewDTO.getRating());
 
         Review updatedReview = reviewRepository.save(existingReview);
-        return modelMapper.map(updatedReview, ReviewDTO.class);
+        return reviewMapper.toDto(updatedReview);
     }
 
     public void deleteReview(Long id) {

@@ -19,11 +19,11 @@ public class ProductAttributeValue {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-   @Column(name = "value" , nullable = false)
+    @Column(name = "value", nullable = false)
     private String value;
 
     @ManyToOne
-    @JoinColumn(name = "attribute_id" , nullable = false)
+    @JoinColumn(name = "attribute_id", nullable = false)
     private ProductAttribute productAttribute;
 
     @ManyToMany(mappedBy = "variantAttributes")

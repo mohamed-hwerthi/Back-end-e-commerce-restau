@@ -25,7 +25,7 @@ public class ProductAttribute {
     private LocalizedString name;
 
     @ManyToOne
-    @JoinColumn(name = "product_id" ,nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)

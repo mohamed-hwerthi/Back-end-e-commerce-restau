@@ -113,16 +113,6 @@ public class ProductController {
         return response;
     }
 
-    @Operation(summary = "Get menu items by IDs", description = "Retrieve a list of menu items by their unique IDs.")
-    @GetMapping("/batch")
-    public ResponseEntity<List<ProductDTO>> getProductsByIds(
-            @Parameter(description = "List of IDs of the menu items to retrieve", example = "[1, 2, 3]")
-            @RequestParam List<UUID> ids) {
-        log.debug("Request to get menu items by ids: {}", ids);
-        ResponseEntity<List<ProductDTO>> response = productService.getProductsByIds(ids);
-        log.info("Fetched {} menu items by ids", ids.size());
-        return response;
-    }
 
     @Operation(summary = "Delete menu items by IDs", description = "Delete existing menu items by their unique IDs.")
     @DeleteMapping("/batch")

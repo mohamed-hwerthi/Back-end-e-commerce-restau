@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.mapper;
 
 
 import com.foodsquad.FoodSquad.model.dto.UserDTO;
+import com.foodsquad.FoodSquad.model.dto.UserResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -15,5 +16,7 @@ public interface UserMapper {
     User toEntity(UserDTO userDTO);
 
     UserDTO toDto(User tax);
+
+    UserResponseDTO toResponseDto(User user);
 
 }

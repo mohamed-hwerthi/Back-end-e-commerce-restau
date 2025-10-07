@@ -2,7 +2,6 @@ package com.foodsquad.FoodSquad.service.client.dec;
 
 
 import com.foodsquad.FoodSquad.model.dto.client.ClientStoreDTO;
-import java.util.UUID;
 
 /**
  * Service interface for retrieving client-facing store information.
@@ -18,5 +17,5 @@ public interface ClientStoreService {
      * @param slug the UUID of the store
      * @return ClientStoreDTO containing public store information
      */
-    ClientStoreDTO getStoreBySlug(String slug );
+    ClientStoreDTO getStoreBySlug(String slug);
 }

@@ -47,8 +47,8 @@ public interface ProductService {
      * @return a paginated response containing {@link ProductDTO} objects
      */
     PaginatedResponseDTO<ClientProductListDTO> getAllProducts(int page, int limit,
-                                                          boolean desc, UUID categoryId,
-                                                          String priceSortDirection);
+                                                              boolean desc, UUID categoryId,
+                                                              String priceSortDirection);
 
     /**
      * Updates an existing product.
@@ -67,13 +67,6 @@ public interface ProductService {
      */
     ResponseEntity<Map<String, String>> deleteProduct(UUID id);
 
-    /**
-     * Retrieves multiple products by their IDs.
-     *
-     * @param ids the list of product UUIDs
-     * @return a {@link ResponseEntity} containing the list of {@link ProductDTO}
-     */
-    ResponseEntity<List<ProductDTO>> getProductsByIds(List<UUID> ids);
 
     /**
      * Deletes multiple products by their IDs.

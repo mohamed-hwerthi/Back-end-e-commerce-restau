@@ -16,8 +16,9 @@ public interface ClientProductService {
 
     ClientProductDetailDTO getById(UUID id);
 
-    PaginatedResponseDTO<ProductDTO> getAllProducts(int page, int limit , String query ,
-                                                     UUID categoryId,
+    PaginatedResponseDTO<ProductDTO> getAllProducts(int page, int limit, String query,
+                                                    UUID categoryId,
                                                     String priceSortDirection);
+
     List<ClientProductListDTO> findByCategory(UUID categoryId);
 }

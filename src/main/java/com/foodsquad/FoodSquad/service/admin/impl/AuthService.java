@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.service.admin.impl;
 import com.foodsquad.FoodSquad.config.security.EncryptionUtil;
 import com.foodsquad.FoodSquad.exception.InvalidCredentialsException;
 import com.foodsquad.FoodSquad.exception.UserAlreadyExistsException;
+import com.foodsquad.FoodSquad.mapper.UserMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
@@ -10,7 +11,6 @@ import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.admin.dec.StoreService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,8 +23,8 @@ public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ModelMapper modelMapper;
     private final StoreService storeService;
+    private final UserMapper userMapper;
 
     /**
      * Spring Security calls this method to load a user by email.
@@ -60,7 +60,7 @@ public class AuthService implements UserDetailsService {
                 .role(UserRole.EMPLOYEE)
                 .build();
 
-        return modelMapper.map(userRepository.save(newUser), UserResponseDTO.class);
+        return userMapper.toResponseDto(userRepository.save(newUser));
     }
 
     /**
@@ -69,7 +69,7 @@ public class AuthService implements UserDetailsService {
     @Transactional
     public UserResponseDTO loginUser(UserLoginDTO loginDTO) {
         User user = getUserIfPasswordMatches(loginDTO);
-        return modelMapper.map(user, UserResponseDTO.class);
+        return userMapper.toResponseDto(user);
     }
 
     /**
@@ -99,7 +99,7 @@ public class AuthService implements UserDetailsService {
             throw new InvalidCredentialsException("User is not authorized as an admin or cashier");
         }
 
-        return modelMapper.map(user, UserResponseDTO.class);
+        return userMapper.toResponseDto(user);
     }
 
     // ------------------- PRIVATE HELPERS -------------------

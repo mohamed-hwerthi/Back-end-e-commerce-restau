@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  *       (replacing dashes with underscores).</li>
  *   <li>Returning the tenant name in the format {@code tenant_<storeId>}.</li>
  * </ul>
- *
+ * <p>
  * Example:
  * <pre>
  *     slug = "my-store"

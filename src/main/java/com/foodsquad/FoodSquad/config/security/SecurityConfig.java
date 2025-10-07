@@ -34,8 +34,8 @@ public class SecurityConfig {
     /**
      * Constructs a new {@link SecurityConfig}.
      *
-     * @param jwtRequestFilter              filter to validate JWT tokens
-     * @param customAccessDeniedHandler     handler for access-denied exceptions
+     * @param jwtRequestFilter               filter to validate JWT tokens
+     * @param customAccessDeniedHandler      handler for access-denied exceptions
      * @param customAuthenticationEntryPoint handler for unauthorized access
      */
     public SecurityConfig(JwtRequestFilter jwtRequestFilter,

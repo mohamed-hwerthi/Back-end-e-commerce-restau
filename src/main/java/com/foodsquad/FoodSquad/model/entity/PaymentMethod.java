@@ -12,12 +12,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentMethod{
+public class PaymentMethod {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true)
+    private String code;
+
+    @Column(nullable = false, unique = true)
     private String methodName;
+
+
 }
+

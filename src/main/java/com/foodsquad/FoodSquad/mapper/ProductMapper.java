@@ -7,10 +7,12 @@ import com.foodsquad.FoodSquad.model.dto.client.*;
 import com.foodsquad.FoodSquad.model.entity.*;
 import org.mapstruct.*;
 import org.springframework.util.ObjectUtils;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
         uses = {CategoryMapper.class, MediaMapper.class, TaxMapper.class, CustomAttributeMapper.class, ProductOptionGroupMapper.class}
@@ -31,14 +33,15 @@ public interface ProductMapper {
     @Mapping(target = "variants", ignore = true)
     @Mapping(target = "tax", ignore = true)
     @Mapping(target = "customAttributes", ignore = true)
-    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "id", ignore = true)
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
     ClientProductListDTO toClientProductListDTO(Product product);
+
     @Mapping(target = "variants", ignore = true)
-    @Mapping(target = "categoryName" , ignore = true)
-    @Mapping(target = "mediasUrls" , ignore = true)
-    @Mapping(target = "basePrice" , source = "price")
+    @Mapping(target = "categoryName", ignore = true)
+    @Mapping(target = "mediasUrls", ignore = true)
+    @Mapping(target = "basePrice", source = "price")
     ClientProductDetailDTO toClientProductDetailDTO(Product product);
 
     default ProductDTO toProductDtoWithMoreInformation(
@@ -52,32 +55,32 @@ public interface ProductMapper {
     }
 
     @AfterMapping
-  default void enrichWithVariantsAndAttributes(Product product, @MappingTarget ProductDTO dto) {
-    if (ObjectUtils.isEmpty(product.getVariants())) {
-      return;
+    default void enrichWithVariantsAndAttributes(Product product, @MappingTarget ProductDTO dto) {
+        if (ObjectUtils.isEmpty(product.getVariants())) {
+            return;
+        }
+
+        dto.setAvailableAttributes(buildAvailableAttributes(product));
+        dto.setVariants(buildVariants(product));
     }
 
-    dto.setAvailableAttributes(buildAvailableAttributes(product));
-    dto.setVariants(buildVariants(product));
-  }
 
+    @AfterMapping
+    default void enrichDetailWithVariantsAndOptions(Product product, @MappingTarget ClientProductDetailDTO dto) {
+        if (!ObjectUtils.isEmpty(product.getVariants())) {
+            dto.setVariants(buildVariantsForClientProductDetailDTO(product));
 
-  @AfterMapping
-  default void enrichDetailWithVariantsAndOptions(Product product, @MappingTarget ClientProductDetailDTO dto) {
-    if (!ObjectUtils.isEmpty(product.getVariants())) {
-        dto.setVariants(buildVariantsForClientProductDetailDTO(product));
-
+        }
+        if (!ObjectUtils.isEmpty(product.getCategories())) {
+            dto.setCategoryName(product.getCategories().get(0).getName());
+        }
+        if (!ObjectUtils.isEmpty(product.getMedias())) {
+            dto.setMediasUrls(product.getMedias().stream().map(Media::getUrl).toList());
+        }
+        if (!ObjectUtils.isEmpty(product.getProductOptionGroups())) {
+            dto.setOptionGroups(buildOptionsForClientProductDetailDTO(product));
+        }
     }
-    if(!ObjectUtils.isEmpty(product.getCategories())){
-        dto.setCategoryName(product.getCategories().get(0).getName());
-    }
-    if(!ObjectUtils.isEmpty(product.getMedias())){
-        dto.setMediasUrls(product.getMedias().stream().map(Media::getUrl).toList());
-    }
-    if(!ObjectUtils.isEmpty(product.getProductOptionGroups())){
-        dto.setOptionGroups(buildOptionsForClientProductDetailDTO(product));
-    }
-  }
 
     private List<ProductAttributeDTO> buildAvailableAttributes(Product product) {
         return product.getAttributes().stream().map(
@@ -99,7 +102,7 @@ public interface ProductMapper {
 
         return groupedByAttribute.entrySet().stream()
                 .map(entry -> {
-                            UUID attributeId = entry.getKey();
+                    UUID attributeId = entry.getKey();
                     List<Product> variantsForAttribute = entry.getValue();
 
                     VariantDTO variantDTO = new VariantDTO();
@@ -182,6 +185,7 @@ public interface ProductMapper {
                 })
                 .toList();
     }
+
     private List<ClientProductOptionGroup> buildOptionsForClientProductDetailDTO(Product product) {
         if (ObjectUtils.isEmpty(product.getProductOptionGroups())) {
             return List.of();
@@ -218,10 +222,6 @@ public interface ProductMapper {
                 .optionPrice(option.getOverridePrice())
                 .build();
     }
-
-
-
-
 
 
 }

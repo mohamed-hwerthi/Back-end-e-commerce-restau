@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 /**
  * DTO representing store data exposed to clients (storefront).
  * Contains only public information, without sensitive fields.
@@ -22,7 +20,7 @@ public class ClientStoreDTO {
 
     private String name;
 
-    private String email  ;
+    private String email;
 
     private String phoneNumber;
 

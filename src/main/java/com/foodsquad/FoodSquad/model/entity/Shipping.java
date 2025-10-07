@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.UUID;
 
 @Entity

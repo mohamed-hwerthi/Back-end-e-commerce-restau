@@ -42,13 +42,34 @@ public class Order {
     @Column(nullable = false)
     private BigDecimal totalAmount;
 
+    @PrePersist
+    protected void onCreate() {
+        if (orderDate == null) orderDate = LocalDateTime.now();
+    }
+
     public void updateStatus(OrderStatus newStatus) {
         this.status = newStatus;
     }
 
     public void calculateTotal() {
-        totalAmount = orderItems.stream()
-                .map(OrderItem::calculateItemTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (orderItems == null || orderItems.isEmpty()) {
+            totalAmount = BigDecimal.ZERO;
+        } else {
+            totalAmount = orderItems.stream()
+                    .map(OrderItem::calculateItemTotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+    }
+
+    public void addOrderItem(OrderItem item) {
+        orderItems.add(item);
+        item.setOrder(this);
+        calculateTotal();
+    }
+
+    public void removeOrderItem(OrderItem item) {
+        orderItems.remove(item);
+        item.setOrder(null);
+        calculateTotal();
     }
 }

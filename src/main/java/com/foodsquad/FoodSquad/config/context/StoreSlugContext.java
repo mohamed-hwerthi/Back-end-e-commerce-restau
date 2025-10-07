@@ -15,21 +15,21 @@ public class StoreSlugContext {
     }
 
     /**
-     * Sets the current store slug.
-     *
-     * @param slug the store slug
-     */
-    public static void setCurrentStoreSlug(String slug) {
-        CURRENT_STORE_SLUG.set(slug);
-    }
-
-    /**
      * Gets the current store slug.
      *
      * @return the store slug, or {@code null} if not set
      */
     public static String getCurrentStoreSlug() {
         return CURRENT_STORE_SLUG.get();
+    }
+
+    /**
+     * Sets the current store slug.
+     *
+     * @param slug the store slug
+     */
+    public static void setCurrentStoreSlug(String slug) {
+        CURRENT_STORE_SLUG.set(slug);
     }
 
     /**

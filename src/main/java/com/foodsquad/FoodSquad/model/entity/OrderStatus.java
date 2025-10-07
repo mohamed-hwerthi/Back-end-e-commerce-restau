@@ -19,7 +19,7 @@ public class OrderStatus {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String code  ;
+    private String code;
 
     @Column(nullable = false, unique = true)
     private String statusName;

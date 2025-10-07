@@ -53,25 +53,25 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
      */
     @Query(
             value = """
-            SELECT DISTINCT p.*
-            FROM products p
-            LEFT JOIN product_categories pc ON p.id = pc.product_id
-            LEFT JOIN categories c ON pc.category_id = c.id
-            WHERE (
-                LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-                OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-            )
-            """,
+                    SELECT DISTINCT p.*
+                    FROM products p
+                    LEFT JOIN product_categories pc ON p.id = pc.product_id
+                    LEFT JOIN categories c ON pc.category_id = c.id
+                    WHERE (
+                        LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                        OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                    )
+                    """,
             countQuery = """
-            SELECT COUNT(DISTINCT p.id)
-            FROM products p
-            LEFT JOIN product_categories pc ON p.id = pc.product_id
-            LEFT JOIN categories c ON pc.category_id = c.id
-            WHERE (
-                LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-                OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-            )
-            """,
+                    SELECT COUNT(DISTINCT p.id)
+                    FROM products p
+                    LEFT JOIN product_categories pc ON p.id = pc.product_id
+                    LEFT JOIN categories c ON pc.category_id = c.id
+                    WHERE (
+                        LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                        OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                    )
+                    """,
             nativeQuery = true
     )
     Page<Product> searchByJsonLanguage(
@@ -86,27 +86,27 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
      */
     @Query(
             value = """
-            SELECT DISTINCT p.*
-            FROM products p
-            LEFT JOIN product_categories pc ON p.id = pc.product_id
-            LEFT JOIN categories c ON pc.category_id = c.id
-            WHERE (
-                LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-                OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-            )
-            AND c.id = :categoryId
-            """,
+                    SELECT DISTINCT p.*
+                    FROM products p
+                    LEFT JOIN product_categories pc ON p.id = pc.product_id
+                    LEFT JOIN categories c ON pc.category_id = c.id
+                    WHERE (
+                        LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                        OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                    )
+                    AND c.id = :categoryId
+                    """,
             countQuery = """
-            SELECT COUNT(DISTINCT p.id)
-            FROM products p
-            LEFT JOIN product_categories pc ON p.id = pc.product_id
-            LEFT JOIN categories c ON pc.category_id = c.id
-            WHERE (
-                LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-                OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
-            )
-            AND c.id = :categoryId
-            """,
+                    SELECT COUNT(DISTINCT p.id)
+                    FROM products p
+                    LEFT JOIN product_categories pc ON p.id = pc.product_id
+                    LEFT JOIN categories c ON pc.category_id = c.id
+                    WHERE (
+                        LOWER(p.title ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                        OR LOWER(p.description ->> :lang) LIKE LOWER(CONCAT('%', :query, '%'))
+                    )
+                    AND c.id = :categoryId
+                    """,
             nativeQuery = true
     )
     Page<Product> searchByJsonLanguageAndCategory(
@@ -115,11 +115,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             @Param("categoryId") UUID categoryId,
             Pageable pageable
     );
-
-
-
-
-
 
 
 }

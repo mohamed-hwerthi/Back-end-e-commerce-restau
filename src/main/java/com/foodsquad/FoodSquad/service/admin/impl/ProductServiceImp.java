@@ -230,22 +230,22 @@ public class ProductServiceImp implements ProductService {
         manageProductCustomAttributesOnUpdate(existingProduct, dtoAttributes);
 
         log.debug("Saving updated product");
-            Product savedProduct = productRepository.save(existingProduct);
+        Product savedProduct = productRepository.save(existingProduct);
 
         ProductDTO responseDTO = productMapper.toDto(savedProduct);
         log.debug("Product updated successfully: {}", responseDTO.getId());
 
-            return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+
+    @Override
+    public ProductDTO decrementProductQuantity(UUID ProductId, int quantity) {
+
+        Product product = productRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
+        if (product.getQuantity() < quantity) {
+            throw new EntityNotFoundException("Product quantity is not enough");
         }
-
-
-        @Override
-        public ProductDTO decrementProductQuantity(UUID ProductId, int quantity) {
-
-            Product product = productRepository.findById(ProductId).orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + ProductId));
-            if (product.getQuantity() < quantity) {
-                throw new EntityNotFoundException("Product quantity is not enough");
-            }
         product.setQuantity(product.getQuantity() - quantity);
         return productMapper.toDto(productRepository.save(product));
 
@@ -257,7 +257,6 @@ public class ProductServiceImp implements ProductService {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + id));
-        orderRepository.removeProductReferences(product.getId());
 
         productRepository.delete(product);
         return ResponseEntity.ok(Map.of("message", "Menu Item successfully deleted"));
@@ -272,7 +271,6 @@ public class ProductServiceImp implements ProductService {
             throw new EntityNotFoundException("No Products found for the given IDs");
         }
         products.forEach(product -> {
-            orderRepository.removeProductReferences(product.getId());
             productRepository.delete(product);
         });
         return ResponseEntity.ok(Map.of("message", "Menu Items successfully deleted"));
@@ -293,36 +291,6 @@ public class ProductServiceImp implements ProductService {
         mediaService.deleteMedia(mediaId);
 
         log.info("Successfully deleted media {} for menu item {}", mediaId, ProductId);
-    }
-
-    @Override
-    public ResponseEntity<List<ProductDTO>> getProductsByIds(List<UUID> ids) {
-
-        log.debug("Getting menu items by IDs: {}", ids);
-
-        List<Product> products = productRepository.findAllById(ids);
-        if (products.isEmpty()) {
-            throw new EntityNotFoundException("No Products found for the given IDs");
-        }
-        List<ProductDTO> ProductDTOs = products.stream()
-                .map(product -> {
-                    Integer salesCount = orderRepository.sumQuantityByProductId(product.getId());
-                    if (salesCount == null) {
-                        salesCount = 0;
-                    }
-                    long reviewCount = reviewRepository.countByProductId(product.getId());
-                    Double averageRating = reviewRepository.findAverageRatingByProductId(product.getId());
-                    if (averageRating == null) {
-                        averageRating = 0.0;
-                    }
-                    averageRating = Math.round(averageRating * 10.0) / 10.0;
-
-
-                    ProductDTO productDTO = productMapper.toProductDtoWithMoreInformation(product, salesCount, reviewCount, averageRating);
-                    return verifyProductIsPromotedForCurrentDayAndCalculateDiscountedPrice(product, productDTO);
-                })
-                .toList();
-        return ResponseEntity.ok(ProductDTOs);
     }
 
 

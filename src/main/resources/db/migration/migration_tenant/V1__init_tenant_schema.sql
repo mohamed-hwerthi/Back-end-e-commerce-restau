@@ -45,19 +45,60 @@ CREATE TABLE timbres(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     amount DOUBLE PRECISION NOT NULL
 );
+-- ========================================
+-- Partners Table (Single Table Inheritance)
+-- ========================================
+CREATE TABLE partners (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    phone VARCHAR(50),
+    address TEXT,
+    partner_type VARCHAR(50) NOT NULL
+);
 
--- Order status enum
-CREATE TYPE order_status AS ENUM ('PENDING', 'COMPLETED', 'CANCELLED');
 
--- Orders
+CREATE TABLE order_statuses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(50),
+    status_name VARCHAR(255) NOT NULL UNIQUE
+);
+CREATE TABLE payment_methods (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    method_name VARCHAR(255) NOT NULL UNIQUE,
+    code VARCHAR(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    total_cost DOUBLE PRECISION NOT NULL,
-    status order_status NOT NULL DEFAULT 'PENDING',
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    paid BOOLEAN NOT NULL DEFAULT FALSE,
-    user_id UUID NOT NULL,
-    CONSTRAINT fk_orders_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+    customer_id UUID NOT NULL,
+    status_id UUID,
+    total_amount NUMERIC(19,2) NOT NULL DEFAULT 0,
+    order_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_orders_status FOREIGN KEY (status_id) REFERENCES order_statuses(id) ON DELETE SET NULL
+);
+
+-- ========================================
+-- Order Items
+-- ========================================
+CREATE TABLE order_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID NOT NULL,
+    product_id UUID NOT NULL,
+    quantity INT NOT NULL CHECK (quantity >= 0),
+    unit_price NUMERIC(19,2) NOT NULL CHECK (unit_price >= 0),
+    CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+CREATE TABLE payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    amount NUMERIC(19, 2),
+    payment_date TIMESTAMP WITH TIME ZONE,
+    payment_method_id UUID,
+    order_id UUID UNIQUE,
+    CONSTRAINT fk_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id) ON DELETE SET NULL,
+    CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 -- Products
@@ -68,7 +109,7 @@ CREATE TABLE products (
     parent_id UUID,
     is_variant BOOLEAN NOT NULL DEFAULT FALSE,
     is_option BOOLEAN NOT NULL DEFAULT FALSE,
-    is_supplement BOOLEAN NOT NULL DEFAULT FALSE,  -- new field
+    is_supplement BOOLEAN NOT NULL DEFAULT FALSE,  
     price DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     code_bar VARCHAR(255) UNIQUE,
     sku VARCHAR(255) UNIQUE,

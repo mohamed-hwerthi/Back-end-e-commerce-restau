@@ -1,7 +1,6 @@
 package com.foodsquad.FoodSquad.controller.client;
 
 
-import com.foodsquad.FoodSquad.model.dto.StoreBasicDataDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientStoreDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientStoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,9 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for client-facing store endpoints (storefront).
@@ -44,7 +44,7 @@ public class ClientStoreController {
     })
     public ResponseEntity<ClientStoreDTO> getStoreBySlug(@PathVariable String slug) {
         log.info("Received request to get store by slug: {}", slug);
-        ClientStoreDTO clientStoreDTO =  clientStoreService.getStoreBySlug(slug);
+        ClientStoreDTO clientStoreDTO = clientStoreService.getStoreBySlug(slug);
         log.info("Found store with ID: {}", clientStoreDTO.toString());
         return ResponseEntity.ok(clientStoreDTO);
     }

@@ -71,7 +71,7 @@ public class ProductDTO {
     private boolean isPromoted;
 
     private TaxDTO tax;
-     @Valid
+    @Valid
     private List<VariantDTO> variants = new ArrayList<>();
 
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();

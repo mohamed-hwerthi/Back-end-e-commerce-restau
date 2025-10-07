@@ -29,14 +29,14 @@ public class ClientProductListDTO {
 
     private BigDecimal price;
 
-    private BigDecimal discountedPrice ;
+    private BigDecimal discountedPrice;
 
-    private boolean isPurchasable ;
+    private boolean isPurchasable;
 
-    private boolean inStock  ;
+    private boolean inStock;
 
     private List<MediaDTO> medias;
 
-    private  String  categoryName;
+    private String categoryName;
 
 }

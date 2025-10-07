@@ -1,4 +1,3 @@
-
 package com.foodsquad.FoodSquad.service.client.impl;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
@@ -16,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service ;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +34,7 @@ public class ClientProductServiceImpl implements ClientProductService {
 
     @Override
     public ClientProductDetailDTO getById(UUID id) {
-        log.info("Fetching client product by id={}", id)  ;
+        log.info("Fetching client product by id={}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         return productMapper.toClientProductDetailDTO(product);
@@ -70,7 +69,7 @@ public class ClientProductServiceImpl implements ClientProductService {
         if (hasQuery && hasCategory) {
             productPage = productRepository.searchByJsonLanguageAndCategory(query, localeContext.getLocale(), categoryId, pageable);
         } else if (hasQuery) {
-            productPage = productRepository.searchByJsonLanguage(query, localeContext.getLocale()           , pageable);
+            productPage = productRepository.searchByJsonLanguage(query, localeContext.getLocale(), pageable);
         } else if (hasCategory) {
             productPage = productRepository.findByCategoryId(categoryId, pageable);
         } else {
@@ -85,9 +84,8 @@ public class ClientProductServiceImpl implements ClientProductService {
     }
 
 
-
     @Override
     public List<ClientProductListDTO> findByCategory(UUID categoryId) {
-          return null  ;
+        return null;
     }
 }
