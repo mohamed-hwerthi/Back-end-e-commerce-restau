@@ -29,8 +29,8 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @Column(nullable = false)
-    private LocalDateTime orderDate;
+    @Column(nullable = false, name = "created_at")
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "status_id")
@@ -40,11 +40,17 @@ public class Order {
     private Payment payment;
 
     @Column(nullable = false)
-    private BigDecimal totalAmount;
+    private BigDecimal subtotal;
+
+    @Column(nullable = false)
+    private BigDecimal total;
+
+    @Embedded
+    private Address deliveryAddress;
 
     @PrePersist
     protected void onCreate() {
-        if (orderDate == null) orderDate = LocalDateTime.now();
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
     public void updateStatus(OrderStatus newStatus) {
@@ -53,9 +59,9 @@ public class Order {
 
     public void calculateTotal() {
         if (orderItems == null || orderItems.isEmpty()) {
-            totalAmount = BigDecimal.ZERO;
+            total = BigDecimal.ZERO;
         } else {
-            totalAmount = orderItems.stream()
+            total = orderItems.stream()
                     .map(OrderItem::calculateItemTotal)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
         }

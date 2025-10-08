@@ -1,9 +1,16 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Getter
@@ -12,11 +19,30 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClientOrderDTO {
-    private List<ClientOrderItemDTO> items;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private UUID id;
+    @NotEmpty(message = "At Least an item is required")
+    private List<ClientOrderItemDTO> orderItems;
+
+    @Valid
+    @NotNull(message = "customer can not be null ")
     private ClientCustomerDTO customer;
+
+    @Valid
+    @NotNull(message = "delivery info can not be null ")
     private DeliveryInfoDTO delivery;
+
+    @NotNull(message = "Subtotal is required")
     private BigDecimal subtotal;
+
+    @NotNull(message = "Total is required")
+    @Positive(message = "Order total must be greater than zero")
     private BigDecimal total;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String status;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime createdAt;
 
 }

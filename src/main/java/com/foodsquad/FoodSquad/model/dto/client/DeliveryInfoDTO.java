@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -8,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class DeliveryInfoDTO {
+    @NotBlank(message = "address is required")
     private String address;
     private String city;
     private String postalCode;

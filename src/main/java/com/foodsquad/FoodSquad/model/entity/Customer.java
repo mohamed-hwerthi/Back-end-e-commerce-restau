@@ -2,16 +2,16 @@ package com.foodsquad.FoodSquad.model.entity;
 
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
 @Entity
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
+@SuperBuilder
 public class Customer extends Partner {
 
 }

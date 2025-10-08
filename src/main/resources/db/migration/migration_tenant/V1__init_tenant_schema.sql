@@ -61,11 +61,11 @@ CREATE TABLE partners (
 CREATE TABLE order_statuses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(50),
-    status_name VARCHAR(255) NOT NULL UNIQUE
+    name jsonb NOT NULL
 );
 CREATE TABLE payment_methods (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    method_name VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
     code VARCHAR(50) NOT NULL UNIQUE
 );
 

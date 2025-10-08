@@ -2,6 +2,10 @@ package com.foodsquad.FoodSquad.model.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
@@ -9,7 +13,10 @@ import java.util.UUID;
 @Table(name = "partners")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "partner_type", discriminatorType = DiscriminatorType.STRING)
-
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
 public abstract class Partner {
 
     @Id
@@ -17,10 +24,14 @@ public abstract class Partner {
     private UUID id;
 
     @Column(nullable = false)
-    private String name;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     private String email;
 
+    @Column(nullable = false)
     private String phone;
 
     private String address;

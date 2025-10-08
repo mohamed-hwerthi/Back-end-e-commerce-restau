@@ -22,7 +22,7 @@ public class PaymentMethod {
     private String code;
 
     @Column(nullable = false, unique = true)
-    private String methodName;
+    private String name;
 
 
 }

@@ -1,8 +1,10 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.UUID;
 
@@ -21,6 +23,7 @@ public class OrderStatus {
 
     private String code;
 
-    @Column(nullable = false, unique = true)
-    private String statusName;
+    @Type(JsonType.class)
+    @Column(name = "name", columnDefinition = "json")
+    private LocalizedString name;
 }
