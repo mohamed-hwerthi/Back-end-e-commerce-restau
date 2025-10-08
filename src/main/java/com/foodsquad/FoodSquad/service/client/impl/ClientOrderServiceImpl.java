@@ -50,10 +50,6 @@ public class ClientOrderServiceImpl implements ClientOrderService {
      * Builds an Order entity from the ClientOrderDTO and associated Customer.
      */
     private Order buildOrder(ClientOrderDTO clientOrderDTO, Customer customer) {
-//        OrderStatus pendingStatus = orderStatusRepository.findByStatusName("PENDING")
-//                .orElseGet(() -> orderStatusRepository.findByCode("PENDING")
-//                        .orElseThrow(() -> new EntityNotFoundException("Pending status not found")));
-
         Order order = Order.builder()
                 .customer(customer)
                 .createdAt(LocalDateTime.now())
