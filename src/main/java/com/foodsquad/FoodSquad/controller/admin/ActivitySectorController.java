@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -45,8 +44,8 @@ public class ActivitySectorController {
     @ApiResponse(responseCode = "404", description = "Activity sector not found")
     @GetMapping("/{id}")
     public ResponseEntity<ActivitySectorDTO> getById(
-            @Parameter(description = "UUID of the ActivitySector")
-            @PathVariable UUID id) {
+            @Parameter(description = "String of the ActivitySector")
+            @PathVariable String id) {
         log.info("Fetching ActivitySector with id: {}", id);
         ActivitySectorDTO activitySectorDTO = activitySectorService.findById(id);
         log.info("Found ActivitySector: {}", activitySectorDTO);
@@ -58,8 +57,8 @@ public class ActivitySectorController {
     @ApiResponse(responseCode = "404", description = "Activity sector not found")
     @PutMapping("/{id}")
     public ResponseEntity<ActivitySectorDTO> update(
-            @Parameter(description = "UUID of the ActivitySector")
-            @PathVariable UUID id,
+            @Parameter(description = "String of the ActivitySector")
+            @PathVariable String id,
             @Valid @RequestBody ActivitySectorDTO activitySectorDTO) {
         log.info("Updating ActivitySector with id: {}", id);
         ActivitySectorDTO updated = activitySectorService.update(id, activitySectorDTO);
@@ -72,8 +71,8 @@ public class ActivitySectorController {
     @ApiResponse(responseCode = "404", description = "Activity sector not found")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
-            @Parameter(description = "UUID of the ActivitySector")
-            @PathVariable UUID id) {
+            @Parameter(description = "String of the ActivitySector")
+            @PathVariable String id) {
         log.info("Deleting ActivitySector with id: {}", id);
         activitySectorService.delete(id);
         log.info("Deleted ActivitySector with id: {}", id);

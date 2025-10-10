@@ -15,8 +15,8 @@ import java.util.UUID;
 public class ActivitySector {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @Column(name = "id", updatable = false)
+    private String id;
 
     @Column(nullable = false, unique = true)
     private String code;

@@ -9,11 +9,11 @@ public interface ActivitySectorService {
 
     ActivitySectorDTO save(ActivitySectorDTO activitySectorDTO);
 
-    ActivitySectorDTO update(UUID id, ActivitySectorDTO activitySectorDTO);
+    ActivitySectorDTO update(String id, ActivitySectorDTO activitySectorDTO);
 
     List<ActivitySectorDTO> findAll();
 
-    ActivitySectorDTO findById(UUID id);
+    ActivitySectorDTO findById(String id);
 
-    void delete(UUID id);
+    void delete(String id);
 }

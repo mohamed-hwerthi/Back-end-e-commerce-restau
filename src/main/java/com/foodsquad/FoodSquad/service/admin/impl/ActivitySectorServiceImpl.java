@@ -16,7 +16,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -41,7 +40,7 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
 
     @Override
     @Transactional
-    public ActivitySectorDTO update(UUID id, ActivitySectorDTO activitySectorDTO) {
+    public ActivitySectorDTO update(String id, ActivitySectorDTO activitySectorDTO) {
         log.info("Updating ActivitySector with id: {}", id);
 
         return activitySectorRepository.findById(id)
@@ -73,7 +72,7 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
 
     @Override
     @Transactional(readOnly = true)
-    public ActivitySectorDTO findById(UUID id) {
+    public ActivitySectorDTO findById(String id) {
         log.info("Fetching ActivitySector with id: {}", id);
         return activitySectorRepository.findById(id)
                 .map(activitySectorMapper::toDto)
@@ -85,7 +84,7 @@ public class ActivitySectorServiceImpl implements ActivitySectorService {
 
     @Override
     @Transactional
-    public void delete(UUID id) {
+    public void delete(String id) {
         log.info("Deleting ActivitySector with id: {}", id);
         if (!activitySectorRepository.existsById(id)) {
             log.warn("Cannot delete, ActivitySector not found with id: {}", id);

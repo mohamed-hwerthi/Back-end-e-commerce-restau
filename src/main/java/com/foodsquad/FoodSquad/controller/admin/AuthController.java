@@ -36,7 +36,7 @@ import java.util.Map;
  * Controller responsible for authentication endpoints including user, cashier, and store owner login,
  * user registration, logout, and fetching the current authenticated user.
  */
-@Tag(name = "2. Authentication", description = "Authentication API")
+@Tag(name = "1. Authentication", description = "Authentication API")
 @Validated
 @RestController
 @RequestMapping("/api/auth")

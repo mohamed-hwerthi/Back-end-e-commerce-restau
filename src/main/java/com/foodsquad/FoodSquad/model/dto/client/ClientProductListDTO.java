@@ -23,9 +23,9 @@ public class ClientProductListDTO {
 
     private UUID id;
 
-    private LocalizedString title;
+    private String title;
 
-    private LocalizedString description;
+    private String description;
 
     private BigDecimal price;
 
@@ -35,7 +35,7 @@ public class ClientProductListDTO {
 
     private boolean inStock;
 
-    private List<MediaDTO> medias;
+    private List<String> mediasU;
 
     private String categoryName;
 

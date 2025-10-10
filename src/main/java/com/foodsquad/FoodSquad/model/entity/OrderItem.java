@@ -30,7 +30,7 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false , name = "unit_price")
     private BigDecimal unitPrice;
 
     public BigDecimal calculateItemTotal() {

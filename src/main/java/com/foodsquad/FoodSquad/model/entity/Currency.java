@@ -19,9 +19,8 @@ import java.util.UUID;
 public class Currency {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+    private String id;
 
     @Column(name = "name", nullable = false, unique = false)
     @JdbcTypeCode(SqlTypes.JSON)

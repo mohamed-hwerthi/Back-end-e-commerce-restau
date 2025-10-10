@@ -8,10 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface LanguageRepository extends JpaRepository<Language, UUID> {
+public interface LanguageRepository extends JpaRepository<Language, String> {
     Optional<Language> findByCode(String code);
 
-    boolean existsByCode(String code);
-
-    boolean existsByCodeAndIdNot(String code, UUID id);
 }

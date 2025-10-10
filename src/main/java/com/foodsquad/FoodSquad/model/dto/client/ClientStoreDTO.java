@@ -46,7 +46,7 @@ public class ClientStoreDTO {
 
     private String currencySymbol;
 
-    private LocalizedString countryName;
+    private String countryName;
 
     private String city;
 }

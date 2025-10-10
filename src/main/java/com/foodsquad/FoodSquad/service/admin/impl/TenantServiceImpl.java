@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.List;
 
 @Service
@@ -26,21 +28,42 @@ public class TenantServiceImpl implements TenantService {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createTenant(String storeId, User user) {
         String safeSchemaName = "tenant_" + storeId.toLowerCase().replaceAll("[^a-z0-9_]", "_");
+        String tempSchemaName = safeSchemaName + "_tmp";
 
-        if (!schemaExists(safeSchemaName)) {
+        if (schemaExists(safeSchemaName) || schemaExists(tempSchemaName)) {
+            throw new IllegalStateException("Tenant schema already exists: " + safeSchemaName);
+        }
+
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE SCHEMA " + tempSchemaName);
             Flyway flyway = Flyway.configure()
-                    .schemas(safeSchemaName)
+                    .schemas(tempSchemaName)
+                    .defaultSchema(tempSchemaName)
                     .locations("classpath:db/migration/migration_tenant")
                     .dataSource(dataSource)
                     .load();
+
             flyway.migrate();
+            stmt.execute("ALTER SCHEMA " + tempSchemaName + " RENAME TO " + safeSchemaName);
+
+            log.info("✅ Tenant schema created and migrated successfully: {}", safeSchemaName);
+
+        } catch (Exception ex) {
+            log.error("❌ Failed to create tenant schema {}: {}", safeSchemaName, ex.getMessage());
+            try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+                if (schemaExists(tempSchemaName)) {
+                    stmt.execute("DROP SCHEMA " + tempSchemaName + " CASCADE");
+                }
+            } catch (Exception cleanupEx) {
+                log.error("⚠️ Failed to clean up temp schema {}: {}", tempSchemaName, cleanupEx.getMessage());
+            }
+            throw new IllegalStateException("Failed to create tenant schema: " + safeSchemaName, ex);
         }
-
-
     }
+
 
     private boolean schemaExists(String schemaName) {
         String sql = "SELECT schema_name FROM information_schema.schemata WHERE schema_name = :schemaName";

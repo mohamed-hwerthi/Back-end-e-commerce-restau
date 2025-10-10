@@ -39,13 +39,19 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
 
-    @Column(nullable = false)
-    private BigDecimal subtotal;
+    @Column(nullable = false , name = "sub_total")
+    private BigDecimal subTotal;
 
     @Column(nullable = false)
     private BigDecimal total;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "street", column = @Column(name = "delivery_street")),
+            @AttributeOverride(name = "city", column = @Column(name = "delivery_city")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "delivery_postal_code")),
+            @AttributeOverride(name = "countryId", column = @Column(name = "delivery_country_id"))
+    })
     private Address deliveryAddress;
 
     @PrePersist

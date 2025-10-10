@@ -22,9 +22,9 @@ public class ClientCategoryDTO {
 
     private UUID id;
 
-    private LocalizedString name;
+    private String name;
 
-    private LocalizedString description;
+    private String description;
 
     private List<MediaDTO> medias;
 }

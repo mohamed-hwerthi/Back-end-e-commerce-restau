@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.controller.admin;
+    package com.foodsquad.FoodSquad.controller.admin;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;

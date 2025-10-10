@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 public class CountryDTO {
 
-    private UUID id;
+    private String id;
 
     @NotBlank(message = "Country code cannot be blank")
     private String code;

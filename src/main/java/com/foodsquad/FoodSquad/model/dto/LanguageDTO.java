@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LanguageDTO {
-    private UUID id;
+    private  String id;
 
     @NotBlank(message = "Language code is required")
     private String code;

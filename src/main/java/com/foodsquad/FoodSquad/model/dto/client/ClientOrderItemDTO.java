@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -16,16 +17,20 @@ import java.util.UUID;
 public class ClientOrderItemDTO {
 
     @NotNull(message = "Product ID is required")
-    private UUID productId;
+    private UUID productId;   @NotNull(message = "Product ID is required")
+
+    @NotBlank(message = "product Name must not be  blank ")
+    private  String  productName;
 
     @NotNull(message = "Price is required")
-    private BigDecimal price;
+    private BigDecimal unitPrice;
 
     @NotNull(message = "Quantity is required")
     private int quantity;
 
     @Valid
-    private List<ClientOptionDTO> options;
+    private List<String> mediasUrls;
+
     @NotNull(message = "Total price is required")
     private BigDecimal totalPrice;
 }

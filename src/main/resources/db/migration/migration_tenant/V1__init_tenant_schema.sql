@@ -29,6 +29,17 @@ CREATE TABLE users (
     dtype VARCHAR(31)
 );
 
+-- ========================================
+-- Create Countries Table
+-- ========================================
+CREATE TABLE IF NOT EXISTS countries (
+    id VARCHAR(2)  NOT NULL UNIQUE PRIMARY KEY,
+    code VARCHAR(2) NOT NULL UNIQUE,
+    name JSON NOT NULL,
+    flag_url VARCHAR(10000)
+);
+
+
 -- Tokens
 CREATE TABLE tokens (
     id SERIAL PRIMARY KEY,
@@ -50,9 +61,10 @@ CREATE TABLE timbres(
 -- ========================================
 CREATE TABLE partners (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
+    firstName VARCHAR(255),
+    lastName VARCHAR(255),
     email VARCHAR(255) UNIQUE,
-    phone VARCHAR(50),
+    phone VARCHAR(50) NOT NULL UNIQUE,
     address TEXT,
     partner_type VARCHAR(50) NOT NULL
 );
@@ -73,24 +85,19 @@ CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID NOT NULL,
     status_id UUID,
-    total_amount NUMERIC(19,2) NOT NULL DEFAULT 0,
-    order_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-    CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE  NOT NULL DEFAULT now(),
+    total NUMERIC(19,2) NOT NULL DEFAULT 0,
+    sub_total NUMERIC(19,2) NOT NULL DEFAULT 0,
+      -- Embedded Address fields
+      delivery_street VARCHAR(255) NOT NULL,
+      delivery_city VARCHAR(255) NOT NULL,
+      delivery_country_id TEXT,
+      delivery_postal_code VARCHAR(50),
+    CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES  partners    (id) ON DELETE CASCADE,
     CONSTRAINT fk_orders_status FOREIGN KEY (status_id) REFERENCES order_statuses(id) ON DELETE SET NULL
 );
 
--- ========================================
--- Order Items
--- ========================================
-CREATE TABLE order_items (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    order_id UUID NOT NULL,
-    product_id UUID NOT NULL,
-    quantity INT NOT NULL CHECK (quantity >= 0),
-    unit_price NUMERIC(19,2) NOT NULL CHECK (unit_price >= 0),
-    CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
+
 CREATE TABLE payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     amount NUMERIC(19, 2),
@@ -122,6 +129,19 @@ CREATE TABLE products (
     CONSTRAINT fk_products_tax FOREIGN KEY(tax_id) REFERENCES taxes(id) ,
     CONSTRAINT fk_products_parent FOREIGN KEY(parent_id) REFERENCES products(id) ON DELETE CASCADE
 
+);
+
+-- ========================================
+-- Order Items
+-- ========================================
+CREATE TABLE order_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID NOT NULL,
+    product_id UUID NOT NULL,
+    quantity INT NOT NULL CHECK (quantity >= 0),
+    unit_price NUMERIC(19,2) NOT NULL CHECK (unit_price >= 0),
+    CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 

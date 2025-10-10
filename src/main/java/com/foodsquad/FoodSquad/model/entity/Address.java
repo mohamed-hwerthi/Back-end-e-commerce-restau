@@ -19,9 +19,7 @@ public class Address {
     @NotBlank(message = "City cannot be blank")
     private String city;
 
-    @NotBlank(message = "Postal code cannot be blank")
     private String postalCode;
 
-    @ManyToOne(optional = false)
-    private Country country;
+    private String  countryId;
 }

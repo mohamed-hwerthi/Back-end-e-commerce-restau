@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ClientProductOptionGroup {
 
-    private LocalizedString name;
+    private String name;
     private List<ClientProductOption> options = new ArrayList<>();
 
 

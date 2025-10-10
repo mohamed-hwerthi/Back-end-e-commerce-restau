@@ -17,9 +17,8 @@ import java.util.UUID;
 public class Language {
 
     @Id
-    @GeneratedValue
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
-    private UUID id;
+    @Column(name = "id", updatable = false, nullable = false)
+    private String id;
 
     @Column(name = "code", length = 5, nullable = false, unique = true)
     private String code;

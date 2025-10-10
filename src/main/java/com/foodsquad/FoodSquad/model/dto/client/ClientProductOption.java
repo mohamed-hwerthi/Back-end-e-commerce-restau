@@ -15,7 +15,7 @@ public class ClientProductOption {
 
     private UUID optionId;
 
-    private LocalizedString optionName;
+    private String optionName;
 
     private BigDecimal optionPrice;
 

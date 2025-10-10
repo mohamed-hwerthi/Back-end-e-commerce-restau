@@ -1,11 +1,12 @@
-package com.foodsquad.FoodSquad.service.admin.impl;
+package com.foodsquad.FoodSquad.service.client.impl;
 
 import com.foodsquad.FoodSquad.mapper.CustomerMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientCustomerDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.entity.Customer;
 import com.foodsquad.FoodSquad.repository.CustomerRepository;
-import com.foodsquad.FoodSquad.service.admin.dec.CustomerService;
+import com.foodsquad.FoodSquad.service.client.dec.ClientCustomerService;
+import com.foodsquad.FoodSquad.service.client.dec.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceImpl implements CustomerService {
+public class ClientCustomerServiceImpl implements ClientCustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;

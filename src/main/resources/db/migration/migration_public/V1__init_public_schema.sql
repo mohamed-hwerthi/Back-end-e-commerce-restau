@@ -2,7 +2,7 @@
 -- Create Activity Sectors Table
 -- ========================================
 CREATE TABLE IF NOT EXISTS activity_sectors (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id  TEXT NOT NULL UNIQUE PRIMARY KEY  ,
     code VARCHAR(255) NOT NULL UNIQUE,
     name JSON NOT NULL
 );
@@ -11,29 +11,28 @@ CREATE TABLE IF NOT EXISTS activity_sectors (
 -- Create Countries Table
 -- ========================================
 CREATE TABLE IF NOT EXISTS countries (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id VARCHAR(2)  NOT NULL UNIQUE PRIMARY KEY,
     code VARCHAR(2) NOT NULL UNIQUE,
     name JSON NOT NULL,
     flag_url VARCHAR(10000)
 );
 
--- ========================================
--- Create Languages Table
--- ========================================
 CREATE TABLE IF NOT EXISTS languages (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id VARCHAR(2) NOT NULL UNIQUE PRIMARY KEY,
     code VARCHAR(5) NOT NULL,
     name JSON NOT NULL,
-    country_id UUID NOT NULL,
+    country_id TEXT NOT NULL,
+    CONSTRAINT uq_language_code_country UNIQUE (code, country_id),
     CONSTRAINT fk_language_country FOREIGN KEY (country_id) REFERENCES countries(id)
 );
+
 
 -- ========================================
 -- Create Currencies Table
 -- ========================================
 CREATE TABLE IF NOT EXISTS currencies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    code VARCHAR(255) UNIQUE,
+    id  TEXT NOT NULL UNIQUE PRIMARY KEY,
+    code VARCHAR(255) NOT NULL UNIQUE,
     name JSON NOT NULL,
     symbol VARCHAR(10),
     scale INT
@@ -101,12 +100,12 @@ CREATE TABLE IF NOT EXISTS stores (
     accent_color VARCHAR(10),
     active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-    activity_sector_id UUID,
+    activity_sector_id  TEXT,
     logo_media_id UUID,
     owner_id UUID,
-    currency_id UUID,
-    country_id UUID,
-    default_language_id UUID,
+    currency_id  TEXT,
+    country_id TEXT,
+    default_language_id TEXT,
 
     CONSTRAINT fk_store_activity_sector FOREIGN KEY (activity_sector_id) REFERENCES activity_sectors(id),
     CONSTRAINT fk_store_logo_media FOREIGN KEY (logo_media_id) REFERENCES medias(id),

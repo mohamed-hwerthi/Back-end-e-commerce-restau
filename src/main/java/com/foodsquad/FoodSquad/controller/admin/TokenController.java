@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Tag(name = "1. Token Management", description = "API for managing JWT tokens")
+@Tag(name = "2. Token Management", description = "API for managing JWT tokens")
 @RestController
 @RequestMapping("/api/token")
 public class TokenController {

@@ -8,21 +8,15 @@ import com.foodsquad.FoodSquad.model.entity.Order;
 import com.foodsquad.FoodSquad.model.entity.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring", uses = {CustomerMapper.class, OrderStatusMapper.class})
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING , uses = {CustomerMapper.class, OrderStatusMapper.class , OrderItemMapper.class})
 public abstract class OrderMapper {
 
     @Autowired
     protected LocaleContext localeContexte;
 
-    @Mapping(source = "customer.id", target = "customer.id")
-    @Mapping(source = "customer.firstName", target = "customer.firstName")
-    @Mapping(source = "customer.lastName", target = "customer.lastName")
-    @Mapping(source = "customer.email", target = "customer.email")
-    @Mapping(source = "customer.phone", target = "customer.phone")
-    @Mapping(source = "status.name", target = "status")
-    public abstract ClientOrderDTO toClientOrderDTO(Order order);
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.title", target = "productName")

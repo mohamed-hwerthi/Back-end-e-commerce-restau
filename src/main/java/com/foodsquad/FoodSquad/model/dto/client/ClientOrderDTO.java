@@ -1,6 +1,8 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.foodsquad.FoodSquad.model.dto.AddressDTO;
+import com.foodsquad.FoodSquad.model.entity.Address;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -28,19 +30,20 @@ public class ClientOrderDTO {
     @NotNull(message = "customer can not be null ")
     private ClientCustomerDTO customer;
 
-    @Valid
-    @NotNull(message = "delivery info can not be null ")
-    private DeliveryInfoDTO delivery;
-
-    @NotNull(message = "Subtotal is required")
-    private BigDecimal subtotal;
-
     @NotNull(message = "Total is required")
     @Positive(message = "Order total must be greater than zero")
     private BigDecimal total;
 
+    @NotNull(message = "Total is required")
+    @Positive(message = "Order total must be greater than zero")
+    private BigDecimal subTotal;
+
+    @NotNull
+    @Valid
+    private AddressDTO deliveryAddress;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String status;
+    private   String  status;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime createdAt;

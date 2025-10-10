@@ -37,5 +37,12 @@ public class CountryServiceImpl implements CountryService {
         return dtos;
     }
 
+    @Override
+    public Country findById(String id) {
+        log.info("Fetching country with id: {}", id);
+          return  countryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Country not found"));
+    }
+
 
 }

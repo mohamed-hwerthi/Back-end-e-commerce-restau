@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.service.admin.dec;
+package com.foodsquad.FoodSquad.service.client.dec;
 
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.entity.Customer;
@@ -8,7 +8,7 @@ import com.foodsquad.FoodSquad.model.entity.Customer;
  * Service interface for managing customers.
  * Provides methods for CRUD operations and querying customers.
  */
-public interface CustomerService {
+public interface ClientCustomerService {
 
     /**
      * Find an existing customer by ID, email, or phone, or create a new one.
