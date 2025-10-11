@@ -20,7 +20,7 @@ public class ClientOrderItemDTO {
     private UUID productId;
 
     @NotBlank(message = "product Name must not be  blank ")
-    private  String  productName;
+    private String productName;
 
     @NotNull(message = "Price is required")
     private BigDecimal unitPrice;
@@ -31,6 +31,10 @@ public class ClientOrderItemDTO {
     @Valid
     private List<String> mediasUrls;
 
+    @Valid
+    private List<ClientOrderItemOptionDTO> options;
+
     @NotNull(message = "Total price is required")
     private BigDecimal totalPrice;
+
 }

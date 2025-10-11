@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.service;
 
 import com.foodsquad.FoodSquad.dto.ProductOptionDTO;
+import com.foodsquad.FoodSquad.model.entity.ProductOption;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,4 +32,13 @@ public interface ProductOptionService {
      * @param id Supplement option ID.
      */
     void deleteProductOption(UUID id);
+
+    /**
+     * Retrieve a product option by its unique identifier.
+     *
+     * @param id The UUID of the product option to retrieve.
+     * @return The corresponding {@link ProductOption} entity if found.
+     * @throws jakarta.persistence.EntityNotFoundException if no product option exists with the given ID.
+     */
+    ProductOption getById(UUID id) ;
 }

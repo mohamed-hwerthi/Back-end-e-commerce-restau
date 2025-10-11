@@ -5,6 +5,7 @@ import com.foodsquad.FoodSquad.mapper.ProductOptionMapper;
 import com.foodsquad.FoodSquad.model.entity.ProductOption;
 import com.foodsquad.FoodSquad.repository.ProductOptionRepository;
 import com.foodsquad.FoodSquad.service.ProductOptionService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,4 +42,12 @@ public class ProductOptionServiceImpl implements ProductOptionService {
         log.info("Deleting supplement option with ID: {}", id);
         productOptionRepository.deleteById(id);
     }
+
+    @Override
+    public ProductOption getById(UUID id) {
+        log.info("Fetching product option with ID: {}", id);
+        return productOptionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product option not found with ID: " + id));
+    }
+
 }

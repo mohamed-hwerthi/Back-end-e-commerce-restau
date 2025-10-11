@@ -2,9 +2,7 @@ package com.foodsquad.FoodSquad.mapper.client;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.GenericMapper;
-import com.foodsquad.FoodSquad.model.dto.client.ClientCategoryDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderItemDTO;
-import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.model.entity.Media;
 import com.foodsquad.FoodSquad.model.entity.OrderItem;
 import com.foodsquad.FoodSquad.model.entity.Product;
