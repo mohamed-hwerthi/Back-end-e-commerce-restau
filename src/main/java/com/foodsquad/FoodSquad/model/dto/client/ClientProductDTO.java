@@ -16,13 +16,13 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientProductDetailDTO {
+public class ClientProductDTO {
 
     private UUID id;
 
-    private LocalizedString title;
+    private String title;
 
-    private LocalizedString description;
+    private String description;
 
     private BigDecimal basePrice;
 
@@ -34,7 +34,7 @@ public class ClientProductDetailDTO {
 
     private List<String> mediasUrls;
 
-    private LocalizedString categoryName;
+    private String categoryName;
 
     private List<ClientProductVariants> variants;
 

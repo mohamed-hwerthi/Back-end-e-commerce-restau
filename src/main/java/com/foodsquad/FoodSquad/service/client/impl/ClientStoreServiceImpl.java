@@ -1,7 +1,7 @@
 package com.foodsquad.FoodSquad.service.client.impl;
 
 
-import com.foodsquad.FoodSquad.mapper.StoreMapper;
+import com.foodsquad.FoodSquad.mapper.client.ClientStoreMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientStoreDTO;
 import com.foodsquad.FoodSquad.model.entity.Store;
 import com.foodsquad.FoodSquad.repository.StoreRepository;
@@ -24,7 +24,7 @@ public class ClientStoreServiceImpl implements ClientStoreService {
 
     private final StoreRepository storeRepository;
 
-    private final StoreMapper storeMapper;
+    private final ClientStoreMapper clientStoreMapper;
 
 
     @Override
@@ -36,7 +36,7 @@ public class ClientStoreServiceImpl implements ClientStoreService {
                     return new EntityNotFoundException("Store not found");
                 });
 
-        ClientStoreDTO dto = storeMapper.toClientStoreDTO(store);
+        ClientStoreDTO dto = clientStoreMapper.toDto(store);
         log.info("Returning client store DTO :{}", dto);
         return dto;
     }

@@ -1,7 +1,5 @@
 package com.foodsquad.FoodSquad.model.dto.client;
 
-import com.foodsquad.FoodSquad.model.dto.MediaDTO;
-import com.foodsquad.FoodSquad.model.entity.LocalizedString;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,5 +24,5 @@ public class ClientCategoryDTO {
 
     private String description;
 
-    private List<MediaDTO> medias;
+    private List<String> mediasUrls;
 }

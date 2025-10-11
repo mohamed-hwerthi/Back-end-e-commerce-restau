@@ -40,9 +40,9 @@ public class ClientStoreDTO {
 
     private String emailContact;
 
-    private LocalizedString about;
+    private String about;
 
-    private MediaDTO logo;
+    private  String logo;
 
     private String currencySymbol;
 

@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.service.client.impl;
 
 import com.foodsquad.FoodSquad.mapper.MediaMapper;
+import com.foodsquad.FoodSquad.mapper.client.ClientCategoryMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientCategoryDTO;
 import com.foodsquad.FoodSquad.model.entity.Category;
 import com.foodsquad.FoodSquad.repository.CategoryRepository;
@@ -19,12 +20,13 @@ public class ClientCategoryServiceImpl implements ClientCategoryService {
 
     private final CategoryRepository categoryRepository;
     private final MediaMapper mediaMapper;
+    private final ClientCategoryMapper clientCategoryMapper;
 
     @Override
     public List<ClientCategoryDTO> findAll() {
         log.info("Fetching all client categories");
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map(this::toClientDto).toList();
+        return categories.stream().map(clientCategoryMapper::toDto).toList();
     }
 
     @Override
@@ -32,15 +34,8 @@ public class ClientCategoryServiceImpl implements ClientCategoryService {
         log.info("Fetching client category by id={}", id);
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        return toClientDto(category);
+        return clientCategoryMapper.toDto(category);
     }
 
-    private ClientCategoryDTO toClientDto(Category category) {
-        return ClientCategoryDTO.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .description(category.getDescription())
-                .medias(category.getMedias() != null ? category.getMedias().stream().map(mediaMapper::toDto).toList() : List.of())
-                .build();
-    }
+
 }

@@ -6,7 +6,6 @@ import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.entity.Customer;
 import com.foodsquad.FoodSquad.repository.CustomerRepository;
 import com.foodsquad.FoodSquad.service.client.dec.ClientCustomerService;
-import com.foodsquad.FoodSquad.service.client.dec.CustomerService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,6 @@ public class ClientCustomerServiceImpl implements ClientCustomerService {
     @Override
     @Transactional
     public Customer findOrCreateCustomerFromOrder(ClientOrderDTO clientOrderDTO) {
-
 
         return findExistingCustomer(clientOrderDTO.getCustomer())
                 .orElseGet(() -> createCustomer(clientOrderDTO.getCustomer()));

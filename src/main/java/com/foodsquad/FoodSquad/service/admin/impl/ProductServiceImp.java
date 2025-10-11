@@ -8,11 +8,8 @@ import com.foodsquad.FoodSquad.mapper.CustomAttributeMapper;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.mapper.ProductOptionGroupMapper;
 import com.foodsquad.FoodSquad.model.dto.*;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.model.entity.*;
-import com.foodsquad.FoodSquad.repository.OrderRepository;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
-import com.foodsquad.FoodSquad.repository.ReviewRepository;
 import com.foodsquad.FoodSquad.service.admin.dec.*;
 import com.foodsquad.FoodSquad.service.helpers.ProductDiscountPriceCalculator;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,9 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -37,10 +32,6 @@ import java.util.stream.IntStream;
 public class ProductServiceImp implements ProductService {
 
     private final ProductRepository productRepository;
-
-    private final OrderRepository orderRepository;
-
-    private final ReviewRepository reviewRepository;
 
     private final ProductPromotionSharedService ProductPromotionSharedService;
 
@@ -63,11 +54,10 @@ public class ProductServiceImp implements ProductService {
     private final CustomAttributeMapper customAttributeMapper;
 
 
-    public ProductServiceImp(ProductRepository ProductRepository, OrderRepository orderRepository, ReviewRepository reviewRepository, @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, ProductOptionGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
+    public ProductServiceImp(ProductRepository ProductRepository , @Lazy ProductPromotionSharedService ProductPromotionSharedService, ProductMapper productMapper, TaxService taxService, ProductDiscountPriceCalculator ProductDiscountPriceCalculator, MediaService mediaService, LocaleContext localeContext, ProductAttributeService productAttributeService, ProductAttributeValueService productAttributeValueService, ProductOptionGroupMapper supplementGroupMapper, CustomAttributeMapper customAttributeMapper) {
 
         this.productRepository = ProductRepository;
-        this.orderRepository = orderRepository;
-        this.reviewRepository = reviewRepository;
+
         this.ProductPromotionSharedService = ProductPromotionSharedService;
         this.productMapper = productMapper;
         this.taxService = taxService;
@@ -171,38 +161,6 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-    @Override
-    public PaginatedResponseDTO<ClientProductListDTO> getAllProducts(
-            int page,
-            int limit,
-            boolean desc,
-            UUID categoryId,
-            String priceSortDirection
-    ) {
-        log.debug("Fetching products with filters - page: {}, limit: {}, sortBy: {}, desc: {}, categoryId: {}, isDefault: {}, priceSortDirection: {}",
-                page, limit, desc, categoryId, priceSortDirection);
-
-        Sort.Direction direction = desc ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, limit, Sort.by(direction));
-
-        Page<Product> productPage;
-
-        if (categoryId != null) {
-            log.debug("Filtering products by category ID: {}", categoryId);
-            productPage = productRepository.findByCategoryId(categoryId, pageable);
-        } else {
-            log.debug("Fetching all products without category filter");
-            productPage = productRepository.findAll(pageable);
-        }
-
-        List<ClientProductListDTO> productDTOs = productPage.getContent().stream()
-                .map(productMapper::toClientProductListDTO)
-                .toList();
-
-        log.debug("Fetched {} products, total elements: {}", productDTOs.size(), productPage.getTotalElements());
-
-        return new PaginatedResponseDTO<>(productDTOs, productPage.getTotalElements());
-    }
 
 
     @Override

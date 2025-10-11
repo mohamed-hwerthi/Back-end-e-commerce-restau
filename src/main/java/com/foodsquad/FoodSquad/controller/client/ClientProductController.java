@@ -1,9 +1,7 @@
 package com.foodsquad.FoodSquad.controller.client;
 
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
-import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDetailDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,48 +26,6 @@ public class ClientProductController {
 
     private final ClientProductService clientProductService;
 
-    @Operation(
-            summary = "Get all products for storefront",
-            description = "Retrieve paginated products with optional search, category filtering, and price sorting."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
-    })
-    @GetMapping
-    public ResponseEntity<PaginatedResponseDTO<ProductDTO>> getAllProducts(
-            @Parameter(description = "Page number, starting from 0", example = "0")
-            @RequestParam(defaultValue = "0") int page,
-
-            @Parameter(description = "Number of items per page", example = "10")
-            @RequestParam(defaultValue = "10") int limit,
-
-            @Parameter(description = "Search query to filter products by name or description", example = "pizza", required = false)
-            @RequestParam(required = false) String query,
-
-            @Parameter(description = "Filter by category ID", example = "550e8400-e29b-41d4-a716-446655440000")
-            @RequestParam(required = false, name = "categoryFilter") UUID categoryFilter,
-
-            @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", example = "asc")
-            @RequestParam(required = false) String priceSortDirection
-    ) {
-        log.debug(
-                "Request to get products: page={}, limit={}, query={}, categoryFilter={}, priceSortDirection={}",
-                page, limit, query, categoryFilter, priceSortDirection
-        );
-
-        PaginatedResponseDTO<ProductDTO> response = clientProductService.getAllProducts(
-                page,
-                limit,
-                query,
-                categoryFilter,
-                priceSortDirection
-        );
-
-        log.info("Fetched {} products successfully (page={}, limit={})",
-                response.getItems().size(), page, limit);
-
-        return ResponseEntity.ok(response);
-    }
 
     @Operation(summary = "Get a product by ID for storefront")
     @ApiResponses({
@@ -78,18 +33,46 @@ public class ClientProductController {
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ClientProductDetailDTO> findById(@PathVariable UUID id) {
+    public ResponseEntity<ClientProductDTO> findById(@PathVariable UUID id) {
         log.info("Client request: get product id={}", id);
         return ResponseEntity.ok(clientProductService.getById(id));
     }
 
-    @Operation(summary = "List products by category for storefront")
+
+    @Operation(summary = "Search and paginate client products")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
     })
-    @GetMapping("/by-category/{categoryId}")
-    public ResponseEntity<List<ClientProductListDTO>> findByCategory(@PathVariable UUID categoryId) {
-        log.info("Client request: list products by categoryId={}", categoryId);
-        return ResponseEntity.ok(clientProductService.findByCategory(categoryId));
+    @GetMapping
+    public ResponseEntity<PaginatedResponseDTO<ClientProductDTO>> searchProducts(
+            @Parameter(description = "Page number (0-based)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Number of items per page", example = "10")
+            @RequestParam(defaultValue = "10") int limit,
+
+            @Parameter(description = "Free-text search query", example = "pizza")
+            @RequestParam(required = false) String query,
+
+            @Parameter(description = "Filter by category ID", example = "b58a4c23-8ddf-4bc3-8b6e-4c3d01a5b9a3")
+            @RequestParam(name = "categoryFilter", required = false) UUID categoryId,
+
+            @Parameter(description = "Sort by price direction (asc or desc)", example = "asc")
+            @RequestParam(required = false) String priceSortDirection
+    ) {
+        log.info("Client request: search products page={}, limit={}, query={}, category={}, sort={}",
+                page, limit, query, categoryId, priceSortDirection);
+
+        PaginatedResponseDTO<ClientProductDTO> response = clientProductService.searchProducts(
+                page,
+                limit,
+                query,
+                categoryId,
+                priceSortDirection
+        );
+
+        return ResponseEntity.ok(response);
     }
+
+
 }

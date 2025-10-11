@@ -1,0 +1,46 @@
+package com.foodsquad.FoodSquad.mapper.client;
+
+import com.foodsquad.FoodSquad.config.context.LocaleContext;
+import com.foodsquad.FoodSquad.mapper.GenericMapper;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductOption;
+import com.foodsquad.FoodSquad.model.entity.Product;
+import com.foodsquad.FoodSquad.model.entity.ProductOption;
+import org.mapstruct.*;
+import org.springframework.util.ObjectUtils;
+
+import java.util.Optional;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface ClientProductOptionMapper extends GenericMapper<ProductOption, ClientProductOption> {
+
+    @Mapping(target = "optionName", ignore = true)
+    @Mapping(target = "inStock", ignore = true)
+    @Override
+    ClientProductOption toDto(ProductOption entity);
+
+    @Override
+    default ProductOption toEntity(ClientProductOption dto) {
+        return null ;
+    }
+
+
+    @Override
+    default void updateEntityFromDto(ClientProductOption dto, ProductOption entity) {
+
+    }
+
+    /**
+     * Applies locale-based translation for the option name after mapping.
+     */
+    @AfterMapping
+    default void afterMappingLocaleTranslation(ProductOption entity, @MappingTarget ClientProductOption dto) {
+        String locale = LocaleContext.get();
+
+        Optional.ofNullable(entity.getLinkedProduct())
+                .map(Product::getTitle)
+                .map(titleMap -> titleMap.get(locale))
+                .filter(name -> !ObjectUtils.isEmpty(name))
+                .ifPresent(dto::setOptionName);
+
+    }
+}

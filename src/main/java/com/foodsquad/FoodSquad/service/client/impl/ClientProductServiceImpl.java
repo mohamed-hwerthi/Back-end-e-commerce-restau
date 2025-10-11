@@ -2,10 +2,10 @@ package com.foodsquad.FoodSquad.service.client.impl;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
 import com.foodsquad.FoodSquad.mapper.ProductMapper;
+import com.foodsquad.FoodSquad.mapper.client.ClientProductMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductDetailDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
+import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.repository.ProductRepository;
 import com.foodsquad.FoodSquad.service.client.dec.ClientProductService;
@@ -27,21 +27,21 @@ public class ClientProductServiceImpl implements ClientProductService {
 
     private final ProductRepository productRepository;
 
-    private final ProductMapper productMapper;
+    private final ClientProductMapper clientproductMapper;
 
     private final LocaleContext localeContext;
 
 
     @Override
-    public ClientProductDetailDTO getById(UUID id) {
+    public ClientProductDTO getById(UUID id) {
         log.info("Fetching client product by id={}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        return productMapper.toClientProductDetailDTO(product);
+        return clientproductMapper.toDto(product);
     }
 
     @Override
-    public PaginatedResponseDTO<ProductDTO> getAllProducts(
+    public PaginatedResponseDTO<ClientProductDTO> searchProducts(
             int page,
             int limit,
             String query,
@@ -59,7 +59,6 @@ public class ClientProductServiceImpl implements ClientProductService {
                     : Sort.Direction.ASC;
             sort = Sort.by(direction, "price");
         }
-
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Product> productPage;
 
@@ -76,16 +75,12 @@ public class ClientProductServiceImpl implements ClientProductService {
             productPage = productRepository.findAll(pageable);
         }
 
-        List<ProductDTO> productDTOs = productPage.getContent().stream()
-                .map(productMapper::toDto)
+        List<ClientProductDTO> productDTOs = productPage.getContent().stream()
+                .map(clientproductMapper::toDto)
                 .toList();
 
         return new PaginatedResponseDTO<>(productDTOs, productPage.getTotalElements());
     }
 
 
-    @Override
-    public List<ClientProductListDTO> findByCategory(UUID categoryId) {
-        return null;
-    }
 }

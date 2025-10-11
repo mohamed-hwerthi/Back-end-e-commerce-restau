@@ -3,8 +3,10 @@ package com.foodsquad.FoodSquad.mapper;
 import com.foodsquad.FoodSquad.model.dto.ProductAttributeDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.VariantDTO;
-import com.foodsquad.FoodSquad.model.dto.client.*;
-import com.foodsquad.FoodSquad.model.entity.*;
+import com.foodsquad.FoodSquad.model.entity.Product;
+import com.foodsquad.FoodSquad.model.entity.ProductAttribute;
+import com.foodsquad.FoodSquad.model.entity.ProductAttributeValue;
+import com.foodsquad.FoodSquad.model.entity.VariantOptionDTO;
 import org.mapstruct.*;
 import org.springframework.util.ObjectUtils;
 
@@ -36,14 +38,6 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     void updateProductFromDto(ProductDTO dto, @MappingTarget Product entity);
 
-    ClientProductListDTO toClientProductListDTO(Product product);
-
-    @Mapping(target = "variants", ignore = true)
-    @Mapping(target = "categoryName", ignore = true)
-    @Mapping(target = "mediasUrls", ignore = true)
-    @Mapping(target = "basePrice", source = "price")
-    ClientProductDetailDTO toClientProductDetailDTO(Product product);
-
     default ProductDTO toProductDtoWithMoreInformation(
             Product product, int salesCount, long reviewCount, double averageRating
     ) {
@@ -65,22 +59,7 @@ public interface ProductMapper {
     }
 
 
-    @AfterMapping
-    default void enrichDetailWithVariantsAndOptions(Product product, @MappingTarget ClientProductDetailDTO dto) {
-        if (!ObjectUtils.isEmpty(product.getVariants())) {
-            dto.setVariants(buildVariantsForClientProductDetailDTO(product));
 
-        }
-        if (!ObjectUtils.isEmpty(product.getCategories())) {
-            dto.setCategoryName(product.getCategories().get(0).getName());
-        }
-        if (!ObjectUtils.isEmpty(product.getMedias())) {
-            dto.setMediasUrls(product.getMedias().stream().map(Media::getUrl).toList());
-        }
-        if (!ObjectUtils.isEmpty(product.getProductOptionGroups())) {
-            dto.setOptionGroups(buildOptionsForClientProductDetailDTO(product));
-        }
-    }
 
     private List<ProductAttributeDTO> buildAvailableAttributes(Product product) {
         return product.getAttributes().stream().map(
@@ -140,88 +119,7 @@ public interface ProductMapper {
                 .toList();
     }
 
-    private List<ClientProductVariants> buildVariantsForClientProductDetailDTO(Product product) {
 
-        Map<UUID, List<Product>> groupedByAttribute = product.getVariants().stream()
-                .flatMap(variant -> variant.getVariantAttributes().stream()
-                        .map(attrValue -> Map.entry(attrValue.getProductAttribute().getId(), variant))
-                )
-                .collect(Collectors.groupingBy(Map.Entry::getKey,
-                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())
-                ));
-
-
-        return groupedByAttribute.entrySet().stream()
-                .map(entry -> {
-                    UUID attributeId = entry.getKey();
-                    List<Product> variantsForAttribute = entry.getValue();
-
-                    ProductAttribute attribute = variantsForAttribute.get(0).getVariantAttributes().stream()
-                            .filter(val -> val.getProductAttribute().getId().equals(attributeId))
-                            .findFirst()
-                            .map(ProductAttributeValue::getProductAttribute)
-                            .orElseThrow();
-
-                    List<ClientProductVariantOption> options = variantsForAttribute.stream()
-                            .map(variant -> {
-                                ProductAttributeValue attrValue = variant.getVariantAttributes().stream()
-                                        .filter(val -> val.getProductAttribute().getId().equals(attributeId))
-                                        .findFirst()
-                                        .orElseThrow();
-
-
-                                return ClientProductVariantOption.builder()
-                                        .variantId(variant.getId())
-                                        .variantValue(attrValue.getValue())
-                                        .variantPrice(variant.getPrice())
-                                        .build();
-                            })
-                            .toList();
-
-                    return ClientProductVariants.builder()
-                            .variantName(attribute.getName())
-                            .options(options)
-                            .build();
-                })
-                .toList();
-    }
-
-    private List<ClientProductOptionGroup> buildOptionsForClientProductDetailDTO(Product product) {
-        if (ObjectUtils.isEmpty(product.getProductOptionGroups())) {
-            return List.of();
-        }
-
-        return product.getProductOptionGroups().stream()
-                .map(this::mapOptionGroup)
-                .toList();
-    }
-
-    private ClientProductOptionGroup mapOptionGroup(ProductOptionGroup group) {
-        ClientProductOptionGroup groupDTO = new ClientProductOptionGroup();
-        groupDTO.setName(group.getName());
-        groupDTO.setOptions(mapOptions(group));
-        return groupDTO;
-    }
-
-    private List<ClientProductOption> mapOptions(ProductOptionGroup group) {
-        if (ObjectUtils.isEmpty(group.getProductOptions())) {
-            return List.of();
-        }
-
-        return group.getProductOptions().stream()
-                .map(this::mapOption)
-                .toList();
-    }
-
-    private ClientProductOption mapOption(ProductOption option) {
-        Product linkedProduct = option.getLinkedProduct();
-
-        return ClientProductOption.builder()
-                .optionId(linkedProduct != null ? linkedProduct.getId() : null)
-                .optionName(linkedProduct != null ? linkedProduct.getTitle() : null)
-                .optionPrice(option.getOverridePrice())
-                .build();
-    }
 
 
 }

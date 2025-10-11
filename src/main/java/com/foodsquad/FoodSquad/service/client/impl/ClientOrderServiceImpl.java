@@ -1,7 +1,6 @@
 package com.foodsquad.FoodSquad.service.client.impl;
 
 import com.foodsquad.FoodSquad.mapper.AddressMapper;
-import com.foodsquad.FoodSquad.mapper.OrderMapper;
 import com.foodsquad.FoodSquad.mapper.client.ClientOrderItemMapper;
 import com.foodsquad.FoodSquad.mapper.client.ClientOrderMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
@@ -41,6 +40,7 @@ public class ClientOrderServiceImpl implements ClientOrderService {
     private final ClientOrderItemMapper clientOrderItemMapper ;
 
 
+
     @Override
     @Transactional
     public ClientOrderDTO placeOrder(ClientOrderDTO clientOrderDTO) {
@@ -59,7 +59,7 @@ public class ClientOrderServiceImpl implements ClientOrderService {
 
         log.info("Order placed successfully with ID: {}", savedOrder.getId());
 
-        return clientOrderMapper.toClientOrderDTO(savedOrder);
+        return clientOrderMapper.toDto(savedOrder );
     }
 
     /**

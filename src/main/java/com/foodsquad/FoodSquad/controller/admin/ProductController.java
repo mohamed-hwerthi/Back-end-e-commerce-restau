@@ -3,7 +3,6 @@ package com.foodsquad.FoodSquad.controller.admin;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.ProductFilterByCategoryAndQueryRequestDTO;
-import com.foodsquad.FoodSquad.model.dto.client.ClientProductListDTO;
 import com.foodsquad.FoodSquad.service.admin.dec.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,33 +61,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
-    @Operation(summary = "Get all menu items", description = "Retrieve a list of menu items with optional filters and sorting.")
-    @GetMapping
-    public ResponseEntity<PaginatedResponseDTO<ClientProductListDTO>> getAllProducts(
-            @Parameter(description = "Page number, starting from 0", example = "0")
-            @RequestParam(defaultValue = "0") int page,
 
-            @Parameter(description = "Number of items per page", example = "10")
-            @RequestParam(defaultValue = "10") int limit,
-
-            @Parameter(description = "Sort by field, e.g., 'salesCount' or 'price'", example = "salesCount", required = false)
-            @RequestParam(required = false) String sortBy,
-
-            @Parameter(description = "Sort direction: true for descending, false for ascending")
-            @RequestParam(required = false) boolean desc,
-
-            @Parameter(description = "Filter by categoryId , params is named categoryFilter but it contains the category Id '", required = false)
-            @RequestParam(required = false) UUID categoryFilter,
-
-            @Parameter(description = "Sort direction for price: 'asc' for ascending, 'desc' for descending", required = false)
-            @RequestParam(required = false) String priceSortDirection
-    ) {
-        log.debug("Request to get all menu items: page={}, limit={}, sortBy={}, desc={}, categoryFilter={}, isDefault={}, priceSortDirection={}",
-                page, limit, sortBy, desc, categoryFilter, priceSortDirection);
-        PaginatedResponseDTO<ClientProductListDTO> response = productService.getAllProducts(page, limit, desc, categoryFilter, priceSortDirection);
-        log.info("Fetched menu items page {} with limit {} successfully", page, limit);
-        return ResponseEntity.ok(response);
-    }
 
     @Operation(summary = "Update a menu item by ID", description = "Update the details of an existing menu item by its unique ID.")
     @PutMapping("/{id}")

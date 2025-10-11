@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ClientOrderItemDTO {
 
     @NotNull(message = "Product ID is required")
-    private UUID productId;   @NotNull(message = "Product ID is required")
+    private UUID productId;
 
     @NotBlank(message = "product Name must not be  blank ")
     private  String  productName;

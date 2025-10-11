@@ -16,4 +16,5 @@ public interface GenericMapper<E, D> {
     List<E> toEntityList(List<D> dtos);
 
     void updateEntityFromDto(D dto, @MappingTarget E entity);
+
 }
