@@ -1,13 +1,14 @@
 package com.foodsquad.FoodSquad.mapper.client;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
+import com.foodsquad.FoodSquad.mapper.AddressMapper;
 import com.foodsquad.FoodSquad.mapper.GenericMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.entity.Order;
 import org.mapstruct.*;
 import org.springframework.util.StringUtils;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING ,  uses ={ClientOrderItemMapper.class , ClientCustomerMapper.class , AddressMapper.class})
 public interface ClientOrderMapper extends GenericMapper<Order, ClientOrderDTO> {
 
     @Mapping(target = "status", ignore = true)

@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.service.client.impl;
 
-import com.foodsquad.FoodSquad.mapper.CustomerMapper;
 import com.foodsquad.FoodSquad.model.dto.client.ClientCustomerDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.entity.Customer;
@@ -22,7 +21,6 @@ import java.util.UUID;
 public class ClientCustomerServiceImpl implements ClientCustomerService {
 
     private final CustomerRepository customerRepository;
-    private final CustomerMapper customerMapper;
 
     @Override
     @Transactional
