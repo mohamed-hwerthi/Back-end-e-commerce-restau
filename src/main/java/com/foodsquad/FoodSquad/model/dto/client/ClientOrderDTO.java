@@ -23,7 +23,9 @@ import java.util.UUID;
 public class ClientOrderDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
+
     @NotEmpty(message = "At Least an item is required")
+    @Valid
     private List<ClientOrderItemDTO> orderItems;
 
     @Valid

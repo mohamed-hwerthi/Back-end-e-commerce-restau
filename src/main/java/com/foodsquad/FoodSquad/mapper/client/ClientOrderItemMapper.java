@@ -11,7 +11,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING )
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING , uses = {ClientOrderItemOptionMapper.class})
 public interface ClientOrderItemMapper extends GenericMapper<OrderItem, ClientOrderItemDTO> {
 
     @Mapping(target = "productId", source = "product.id")
@@ -20,7 +20,7 @@ public interface ClientOrderItemMapper extends GenericMapper<OrderItem, ClientOr
     @Override
     ClientOrderItemDTO toDto(OrderItem entity);
 
-    @Mapping(target = "product", ignore = true)
+    @Mapping(target = "options", ignore = true)
     @Override
     OrderItem toEntity(ClientOrderItemDTO dto);
 

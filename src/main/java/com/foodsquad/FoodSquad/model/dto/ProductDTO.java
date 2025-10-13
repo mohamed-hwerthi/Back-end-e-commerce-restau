@@ -75,7 +75,7 @@ public class ProductDTO {
     private List<VariantDTO> variants = new ArrayList<>();
 
     private List<ProductAttributeDTO> availableAttributes = new ArrayList<>();
-
+    @Valid
     private List<ProductOptionGroupDTO> productOptionGroups = new ArrayList<>();
 
     private List<CustomAttributeDTO> customAttributes = new ArrayList<>();

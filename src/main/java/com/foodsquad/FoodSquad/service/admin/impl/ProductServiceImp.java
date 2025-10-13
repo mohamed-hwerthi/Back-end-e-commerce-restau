@@ -573,7 +573,9 @@ public class ProductServiceImp implements ProductService {
         List<ProductOptionGroup> groups = productDTO.getProductOptionGroups().stream()
                 .map(dtoGroup -> mapToEntityGroup(dtoGroup, product))
                 .toList();
-
+        if (product.getProductOptionGroups() == null) {
+            product.setProductOptionGroups(new ArrayList<>());
+        }
         product.getProductOptionGroups().addAll(groups);
     }
 

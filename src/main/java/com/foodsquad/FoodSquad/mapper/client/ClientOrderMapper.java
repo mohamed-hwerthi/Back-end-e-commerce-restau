@@ -31,7 +31,6 @@ public interface ClientOrderMapper extends GenericMapper<Order, ClientOrderDTO> 
     @AfterMapping
     default void applyLocalizedStatus(Order order, @MappingTarget ClientOrderDTO dto) {
         String locale = LocaleContext.get();
-
         if (order.getStatus() != null &&
                 order.getStatus().getName() != null &&
                 StringUtils.hasText(order.getStatus().getName().get(locale))) {

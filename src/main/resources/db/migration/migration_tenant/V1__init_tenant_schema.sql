@@ -131,6 +131,64 @@ CREATE TABLE products (
 
 );
 
+-- Product Attributes
+CREATE TABLE product_attributes (
+    id UUID PRIMARY KEY,
+    name JSON NOT NULL  ,
+    product_id UUID NOT NULL,
+    CONSTRAINT fk_product_attributes_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Product Attribute Values
+CREATE TABLE attribute_values (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    value VARCHAR(255) NOT NULL,
+    attribute_id UUID NOT NULL,
+    CONSTRAINT fk_attribute_values_attribute FOREIGN KEY(attribute_id) REFERENCES product_attributes(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE product_option_groups (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name jsonb NOT NULL,
+    product_id UUID NOT NULL,
+    CONSTRAINT fk_product_option_group_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+    CREATE TABLE product_options (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        override_price NUMERIC CHECK (override_price >= 0),
+        product_option_group_id UUID NOT NULL,
+        linked_product_id UUID NOT NULL,
+        CONSTRAINT fk_product_option_group FOREIGN KEY (product_option_group_id) REFERENCES product_option_groups(id) ON DELETE CASCADE,
+        CONSTRAINT fk_product_option_linked_product FOREIGN KEY (linked_product_id) REFERENCES products(id) ON DELETE CASCADE
+    );
+
+
+
+
+
+
+-- ========================================
+-- Create Custom Attributes Table
+-- ========================================
+CREATE TABLE IF NOT EXISTS custom_attributes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    product_id UUID NOT NULL,
+    name jsonb NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    CONSTRAINT fk_custom_attribute_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS product_variant_attributes (
+    product_id UUID NOT NULL,
+    attribute_value_id UUID NOT NULL,
+    CONSTRAINT fk_variant_product_join FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT fk_variant_attr_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
+    PRIMARY KEY(product_id, attribute_value_id)
+);
+
 -- ========================================
 -- Order Items
 -- ========================================
@@ -142,6 +200,22 @@ CREATE TABLE order_items (
     unit_price NUMERIC(19,2) NOT NULL CHECK (unit_price >= 0),
     CONSTRAINT fk_order_items_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     CONSTRAINT fk_order_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+-- ========================================
+-- Create Order Item Options Table
+-- ========================================
+CREATE TABLE order_item_options (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_item_id UUID NOT NULL,
+    product_option_id UUID NOT NULL,
+
+    CONSTRAINT fk_order_item_options_order_item
+        FOREIGN KEY (order_item_id)
+        REFERENCES order_items(id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_order_item_options_product_option
+        FOREIGN KEY (product_option_id)
+        REFERENCES product_options(id) ON DELETE CASCADE
 );
 
 
@@ -271,61 +345,5 @@ CREATE TABLE IF NOT EXISTS category_promotions (
     CONSTRAINT fk_category_promotions_promotion FOREIGN KEY(promotion_id) REFERENCES promotions(id) ON DELETE CASCADE
 );
 
--- Product Attributes
-CREATE TABLE product_attributes (
-    id UUID PRIMARY KEY,
-    name JSON NOT NULL  ,
-    product_id UUID NOT NULL,
-    CONSTRAINT fk_product_attributes_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
-);
 
--- Product Attribute Values
-CREATE TABLE attribute_values (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    value VARCHAR(255) NOT NULL,
-    attribute_id UUID NOT NULL,
-    CONSTRAINT fk_attribute_values_attribute FOREIGN KEY(attribute_id) REFERENCES product_attributes(id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE product_option_groups (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name jsonb NOT NULL,
-    product_id UUID NOT NULL,
-    CONSTRAINT fk_product_option_group_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
-
-    CREATE TABLE product_options (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        override_price NUMERIC CHECK (override_price >= 0),
-        product_option_group_id UUID NOT NULL,
-        linked_product_id UUID NOT NULL,
-        CONSTRAINT fk_product_option_group FOREIGN KEY (product_option_group_id) REFERENCES product_option_groups(id) ON DELETE CASCADE,
-        CONSTRAINT fk_product_option_linked_product FOREIGN KEY (linked_product_id) REFERENCES products(id) ON DELETE CASCADE
-    );
-
-
-
-
-
-
--- ========================================
--- Create Custom Attributes Table
--- ========================================
-CREATE TABLE IF NOT EXISTS custom_attributes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID NOT NULL,
-    name jsonb NOT NULL,
-    value VARCHAR(255) NOT NULL,
-    type VARCHAR(20) NOT NULL,
-    CONSTRAINT fk_custom_attribute_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS product_variant_attributes (
-    product_id UUID NOT NULL,
-    attribute_value_id UUID NOT NULL,
-    CONSTRAINT fk_variant_product_join FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE,
-    CONSTRAINT fk_variant_attr_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
-    PRIMARY KEY(product_id, attribute_value_id)
-);
 

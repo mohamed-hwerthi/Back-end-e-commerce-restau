@@ -4,7 +4,6 @@ package com.foodsquad.FoodSquad.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -26,12 +25,8 @@ public class OrderItemOption {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_option_id", nullable = false)
-    private ProductOption productOption;
+        private ProductOption productOption ;
 
-    @Column(nullable = false, name = "option_price")
-    private BigDecimal optionPrice;
 
-    public BigDecimal getOptionTotal() {
-        return optionPrice != null ? optionPrice : BigDecimal.ZERO;
-    }
+
 }

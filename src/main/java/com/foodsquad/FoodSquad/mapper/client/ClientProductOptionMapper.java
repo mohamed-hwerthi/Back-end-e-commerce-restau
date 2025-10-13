@@ -13,7 +13,6 @@ import java.util.Optional;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ClientProductOptionMapper extends GenericMapper<ProductOption, ClientProductOption> {
 
-    @Mapping(target = "optionName", ignore = true)
     @Mapping(target = "inStock", ignore = true)
     @Override
     ClientProductOption toDto(ProductOption entity);
@@ -29,18 +28,4 @@ public interface ClientProductOptionMapper extends GenericMapper<ProductOption, 
 
     }
 
-    /**
-     * Applies locale-based translation for the option name after mapping.
-     */
-    @AfterMapping
-    default void afterMappingLocaleTranslation(ProductOption entity, @MappingTarget ClientProductOption dto) {
-        String locale = LocaleContext.get();
-
-        Optional.ofNullable(entity.getLinkedProduct())
-                .map(Product::getTitle)
-                .map(titleMap -> titleMap.get(locale))
-                .filter(name -> !ObjectUtils.isEmpty(name))
-                .ifPresent(dto::setOptionName);
-
-    }
 }

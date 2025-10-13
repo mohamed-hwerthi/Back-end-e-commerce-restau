@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING )
 public interface OrderItemMapper extends GenericMapper<OrderItem, OrderItemDTO> {
 
     @Mapping(target = "productId", source = "product.id")
@@ -15,4 +15,9 @@ public interface OrderItemMapper extends GenericMapper<OrderItem, OrderItemDTO> 
     @Override
     OrderItemDTO toDto(OrderItem entity);
 
+    @Override
+    @Mapping(target = "options" ,ignore = true)
+    default OrderItem toEntity(OrderItemDTO dto) {
+        return null;
+    }
 }

@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -54,7 +53,7 @@ public class ClientOrderServiceImpl implements ClientOrderService {
         Customer customer = clientCustomerService.findOrCreateCustomerFromOrder(clientOrderDTO);
         OrderStatus orderStatus = orderStatusService.getByCode(ORDER_STATUS_PENDING);
 
-        Order order = buildOrder(clientOrderDTO, customer, orderStatus);
+        Order order =   buildOrder(clientOrderDTO, customer, orderStatus);
 
         order.calculateTotal();
         Order savedOrder = orderRepository.save(order);
@@ -100,12 +99,12 @@ public class ClientOrderServiceImpl implements ClientOrderService {
         OrderItem orderItem = clientOrderItemMapper.toEntity(itemDTO);
         orderItem.setProduct(product);
 
-        if (itemDTO.getOptions() != null && !itemDTO.getOptions().isEmpty()) {
-            itemDTO.getOptions().forEach(optionDTO -> {
-                OrderItemOption option = buildOrderItemOption(optionDTO);
-                orderItem.addOption(option);
-            });
-        }
+            if (itemDTO.getOptions() != null && !itemDTO.getOptions().isEmpty()) {
+                itemDTO.getOptions().forEach(optionDTO -> {
+                    OrderItemOption option = buildOrderItemOption(optionDTO);
+                    orderItem.addOption(option);
+                });
+            }
 
         return orderItem;
     }
@@ -113,14 +112,11 @@ public class ClientOrderServiceImpl implements ClientOrderService {
     /**
      * Build an OrderItemOption entity from DTO.
      */
-    private OrderItemOption buildOrderItemOption(ClientOrderItemOptionDTO optionDTO) {
+    private OrderItemOption  buildOrderItemOption(ClientOrderItemOptionDTO optionDTO) {
         ProductOption productOption = productOptionService.getById(optionDTO.getOptionId());
 
         return OrderItemOption.builder()
                 .productOption(productOption)
-                .optionPrice(productOption.getOverridePrice() != null
-                        ? productOption.getOverridePrice()
-                        : BigDecimal.ZERO)
                 .build();
     }
 

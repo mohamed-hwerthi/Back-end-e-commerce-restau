@@ -49,9 +49,7 @@ public interface ClientProductOptionGroupMapper extends GenericMapper<ProductOpt
             ClientProductOption clientOption = new ClientProductOption();
             if (option.getLinkedProduct() != null) {
                 clientOption.setOptionId(option.getLinkedProduct().getId());
-                clientOption.setOptionName(option.getLinkedProduct().getTitle().get(locale));
             }
-            clientOption.setOptionPrice(option.getOverridePrice());
             return clientOption;
         }).toList();
     }
