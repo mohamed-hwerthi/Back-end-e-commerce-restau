@@ -14,6 +14,7 @@ public interface ClientProductOptionMapper extends GenericMapper<ProductOption, 
 
     @Mapping(target = "inStock", ignore = true)
     @Mapping(target = "optionPrice", source = "overridePrice")
+    @Mapping(target = "optionId"  , source = "id")
     @Override
     ClientProductOptionDTO toDto(ProductOption entity);
 

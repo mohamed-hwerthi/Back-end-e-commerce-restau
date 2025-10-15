@@ -19,16 +19,13 @@
         @NotNull(message = "Product ID is required")
         private UUID productId;
 
-        @NotBlank(message = "product Name must not be  blank ")
         private String productName;
 
-        @NotNull(message = "Price is required")
         private BigDecimal unitPrice;
 
         @NotNull(message = "Quantity is required")
         private int quantity;
 
-        @Valid
         private List<String> mediasUrls;
 
         @Valid
