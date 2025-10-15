@@ -172,7 +172,7 @@ public class ProductServiceImp implements ProductService {
                     log.error("Product not found for ID: {}", id);
                     return new EntityNotFoundException("Product not found for ID: " + id);
                 });
-        log.debug("Existing product fetched: {}", existingProduct.getId());
+            log.debug("Existing product fetched: {}", existingProduct.getId());
 
         log.debug("Updating product fields from DTO");
         productMapper.updateProductFromDto(productDTO, existingProduct);
