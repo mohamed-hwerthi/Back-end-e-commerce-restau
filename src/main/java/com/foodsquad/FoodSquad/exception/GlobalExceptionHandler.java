@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,20 +17,68 @@ import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler for the application.
+ * Handles exceptions and returns appropriate HTTP responses.
+ */
+@Slf4j
+@RestControllerAdvice
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(EntityNotFoundException ex) {
-
+    /**
+     * Handles ResourceNotFoundException.
+     *
+     * @param ex the exception
+     * @return ResponseEntity with error details
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.error("Resource not found: {}", ex.getMessage());
         Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+        response.put("message", ex.getMessage());
         response.put("status", "404");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+    
+    /**
+     * Handles EntityNotFoundException.
+     *
+     * @param ex the exception
+     * @return ResponseEntity with error details
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("Entity not found: {}", ex.getMessage());
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        response.put("status", "404");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+    
+    /**
+     * Handles ConstraintViolationException.
+     *
+     * @param ex the exception
+     * @return ResponseEntity with validation error details
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
+        log.error("Validation error: {}", ex.getMessage());
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> 
+            errors.put(violation.getPropertyPath().toString(), violation.getMessage())
+        );
+        errors.put("status", "400");
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(OutOfStockException.class)
@@ -40,10 +90,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    /**
+     * Handles MethodArgumentNotValidException.
+     *
+     * @param ex the exception
+     * @return ResponseEntity with validation error details
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-
+        log.error("Validation error: {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();

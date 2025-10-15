@@ -25,7 +25,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
      * Finds an attribute by name for a product, or creates a new one if it doesn't exist.
      */
     public ProductAttribute findOrCreateAttribute(Product product, LocalizedString attributeName) {
-        return product.getAttributes().stream()
+                    return product.getAttributes().stream()
                 .filter(a -> a.getName().equals(attributeName))
                 .findFirst()
                 .orElseGet(() -> createAttribute(product, attributeName));
@@ -63,7 +63,7 @@ public class ProductAttributeServiceImpl implements ProductAttributeService {
     /**
      * Creates and saves a new ProductAttribute for the given product.
      */
-    private ProductAttribute createAttribute(Product product, LocalizedString attributeName) {
+    private ProductAttribute    createAttribute(Product product, LocalizedString attributeName) {
         ProductAttribute newAttr = new ProductAttribute();
         newAttr.setName(attributeName);
         newAttr.setProduct(product);

@@ -23,7 +23,8 @@ public class OrderDTO {
 
     @NotNull(message = "Customer information cannot be null")
     @Valid
-    private CustomerDTO customerDTO;
+    private CustomerDTO customer;
+
 
     @NotEmpty(message = "Order must contain at least one item")
     @Valid
