@@ -10,9 +10,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ClientProductOption {
+public class ClientProductOptionDTO {
 
     private UUID optionId;
+
+    private String optionName  ;
+
+    private  BigDecimal  optionPrice ;
 
     private boolean inStock;
 }

@@ -16,6 +16,7 @@ public interface ClientStoreMapper extends GenericMapper<Store, ClientStoreDTO> 
     @Mapping(target = "logo", ignore = true)
     @Mapping(target = "email", source = "owner.email")
     @Mapping(target = "phoneNumber", source = "owner.phoneNumber")
+    @Mapping(target = "currencySymbol", source = "currency.symbol")
     ClientStoreDTO toDto(Store store);
 
 

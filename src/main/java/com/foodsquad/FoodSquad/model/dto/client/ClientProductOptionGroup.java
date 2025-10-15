@@ -13,7 +13,7 @@ import java.util.List;
 public class ClientProductOptionGroup {
 
     private String name;
-    private List<ClientProductOption> options = new ArrayList<>();
+    private List<ClientProductOptionDTO> options = new ArrayList<>();
 
 
 }

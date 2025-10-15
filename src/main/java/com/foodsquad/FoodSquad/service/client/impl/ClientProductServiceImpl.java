@@ -1,10 +1,8 @@
 package com.foodsquad.FoodSquad.service.client.impl;
 
 import com.foodsquad.FoodSquad.config.context.LocaleContext;
-import com.foodsquad.FoodSquad.mapper.ProductMapper;
 import com.foodsquad.FoodSquad.mapper.client.ClientProductMapper;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
-import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientProductDTO;
 import com.foodsquad.FoodSquad.model.entity.Product;
 import com.foodsquad.FoodSquad.repository.ProductRepository;

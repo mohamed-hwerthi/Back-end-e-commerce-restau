@@ -20,5 +20,5 @@ public class AddressDTO {
     @NotBlank(message = "Postal code cannot be blank")
     private String postalCode;
 
-    private  String countryId;
+    private String countryId;
 }
