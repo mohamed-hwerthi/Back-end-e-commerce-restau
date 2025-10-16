@@ -40,8 +40,27 @@ public abstract class Partner {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private String password;
+
+    @Column(name = "account_non_expired", nullable = false)
+    private boolean accountNonExpired = true;
+
+    @Column(name = "account_non_locked", nullable = false)
+    private boolean accountNonLocked = true;
+
+    @Column(name = "credentials_non_expired", nullable = false)
+    private boolean credentialsNonExpired = true;
+
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+
+
+
 }

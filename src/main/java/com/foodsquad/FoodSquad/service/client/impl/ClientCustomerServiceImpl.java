@@ -93,4 +93,50 @@ public class ClientCustomerServiceImpl implements ClientCustomerService {
     private Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
+
+    @Override
+    @Transactional
+    public Customer registerCustomer(CustomerRegistrationDTO registrationDTO) {
+        // Check if email already exists
+        if (customerRepository.existsByEmail(registrationDTO.getEmail())) {
+            throw new IllegalStateException("Email already in use");
+        }
+
+        // Check if phone already exists
+        if (customerRepository.existsByPhone(registrationDTO.getPhoneNumber())) {
+            throw new IllegalStateException("Phone number already in use");
+        }
+
+        // Create new customer
+        Customer customer = Customer.builder()
+                .firstName(registrationDTO.getFirstName())
+                .lastName(registrationDTO.getLastName())
+                .email(registrationDTO.getEmail())
+                .phone(registrationDTO.getPhoneNumber())
+                .password(registrationDTO.getPassword()) // Password will be hashed in the setter
+                .build();
+
+        log.info("Registering new customer with email: {}", registrationDTO.getEmail());
+        return saveCustomer(customer);
+    }
+
+    @Override
+    public Customer loginCustomer(CustomerLoginDTO loginDTO) {
+        log.info("Attempting login for email: {}", loginDTO.getEmail());
+        
+        Customer customer = customerRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+
+        // Verify password
+        if (!passwordEncoder.matches(loginDTO.getPassword(), customer.getPassword())) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+
+        if (!customer.isEnabled()) {
+            throw new IllegalStateException("Account is disabled");
+        }
+
+        log.info("Login successful for customer: {}", customer.getEmail());
+        return customer;
+    }
 }
