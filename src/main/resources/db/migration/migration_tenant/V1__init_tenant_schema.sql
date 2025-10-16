@@ -66,14 +66,17 @@ CREATE TABLE partners (
     email VARCHAR(255) UNIQUE,
     phone VARCHAR(50) NOT NULL UNIQUE,
     address TEXT,
-    partner_type VARCHAR(50) NOT NULL
+    partner_type VARCHAR(50) NOT NULL ,
+    created_at TIMESTAMP WITH TIME ZONE  NOT NULL DEFAULT now()
+
 );
 
 
 CREATE TABLE order_statuses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(50),
-    name jsonb NOT NULL
+    name jsonb NOT NULL ,
+    color VARCHAR(50)
 );
 CREATE TABLE payment_methods (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -83,10 +86,12 @@ CREATE TABLE payment_methods (
 
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_number VARCHAR(50) NOT NULL ,
     customer_id UUID NOT NULL,
     status_id UUID,
     created_at TIMESTAMP WITH TIME ZONE  NOT NULL DEFAULT now(),
     total NUMERIC(19,2) NOT NULL DEFAULT 0,
+    source VARCHAR(50) NOT NULL ,
     sub_total NUMERIC(19,2) NOT NULL DEFAULT 0,
       -- Embedded Address fields
       delivery_street VARCHAR(255) NOT NULL,

@@ -23,7 +23,7 @@ public class Payment {
     private UUID id;
 
     private BigDecimal amount;
-
+   @Column(name = "payment_date"  , nullable = false)
     private LocalDateTime paymentDate;
 
     @ManyToOne

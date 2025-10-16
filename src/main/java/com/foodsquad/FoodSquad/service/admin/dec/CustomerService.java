@@ -1,6 +1,8 @@
 package com.foodsquad.FoodSquad.service.admin.dec;
 
 import com.foodsquad.FoodSquad.model.dto.CustomerDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
+import com.foodsquad.FoodSquad.model.dto.ProductDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,7 +13,7 @@ public interface CustomerService {
 
     CustomerDTO getCustomerById(UUID id);
 
-    Page<CustomerDTO> getAllCustomers(Pageable pageable);
+    PaginatedResponseDTO<CustomerDTO> getAllCustomers(Pageable pageable);
 
     CustomerDTO updateCustomer(UUID id, CustomerDTO customerDTO);
 

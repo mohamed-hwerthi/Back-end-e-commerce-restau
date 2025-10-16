@@ -2,6 +2,7 @@ package com.foodsquad.FoodSquad.service.admin.impl;
 
 import com.foodsquad.FoodSquad.mapper.CustomerMapper;
 import com.foodsquad.FoodSquad.model.dto.CustomerDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.entity.Customer;
 import com.foodsquad.FoodSquad.repository.CustomerRepository;
 import com.foodsquad.FoodSquad.service.admin.dec.CustomerService;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -44,11 +46,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CustomerDTO> getAllCustomers(Pageable pageable) {
+    public PaginatedResponseDTO<CustomerDTO> getAllCustomers(Pageable pageable) {
         log.debug("Fetching all customers with pagination - Page: {}, Size: {}", 
                  pageable.getPageNumber(), pageable.getPageSize());
-        return customerRepository.findAll(pageable)
-                .map(customerMapper::toDto);
+        Page<Customer>response = customerRepository.findAll(pageable) ;
+         return new  PaginatedResponseDTO<>( customerMapper.toDtoList(response.getContent()) ,response.getTotalElements() ) ;
     }
 
     @Override

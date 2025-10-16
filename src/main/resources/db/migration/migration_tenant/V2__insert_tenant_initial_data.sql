@@ -3,15 +3,13 @@ INSERT INTO timbres (id, amount)
 VALUES (gen_random_uuid(), 0)
 ON CONFLICT (id) DO NOTHING;
 
--- Insert default order statuses with multilingual names
-INSERT INTO order_statuses (code, name)
+-- Insert default order statuses with multilingual names and colors
+INSERT INTO order_statuses (code, name, color)
 VALUES
-    ('PENDING', '{"en": "Pending", "fr": "En attente", "ar": "قيد الانتظار"}'),
-    ('PROCESSING', '{"en": "Processing", "fr": "En cours", "ar": "قيد المعالجة"}'),
-    ('COMPLETED', '{"en": "Completed", "fr": "Terminé", "ar": "مكتمل"}'),
-    ('CANCELLED', '{"en": "Cancelled", "fr": "Annulé", "ar": "ملغي"}');
-
-
+    ('PENDING', '{"en": "Pending", "fr": "En attente", "ar": "قيد الانتظار"}', '#FFC107'),   -- amber/yellow
+    ('PROCESSING', '{"en": "Processing", "fr": "En cours", "ar": "قيد المعالجة"}', '#17A2B8'), -- blue
+    ('COMPLETED', '{"en": "Completed", "fr": "Terminé", "ar": "مكتمل"}', '#28A745'),  -- green
+    ('CANCELLED', '{"en": "Cancelled", "fr": "Annulé", "ar": "ملغي"}', '#DC3545');   -- red
 
 -- Insert default countries
 INSERT INTO countries (id, code, name, flag_url) VALUES

@@ -7,4 +7,5 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING ,  uses = {CountryMapper.class})
 public interface AddressMapper extends GenericMapper<Address, AddressDTO> {
+
 }

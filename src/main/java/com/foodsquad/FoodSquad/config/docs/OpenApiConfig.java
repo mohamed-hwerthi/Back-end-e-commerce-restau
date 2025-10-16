@@ -1,6 +1,5 @@
 package com.foodsquad.FoodSquad.config.docs;
 
-import com.foodsquad.FoodSquad.config.utils.Constant;
 import com.foodsquad.FoodSquad.config.web.TenantFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -14,16 +13,13 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
 import static com.foodsquad.FoodSquad.config.utils.Constant.CLIENT_API_BASE_PACKAGE;
+import static com.foodsquad.FoodSquad.config.web.TenantFilter.TENANT_HEADER;
 
 @Configuration
 public class OpenApiConfig {
 
     private static final String SECURITY_SCHEME_NAME = "bearer-key";
-
-    private static final String TENANT_HEADER = "X-TenantID";
     private static final String STORE_SLUG_PARAM = "storeSlug";
 
     @Bean
@@ -120,7 +116,10 @@ public class OpenApiConfig {
                         .description("API endpoints for managing languages"))
                 .addTagsItem(new Tag()
                         .name("Activity Sector Management")
-                        .description("APIs for managing activity sectors"));
+                        .description("APIs for managing activity sectors"))
+          .addTagsItem(new Tag()
+                .name("Customer Management")
+                .description("APIs for managing customers"));
     }
 
     @Bean
@@ -152,6 +151,7 @@ public class OpenApiConfig {
                         "com.foodsquad.FoodSquad.controller"
                 )
                 .pathsToMatch(
+                        "/api/customers/**" ,
                         "/api/auth/**",
                         "/api/token/**",
                         "/api/users/**",

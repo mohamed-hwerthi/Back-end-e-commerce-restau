@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.controller.admin;
 
 import com.foodsquad.FoodSquad.model.dto.CustomerDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.service.admin.dec.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -63,7 +63,7 @@ public class CustomerController {
     @Operation(summary = "Get all customers",
                description = "Retrieves a paginated list of all customers")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved customers")
-    public ResponseEntity<Page<CustomerDTO>> getAllCustomers(
+    public ResponseEntity<PaginatedResponseDTO<CustomerDTO>> getAllCustomers(
             @Parameter(description = "Pagination and sorting parameters")
             @PageableDefault(size = 20) Pageable pageable) {
         log.debug("Fetching all customers with pagination");

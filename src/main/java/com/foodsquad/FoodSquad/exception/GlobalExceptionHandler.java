@@ -31,21 +31,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Handles ResourceNotFoundException.
-     *
-     * @param ex the exception
-     * @return ResponseEntity with error details
-     */
-    @ExceptionHandler(ResourceNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        log.error("Resource not found: {}", ex.getMessage());
-        Map<String, String> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        response.put("status", "404");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
+
     
     /**
      * Handles EntityNotFoundException.

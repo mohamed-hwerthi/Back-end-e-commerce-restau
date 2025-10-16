@@ -37,6 +37,5 @@ public interface CustomerMapper   extends GenericMapper<Customer, CustomerDTO> {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     void updateEntityFromDto(CustomerDTO dto, @MappingTarget Customer entity);
 }

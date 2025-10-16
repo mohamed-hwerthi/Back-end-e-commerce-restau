@@ -22,6 +22,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "order_number" , nullable = false)
+    private String orderNumber ;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -44,6 +47,10 @@ public class Order {
 
     @Column(nullable = false)
     private BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source", nullable = false)
+    private OrderSource source ;
 
     @Embedded
     @AttributeOverrides({

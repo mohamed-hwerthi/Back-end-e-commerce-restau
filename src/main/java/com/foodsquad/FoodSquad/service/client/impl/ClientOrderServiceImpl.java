@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.foodsquad.FoodSquad.config.utils.Constant.ORDER_STATUS_PENDING;
 
@@ -53,9 +54,11 @@ public class ClientOrderServiceImpl implements ClientOrderService {
         Customer customer = clientCustomerService.findOrCreateCustomerFromOrder(clientOrderDTO);
         OrderStatus orderStatus = orderStatusService.getByCode(ORDER_STATUS_PENDING);
 
-        Order order =   buildOrder(clientOrderDTO, customer, orderStatus);
+        Order order = buildOrder(clientOrderDTO, customer, orderStatus);
 
         order.calculateTotal();
+        order.setOrderNumber(generateOrderNumber());
+        order.setSource(OrderSource.WEBSITE);
         Order savedOrder = orderRepository.save(order);
 
         log.info("Order placed successfully with ID: {}", savedOrder.getId());
@@ -99,12 +102,12 @@ public class ClientOrderServiceImpl implements ClientOrderService {
         OrderItem orderItem = clientOrderItemMapper.toEntity(itemDTO);
         orderItem.setProduct(product);
 
-            if (itemDTO.getOptions() != null && !itemDTO.getOptions().isEmpty()) {
-                itemDTO.getOptions().forEach(optionDTO -> {
-                    OrderItemOption option = buildOrderItemOption(optionDTO);
-                    orderItem.addOption(option);
-                });
-            }
+        if (itemDTO.getOptions() != null && !itemDTO.getOptions().isEmpty()) {
+            itemDTO.getOptions().forEach(optionDTO -> {
+                OrderItemOption option = buildOrderItemOption(optionDTO);
+                orderItem.addOption(option);
+            });
+        }
 
         return orderItem;
     }
@@ -112,12 +115,26 @@ public class ClientOrderServiceImpl implements ClientOrderService {
     /**
      * Build an OrderItemOption entity from DTO.
      */
-    private OrderItemOption  buildOrderItemOption(ClientOrderItemOptionDTO optionDTO) {
+    private OrderItemOption buildOrderItemOption(ClientOrderItemOptionDTO optionDTO) {
         ProductOption productOption = productOptionService.getById(optionDTO.getOptionId());
 
         return OrderItemOption.builder()
                 .productOption(productOption)
                 .build();
+    }
+
+
+    /*
+    todo   :to change it after by goof logic with counter  , date of today ...
+     */
+    public String generateOrderNumber() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder("ORD-");
+        for (int i = 0; i < 6; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
 

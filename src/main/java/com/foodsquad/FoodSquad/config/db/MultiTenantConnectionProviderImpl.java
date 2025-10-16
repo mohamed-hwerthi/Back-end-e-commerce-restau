@@ -81,7 +81,7 @@ public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMu
                 ? tenantIdentifier.toString()
                 : TenantContext.DEFAULT_TENANT;
 
-        logger.info("Acquiring connection for tenant: {}", tenantId);
+            logger.info("Acquiring connection for tenant: {}", tenantId);
 
         Connection connection;
         try {

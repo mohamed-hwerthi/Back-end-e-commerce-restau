@@ -15,8 +15,10 @@ import java.util.UUID;
 public class CustomerDTO {
     private UUID id;
 
-    @NotBlank(message = "Customer name is required")
-    private String name;
+    @NotBlank(message = "firstName can not be blank")
+    private String firstName;
+
+    private String lastName;
 
     @Email(message = "Invalid email format")
     private String email;
