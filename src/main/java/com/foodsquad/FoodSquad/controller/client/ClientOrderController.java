@@ -2,7 +2,6 @@ package com.foodsquad.FoodSquad.controller.client;
 
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
-import com.foodsquad.FoodSquad.model.dto.common.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;

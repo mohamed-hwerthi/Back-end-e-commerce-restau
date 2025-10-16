@@ -37,6 +37,14 @@ public class ClientCustomerServiceImpl implements ClientCustomerService {
                 .or(() -> findByPhone(customerDTO.getPhone()));
     }
 
+    @Override
+    public boolean existsById(UUID customerId) {
+        if (customerId == null) {
+            return false;
+        }
+        return customerRepository.existsById(customerId);
+    }
+
     private Optional<Customer> findById(UUID id) {
         if (id == null) return Optional.empty();
 

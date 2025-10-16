@@ -14,17 +14,20 @@ import com.foodsquad.FoodSquad.service.ProductOptionService;
 import com.foodsquad.FoodSquad.service.admin.dec.ProductService;
 import com.foodsquad.FoodSquad.service.client.dec.ClientCustomerService;
 import com.foodsquad.FoodSquad.service.client.dec.ClientOrderService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 import static com.foodsquad.FoodSquad.config.utils.Constant.ORDER_STATUS_PENDING;
 
@@ -69,6 +72,25 @@ public class ClientOrderServiceImpl implements ClientOrderService {
 
         log.info("Order placed successfully with ID: {}", savedOrder.getId());
         return clientOrderMapper.toDto(savedOrder);
+    }
+
+    @Override
+    public PaginatedResponseDTO<ClientOrderDTO> getOrdersByCustomer(UUID customerId, Pageable pageable) {
+        log.info("Fetching orders for customer with ID: {}", customerId);
+        if (!clientCustomerService.existsById(customerId)) {
+            throw  new   EntityNotFoundException ("Customer not found with ID: " + customerId);
+        }
+        
+        Page<Order> orderPage = orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId, pageable);
+        List<ClientOrderDTO> orderDTOs = orderPage.getContent().stream()
+                .map(clientOrderMapper::toDto)
+                .collect(Collectors.toList());
+        
+        log.info("Found {} orders for customer with ID: {}", orderDTOs.size(), customerId);
+        return new PaginatedResponseDTO<>(
+            orderDTOs,
+            orderPage.getTotalElements()
+        );
     }
 
     /**
@@ -119,18 +141,7 @@ public class ClientOrderServiceImpl implements ClientOrderService {
     }
 
 
-    @Override
-    @Transactional(readOnly = true)
-    public PaginatedResponseDTO<ClientOrderDTO> getOrdersByCustomer(UUID customerId, Pageable pageable) {
-        log.info("Fetching orders for customer ID: {}", customerId);
-        var orderPage = orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId, pageable)
-                .map(clientOrderMapper::toDto);
-        
-        log.debug("Found {} orders for customer {}", orderPage.getTotalElements(), customerId);
-        return PaginatedResponseDTO.of(orderPage);
-    }
-
-    /**
+           /**
      * Build an OrderItemOption entity from DTO.
      */
     private OrderItemOption buildOrderItemOption(ClientOrderItemOptionDTO optionDTO) {

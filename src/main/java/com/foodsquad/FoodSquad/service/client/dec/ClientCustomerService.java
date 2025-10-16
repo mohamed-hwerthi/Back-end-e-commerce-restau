@@ -3,6 +3,8 @@ package com.foodsquad.FoodSquad.service.client.dec;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.entity.Customer;
 
+import java.util.UUID;
+
 
 /**
  * Service interface for managing customers.
@@ -19,5 +21,11 @@ public interface ClientCustomerService {
      */
     Customer findOrCreateCustomerFromOrder(ClientOrderDTO clientOrderDTO);
 
-
+    /**
+     * Check if a customer exists by ID.
+     *
+     * @param customerId ID of the customer to check
+     * @return true if customer exists, false otherwise
+     */
+    boolean existsById(UUID customerId);
 }
