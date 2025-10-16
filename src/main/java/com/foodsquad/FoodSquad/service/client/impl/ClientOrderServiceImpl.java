@@ -3,6 +3,7 @@ package com.foodsquad.FoodSquad.service.client.impl;
 import com.foodsquad.FoodSquad.mapper.AddressMapper;
 import com.foodsquad.FoodSquad.mapper.client.ClientOrderItemMapper;
 import com.foodsquad.FoodSquad.mapper.client.ClientOrderMapper;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderItemDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderItemOptionDTO;
@@ -15,12 +16,15 @@ import com.foodsquad.FoodSquad.service.client.dec.ClientCustomerService;
 import com.foodsquad.FoodSquad.service.client.dec.ClientOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.foodsquad.FoodSquad.config.utils.Constant.ORDER_STATUS_PENDING;
 
@@ -44,6 +48,8 @@ public class ClientOrderServiceImpl implements ClientOrderService {
     private final ProductOptionService productOptionService;
 
     private final ClientOrderItemMapper clientOrderItemMapper;
+
+
 
 
     @Override
@@ -110,6 +116,18 @@ public class ClientOrderServiceImpl implements ClientOrderService {
         }
 
         return orderItem;
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaginatedResponseDTO<ClientOrderDTO> getOrdersByCustomer(UUID customerId, Pageable pageable) {
+        log.info("Fetching orders for customer ID: {}", customerId);
+        var orderPage = orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId, pageable)
+                .map(clientOrderMapper::toDto);
+        
+        log.debug("Found {} orders for customer {}", orderPage.getTotalElements(), customerId);
+        return PaginatedResponseDTO.of(orderPage);
     }
 
     /**
