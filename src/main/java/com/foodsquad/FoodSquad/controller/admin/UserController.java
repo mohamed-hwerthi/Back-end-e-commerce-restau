@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.foodsquad.FoodSquad.model.entity.UserRole;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,6 +95,19 @@ public class UserController {
         userService.deleteUser(id);
         log.info("User deleted successfully with ID: {}", id);
         return ResponseEntity.noContent().build();
+    }
+    
+    /**
+     * Get all available user roles.
+     *
+     * @return a list of all user roles
+     */
+    @GetMapping("/roles")
+    public ResponseEntity<List<UserRole>> getAllUserRoles() {
+        log.info("Request received to fetch all user roles");
+        List<UserRole> roles = Arrays.asList(UserRole.values());
+        log.info("Returning {} user roles", roles.size());
+        return ResponseEntity.ok(roles);
     }
 }
 

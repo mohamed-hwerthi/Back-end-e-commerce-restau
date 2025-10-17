@@ -25,7 +25,6 @@ public class UserDTO {
     @Email(message = "Email should be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

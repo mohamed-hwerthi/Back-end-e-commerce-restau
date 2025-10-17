@@ -72,13 +72,9 @@ public class UserServiceImpl implements UserService {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateEntityFromDto(userDTO, existing);
-        if (userDTO.getPassword() != null) {
-            existing.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        }
         userRepository.save(existing);
 
         UserDTO response = userMapper.toDto(existing);
-        response.setPassword(null);
 
         log.info("User updated successfully with id {}", id);
         return response;
