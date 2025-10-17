@@ -1,10 +1,9 @@
 package com.foodsquad.FoodSquad.model.entity;
 
 public enum UserRole {
-    SUPERADMIN,
+    SUPERADMIN ,
     EMPLOYEE,
     ADMIN,
     CASHIER,
-    CUSTOMER,
     OWNER
 }

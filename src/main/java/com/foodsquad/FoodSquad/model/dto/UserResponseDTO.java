@@ -19,8 +19,12 @@ public class UserResponseDTO {
     private UUID id;
 
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    @Schema(description = "Name of the user", example = "John Doe")
-    private String name;
+    @Schema(description = "firstName of the user", example = "John ")
+    private String firstName;
+
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
+    @Schema(description = "lastName of the user", example = "John Doe")
+    private String lastName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -47,7 +51,8 @@ public class UserResponseDTO {
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
-        this.name = user.getName();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName() ;
         this.email = user.getEmail();
         this.role = user.getRole().name();
         this.imageUrl = user.getImageUrl();

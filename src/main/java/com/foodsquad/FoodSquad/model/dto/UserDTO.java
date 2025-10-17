@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,18 +17,21 @@ import java.util.UUID;
 public class UserDTO {
     private UUID id;
 
-    private String name;
+    private String firstName;
+
+    private String lastName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
 
     @NotBlank(message = "Password is required")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private UserRole role;
-    private String imageUrl;
 
-    @Pattern(regexp = "\\d{3}-\\d{3}-\\d{4}", message = "Phone number should be in format: 000-000-0000")
+    private String imageUrl;
+    @NotBlank(message = "phone number has  to be not null")
     private String phoneNumber;
 }

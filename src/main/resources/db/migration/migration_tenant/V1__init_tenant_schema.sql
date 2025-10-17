@@ -19,7 +19,8 @@ CREATE TABLE medias (
 -- Users
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255),
+     firstName VARCHAR(255),
+     lastName VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50),

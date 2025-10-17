@@ -283,7 +283,8 @@ public class AuthController {
     private Map<String, Object> buildClaims(UserResponseDTO user) {
         return Map.of(
                 "id", user.getId(),
-                "name", user.getName(),
+                "firstName", user.getFirstName(),
+                "lastName" , user.getLastName() ,
                 "email", user.getEmail(),
                 "role", user.getRole(),
                 "imageUrl", user.getImageUrl(),

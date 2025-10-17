@@ -47,7 +47,7 @@ public interface ClientCustomerService {
      * @param loginDTO DTO containing login credentials
      * @return Authenticated customer entity if successful, null otherwise
      */
-    Customer loginCustomer(CustomerLoginDTO loginDTO);
+  //  Customer loginCustomer(CustomerLoginDTO loginDTO);
 
     /**
      * Find an existing customer by ID, email, or phone, or create a new guest customer.

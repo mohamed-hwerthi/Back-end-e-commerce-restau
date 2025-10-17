@@ -27,7 +27,7 @@ public class Customer extends Partner {
     /**
      * Converts a guest customer to a registered customer.
      * Call this method when a guest decides to register.
-     * 
+     *
      * @param password The password to set for the new registered user
      * @return The updated customer
      */
@@ -39,11 +39,11 @@ public class Customer extends Partner {
 
     /**
      * Creates a new guest customer with minimal required information.
-     * 
-     * @param email Customer's email
+     *
+     * @param email     Customer's email
      * @param firstName Customer's first name
-     * @param lastName Customer's last name
-     * @param phone Customer's phone number
+     * @param lastName  Customer's last name
+     * @param phone     Customer's phone number
      * @return A new guest Customer instance
      */
     public static Customer createGuest(String email, String firstName, String lastName, String phone) {
