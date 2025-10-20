@@ -83,6 +83,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/category-promotions/**").permitAll()
                         .requestMatchers("/api/stores/**").permitAll()
                         .requestMatchers("/api/client/**").permitAll()
+                        .requestMatchers("/api/cashier-sessions/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex

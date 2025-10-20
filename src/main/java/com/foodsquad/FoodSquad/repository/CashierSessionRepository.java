@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface CashierSessionRepository extends JpaRepository<CashierSession, UUID> {
     List<CashierSession> findByCashierId(UUID cashierId);
 
+    List<CashierSession> findByCashierIdAndIsClosed(UUID cashierId, Boolean isClosed);
 
     List<CashierSession> findByIsClosed(Boolean isClosed);
 }

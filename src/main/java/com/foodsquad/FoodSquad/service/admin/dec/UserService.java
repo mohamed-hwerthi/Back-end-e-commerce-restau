@@ -47,7 +47,14 @@ public interface UserService {
      */
     void deleteUser(UUID id);
 
-    User findById(UUID id) ;
+    User findById(UUID id);
+    
+    /**
+     * Get the currently authenticated user.
+     *
+     * @return UserDTO of the currently authenticated user.
+     */
+    UserDTO getCurrentUser();
 
 
 }

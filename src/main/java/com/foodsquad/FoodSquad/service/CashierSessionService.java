@@ -16,12 +16,13 @@ public interface CashierSessionService {
 
     CashierSessionResponseDTO getSessionById(UUID id);
 
-    CashierSession getSession(UUID id) ;
+    CashierSession getSession(UUID id);
 
     List<CashierSessionResponseDTO> getAllSessions();
 
     List<CashierSessionResponseDTO> getSessionsByCashier(UUID cashierId);
 
+    CashierSessionResponseDTO getActiveCashierSession(UUID cashierId);
 
     List<CashierSessionResponseDTO> getSessionsByStatus(Boolean isClosed);
 

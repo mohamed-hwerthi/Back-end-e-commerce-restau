@@ -28,7 +28,7 @@ import java.sql.Statement;
  * </ul>
  */
 @Component
-public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
+public class    MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiTenantConnectionProviderImpl.class);
 

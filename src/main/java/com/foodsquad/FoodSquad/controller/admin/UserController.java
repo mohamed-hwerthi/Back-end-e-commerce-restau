@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.controller.admin;
 
 import com.foodsquad.FoodSquad.model.dto.UserDTO;
+import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.service.admin.dec.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.foodsquad.FoodSquad.model.entity.UserRole;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -108,6 +108,20 @@ public class UserController {
         List<UserRole> roles = Arrays.asList(UserRole.values());
         log.info("Returning {} user roles", roles.size());
         return ResponseEntity.ok(roles);
+
+    }
+
+    /**
+     * Get the currently authenticated user's information.
+     *
+     * @return ResponseEntity containing the current user's DTO
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser() {
+        log.info("Request received to fetch current user information");
+        UserDTO currentUser = userService.getCurrentUser();
+        log.info("Successfully retrieved current user with ID: {}", currentUser.getId());
+        return ResponseEntity.ok(currentUser);
     }
 }
 

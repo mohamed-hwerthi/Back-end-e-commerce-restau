@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.controller;
+package com.foodsquad.FoodSquad.controller.client;
 
 import com.foodsquad.FoodSquad.model.dto.cashier.CashierSessionRequestDTO;
 import com.foodsquad.FoodSquad.model.dto.cashier.CashierSessionResponseDTO;
@@ -65,6 +65,17 @@ public class CashierSessionController {
     public ResponseEntity<List<CashierSessionResponseDTO>> getSessionsByCashier(
             @PathVariable UUID cashierId) {
         return ResponseEntity.ok(cashierSessionService.getSessionsByCashier(cashierId));
+    }
+
+    @GetMapping("/cashier/{cashierId}/active")
+    @Operation(summary = "Get the active (open) session for a specific cashier")
+    public ResponseEntity<CashierSessionResponseDTO> getActiveCashierSession(
+            @PathVariable UUID cashierId) {
+        CashierSessionResponseDTO activeSession = cashierSessionService.getActiveCashierSession(cashierId);
+        if (activeSession == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(activeSession);
     }
 
     @GetMapping("/status/{isClosed}")

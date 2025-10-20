@@ -119,7 +119,10 @@ public class OpenApiConfig {
                         .description("APIs for managing activity sectors"))
           .addTagsItem(new Tag()
                 .name("Customer Management")
-                .description("APIs for managing customers"));
+                .description("APIs for managing customers"))
+        .addTagsItem(new Tag()
+                .name("Cashier Session Management")
+                .description("APIs for managing cashier sessions"));
     }
 
     @Bean

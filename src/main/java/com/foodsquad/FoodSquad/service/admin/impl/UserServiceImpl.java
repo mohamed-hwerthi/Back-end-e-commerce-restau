@@ -9,6 +9,8 @@ import com.foodsquad.FoodSquad.service.admin.dec.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -96,5 +98,14 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID id) {
         log.info("Deleting user with id {}", id);
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDTO getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+        return userRepository.findByEmail(currentUsername)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + currentUsername));
     }
 }

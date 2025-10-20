@@ -100,6 +100,14 @@ public class CashierSessionServiceImpl implements CashierSessionService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    @Override
+    public CashierSessionResponseDTO getActiveCashierSession(UUID cashierId) {
+        return cashierSessionRepository.findByCashierIdAndIsClosed(cashierId, false)
+                .stream()
+                .findFirst()
+                .map(cashierSessionMapper::toDto)
+                .orElse(null);
+    }
 
     @Override
     public List<CashierSessionResponseDTO> getSessionsByStatus(Boolean isClosed) {

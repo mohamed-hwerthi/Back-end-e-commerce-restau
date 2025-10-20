@@ -1,4 +1,4 @@
-package com.foodsquad.FoodSquad.controller;
+package com.foodsquad.FoodSquad.controller.admin;
 
 import com.foodsquad.FoodSquad.model.dto.OrderStatusDTO;
 import com.foodsquad.FoodSquad.service.OrderStatusService;
