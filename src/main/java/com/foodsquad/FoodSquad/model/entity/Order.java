@@ -22,8 +22,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "order_number" , nullable = false)
-    private String orderNumber ;
+    @Column(name = "order_number", nullable = false)
+    private String orderNumber;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "customer_id")
@@ -42,7 +42,7 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
 
-    @Column(nullable = false , name = "sub_total")
+    @Column(nullable = false, name = "sub_total")
     private BigDecimal subTotal;
 
     @Column(nullable = false)
@@ -50,7 +50,7 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false)
-    private OrderSource source ;
+    private OrderSource source;
 
     @Embedded
     @AttributeOverrides({
@@ -60,6 +60,24 @@ public class Order {
             @AttributeOverride(name = "countryId", column = @Column(name = "delivery_country_id"))
     })
     private Address deliveryAddress;
+
+    @ManyToOne
+    @JoinColumn(name = "cashier_session_id")
+    private CashierSession cashierSession;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    @Column(name = "cash_received")
+    private BigDecimal cashReceived;
+
+    @Column(name = "change_given")
+    private BigDecimal changeGiven;
+
+    @Column(name = "is_printed")
+    private Boolean isPrinted;
+
 
     @PrePersist
     protected void onCreate() {

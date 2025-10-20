@@ -6,6 +6,7 @@ import com.foodsquad.FoodSquad.model.dto.UserDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.UserRepository;
 import com.foodsquad.FoodSquad.service.admin.dec.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         user = userRepository.save(user);
         log.info("User created with id {}", user.getId());
-      return userMapper.toDto(user);
+        return userMapper.toDto(user);
     }
 
     @Override
@@ -80,6 +81,16 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+
+    @Override
+    public User findById(UUID id) {
+        log.info("Finding user by id: {}", id);
+        return userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("User not found with id: {}", id);
+                    return new EntityNotFoundException("User not found with id: " + id);
+                });
+    }
 
     @Override
     public void deleteUser(UUID id) {

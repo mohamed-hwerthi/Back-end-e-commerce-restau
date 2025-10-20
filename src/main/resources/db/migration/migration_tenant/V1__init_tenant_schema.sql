@@ -57,6 +57,7 @@ CREATE TABLE timbres(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     amount DOUBLE PRECISION NOT NULL
 );
+
 -- ========================================
 -- Partners Table (Single Table Inheritance)
 -- ========================================
@@ -65,12 +66,14 @@ CREATE TABLE partners (
     firstName VARCHAR(255),
     lastName VARCHAR(255),
     email VARCHAR(255) UNIQUE,
+    password VARCHAR(255) UNIQUE,
     phone VARCHAR(50) NOT NULL UNIQUE,
     address TEXT,
-    partner_type VARCHAR(50) NOT NULL ,
-    created_at TIMESTAMP WITH TIME ZONE  NOT NULL DEFAULT now()
-
+    partner_type VARCHAR(50) NOT NULL,
+    is_guest BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
+
 
 
 CREATE TABLE order_statuses (
@@ -85,6 +88,36 @@ CREATE TABLE payment_methods (
     code VARCHAR(50) NOT NULL UNIQUE
 );
 
+
+
+CREATE TABLE cashier_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_number VARCHAR(50) UNIQUE NOT NULL,
+    cashier_id UUID NOT NULL,
+    store_id UUID NOT NULL,
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    end_time TIMESTAMP WITH TIME ZONE,
+    opening_balance NUMERIC(19,2) NOT NULL DEFAULT 0,
+    closing_balance NUMERIC(19,2),
+    total_sales NUMERIC(19,2) DEFAULT 0,
+    total_refunds NUMERIC(19,2) DEFAULT 0,
+    is_closed BOOLEAN DEFAULT FALSE,
+
+    CONSTRAINT fk_cashier_session_cashier FOREIGN KEY (cashier_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE cash_movements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    cashier_session_id UUID NOT NULL,
+    movement_type VARCHAR(20) NOT NULL CHECK (movement_type IN ('ENTRY', 'EXIT')),
+    amount NUMERIC(19,2) NOT NULL CHECK (amount > 0),
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+
+    CONSTRAINT fk_cash_movement_session FOREIGN KEY (cashier_session_id)
+            REFERENCES cashier_sessions(id) ON DELETE CASCADE
+);
+
+
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_number VARCHAR(50) NOT NULL ,
@@ -94,11 +127,16 @@ CREATE TABLE orders (
     total NUMERIC(19,2) NOT NULL DEFAULT 0,
     source VARCHAR(50) NOT NULL ,
     sub_total NUMERIC(19,2) NOT NULL DEFAULT 0,
-      -- Embedded Address fields
-      delivery_street VARCHAR(255) NOT NULL,
-      delivery_city VARCHAR(255) NOT NULL,
-      delivery_country_id TEXT,
-      delivery_postal_code VARCHAR(50),
+    delivery_street VARCHAR(255) NOT NULL,
+    delivery_city VARCHAR(255) NOT NULL,
+    delivery_country_id TEXT,
+    delivery_postal_code VARCHAR(50),
+    cashier_session_id UUID,
+    cash_received NUMERIC(19,2),
+    change_given NUMERIC(19,2),
+    is_printed BOOLEAN DEFAULT FALSE,
+
+    CONSTRAINT fk_orders_cashier_session FOREIGN KEY (cashier_session_id) REFERENCES cashier_sessions(id) ON DELETE SET NULL,
     CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES  partners    (id) ON DELETE CASCADE,
     CONSTRAINT fk_orders_status FOREIGN KEY (status_id) REFERENCES order_statuses(id) ON DELETE SET NULL
 );
@@ -194,6 +232,7 @@ CREATE TABLE IF NOT EXISTS product_variant_attributes (
     CONSTRAINT fk_variant_attr_value FOREIGN KEY(attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
     PRIMARY KEY(product_id, attribute_value_id)
 );
+
 
 -- ========================================
 -- Order Items

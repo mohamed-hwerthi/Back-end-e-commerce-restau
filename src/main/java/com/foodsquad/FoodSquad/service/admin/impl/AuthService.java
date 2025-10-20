@@ -3,8 +3,9 @@ package com.foodsquad.FoodSquad.service.admin.impl;
 import com.foodsquad.FoodSquad.config.security.EncryptionUtil;
 import com.foodsquad.FoodSquad.exception.InvalidCredentialsException;
 import com.foodsquad.FoodSquad.exception.UserAlreadyExistsException;
-import com.foodsquad.FoodSquad.mapper.UserMapper;
-import com.foodsquad.FoodSquad.model.dto.*;
+import com.foodsquad.FoodSquad.model.dto.AuthResponseDTO;
+import com.foodsquad.FoodSquad.model.dto.StoreDTO;
+import com.foodsquad.FoodSquad.model.dto.UserLoginDTO;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.model.entity.UserRole;
 import com.foodsquad.FoodSquad.repository.UserRepository;
@@ -17,6 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
@@ -24,12 +28,7 @@ public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final StoreService storeService;
-    private final UserMapper userMapper;
 
-    /**
-     * Spring Security calls this method to load a user by email.
-     * Store owners always reside in the public schema.
-     */
     @Override
     public UserDetails loadUserByUsername(String email) {
         User user = findUserByEmail(email);
@@ -40,90 +39,61 @@ public class AuthService implements UserDetailsService {
                 .build();
     }
 
-    /**
-     * Load the actual User entity by email
-     */
     public User loadUserEntityByUsername(String email) {
         return findUserByEmail(email);
     }
 
-    /**
-     * Register a new employee
-     */
-    @Transactional
-    public UserResponseDTO registerUser(UserRegistrationDTO registrationDTO) {
-        checkUserExists(registrationDTO.getEmail());
-
-        User newUser = User.builder()
-                .email(registrationDTO.getEmail())
-                .password(passwordEncoder.encode(registrationDTO.getPassword()))
-                .role(UserRole.EMPLOYEE)
-                .build();
-
-        return userMapper.toResponseDto(userRepository.save(newUser));
-    }
 
     /**
-     * Login for general users (employees)
+     * ✅ Unified Sign-In Method for All Users
      */
     @Transactional
-    public UserResponseDTO loginUser(UserLoginDTO loginDTO) {
+    public AuthResponseDTO signIn(UserLoginDTO loginDTO) {
         User user = getUserIfPasswordMatches(loginDTO);
-        return userMapper.toResponseDto(user);
-    }
 
-    /**
-     * Login for store owners
-     */
-    @Transactional
-    public StoreOwnerAuthResponse loginStoreOwner(UserLoginDTO loginDTO) {
-        User user = getUserIfPasswordMatches(loginDTO);
-        StoreDTO storeDto = storeService.findByOwner(user);
-        String encryptedStoreId = encryptStoreId(storeDto.getId().toString());
-
-        return StoreOwnerAuthResponse.builder()
+        AuthResponseDTO.AuthResponseDTOBuilder response = AuthResponseDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .storeId(encryptedStoreId)
-                .build();
+                .role(user.getRole());
+
+        if (user.getRole() == UserRole.OWNER) {
+            StoreDTO storeDto = storeService.findByOwner(user);
+            String encryptedStoreId = encryptStoreId(storeDto.getId().toString());
+            response.storeId(encryptedStoreId);
+        }
+
+        return response.build();
     }
 
     /**
-     * Login for admin or cashier users
+     * ✅ Build JWT claims map
      */
-    @Transactional
-    public UserResponseDTO loginCashier(UserLoginDTO loginDTO) {
-        User user = getUserIfPasswordMatches(loginDTO);
+    public Map<String, Object> buildClaims(AuthResponseDTO authResponse) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", authResponse.getId());
+        claims.put("email", authResponse.getEmail());
+        claims.put("role", authResponse.getRole());
 
-        if (!isAdminOrCashier(user)) {
-            throw new InvalidCredentialsException("User is not authorized as an admin or cashier");
+        if (authResponse.getStoreId() != null) {
+            claims.put("storeId", authResponse.getStoreId());
         }
 
-        return userMapper.toResponseDto(user);
+        return claims;
     }
 
     // ------------------- PRIVATE HELPERS -------------------
 
-    /**
-     * Find user by email or throw exception
-     */
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
-    /**
-     * Check if user email already exists
-     */
     private void checkUserExists(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException("Email already exists");
         }
     }
 
-    /**
-     * Verify password matches or throw exception
-     */
     private User getUserIfPasswordMatches(UserLoginDTO loginDTO) {
         User user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -131,21 +101,9 @@ public class AuthService implements UserDetailsService {
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
-
         return user;
     }
 
-    /**
-     * Check if the user role is ADMIN or CASHIER
-     */
-    private boolean isAdminOrCashier(User user) {
-        UserRole role = user.getRole();
-        return role == UserRole.ADMIN || role == UserRole.CASHIER;
-    }
-
-    /**
-     * Encrypt store ID
-     */
     private String encryptStoreId(String storeId) {
         try {
             return EncryptionUtil.encrypt(storeId);

@@ -6,8 +6,5 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface ActivitySectorMapper {
-    ActivitySector toEntity(ActivitySectorDTO activitySectorDTO);
-
-    ActivitySectorDTO toDto(ActivitySector activitySector);
+public interface ActivitySectorMapper  extends   GenericMapper<ActivitySector, ActivitySectorDTO> {
 }

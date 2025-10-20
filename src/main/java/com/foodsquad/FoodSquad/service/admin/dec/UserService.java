@@ -1,6 +1,7 @@
 package com.foodsquad.FoodSquad.service.admin.dec;
 
 import com.foodsquad.FoodSquad.model.dto.UserDTO;
+import com.foodsquad.FoodSquad.model.entity.User;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +46,8 @@ public interface UserService {
      * @param id UUID of the user to delete.
      */
     void deleteUser(UUID id);
+
+    User findById(UUID id) ;
 
 
 }

@@ -13,6 +13,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * {@code TenantFilter} is a servlet filter responsible for dynamically resolving the tenant
@@ -74,11 +76,12 @@ public class TenantFilter implements Filter {
             resolveTenantFromHeader(encryptedStoreId);
             return;
         }
+        String hostSlug = extractSlugFromOrigin(httpRequest);
+        if (StringUtils.hasText(hostSlug)) {
+            resolveTenantFromSlug(hostSlug);
+        }
 
-        String slug = httpRequest.getParameter(STORE_SLUG_PARAM);
-        if (StringUtils.hasText(slug)) {
-            resolveTenantFromSlug(slug);
-        } else {
+     else {
             log.debug("No tenant info found; using default tenant.");
             setDefaultTenant();
         }
@@ -133,4 +136,36 @@ public class TenantFilter implements Filter {
     private void setDefaultTenant() {
         TenantContext.setCurrentTenant(TenantContext.DEFAULT_TENANT);
     }
+
+    /**
+     * 🆕 Extracts the store slug from the request hostname.
+     * Example: "medstore.localhost" → "medstore"
+     */
+    private String extractSlugFromOrigin(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        if (!StringUtils.hasText(origin)) {
+            return null;
+        }
+
+        try {
+            URL url = new URL(origin);
+            String host = url.getHost();
+            if (host.contains(".")) {
+                String[] parts = host.split("\\.");
+                if (parts.length > 1 && !"localhost".equalsIgnoreCase(parts[0])) {
+                    String slug = parts[0];
+                    log.debug("Extracted slug from origin: {}", slug);
+                    return slug;
+                }
+            }
+        } catch (MalformedURLException e) {
+            log.warn("Invalid Origin header: {}", origin);
+        }
+
+        return null;
+    }
+
+
+
+
 }

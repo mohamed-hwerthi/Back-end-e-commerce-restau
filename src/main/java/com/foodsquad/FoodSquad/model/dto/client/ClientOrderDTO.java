@@ -2,9 +2,8 @@ package com.foodsquad.FoodSquad.model.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foodsquad.FoodSquad.model.dto.AddressDTO;
-import com.foodsquad.FoodSquad.model.entity.Address;
+import com.foodsquad.FoodSquad.model.entity.OrderSource;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -46,15 +45,21 @@ public class ClientOrderDTO {
     private AddressDTO deliveryAddress;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private   String  status;
+    private String status;
 
-    private String  source  ;
+    private OrderSource source;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime createdAt;
 
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    private String  orderNumber ;
+    private String orderNumber;
+
+    private UUID cashierSessionId;
+
+    private BigDecimal cashReceived;
+
+    private BigDecimal changeGiven;
 
 
 }
