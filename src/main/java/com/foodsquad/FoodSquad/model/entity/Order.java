@@ -25,7 +25,7 @@ public class Order {
     @Column(name = "order_number", nullable = false)
     private String orderNumber;
 
-    @ManyToOne(optional = false)
+    @ManyToOne()
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -64,10 +64,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "cashier_session_id")
     private CashierSession cashierSession;
-
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
 
     @Column(name = "cash_received")
     private BigDecimal cashReceived;

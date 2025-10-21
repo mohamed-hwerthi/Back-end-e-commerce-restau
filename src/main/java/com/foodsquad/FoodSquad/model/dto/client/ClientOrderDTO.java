@@ -29,7 +29,6 @@ public class ClientOrderDTO {
     private List<ClientOrderItemDTO> orderItems;
 
     @Valid
-    @NotNull(message = "customer can not be null ")
     private ClientCustomerDTO customer;
 
     @NotNull(message = "Total is required")
@@ -40,7 +39,6 @@ public class ClientOrderDTO {
     @Positive(message = "Order total must be greater than zero")
     private BigDecimal subTotal;
 
-    @NotNull
     @Valid
     private AddressDTO deliveryAddress;
 

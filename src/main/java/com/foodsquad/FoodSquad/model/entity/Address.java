@@ -13,10 +13,8 @@ import lombok.*;
 @NoArgsConstructor
 public class Address {
 
-    @NotBlank(message = "Street cannot be blank")
     private String street;
 
-    @NotBlank(message = "City cannot be blank")
     private String city;
 
     private String postalCode;

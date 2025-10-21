@@ -22,6 +22,7 @@
     import org.springframework.data.domain.Pageable;
     import org.springframework.stereotype.Service;
     import org.springframework.transaction.annotation.Transactional;
+    import org.springframework.util.ObjectUtils;
 
     import java.math.BigDecimal;
     import java.time.LocalDateTime;
@@ -63,12 +64,12 @@
         @Transactional
         public ClientOrderDTO placeOrder(ClientOrderDTO clientOrderDTO) {
             log.info("Placing new order for customer");
-
-            Customer customer = clientCustomerService.findOrCreateCustomerFromOrder(clientOrderDTO);
+            Customer customer = null;
+            if (!ObjectUtils.isEmpty(clientOrderDTO.getCustomer()) && !clientOrderDTO.getSource().equals(OrderSource.POS)) {
+                customer = clientCustomerService.findOrCreateCustomerFromOrder(clientOrderDTO);
+            }
             OrderStatus orderStatus = orderStatusService.getByCode(ORDER_STATUS_PENDING);
-
             Order order = buildOrder(clientOrderDTO, customer, orderStatus);
-
             order.calculateTotal();
             order.setOrderNumber(generateOrderNumber());
             if (OrderSource.POS.equals(clientOrderDTO.getSource())) {
