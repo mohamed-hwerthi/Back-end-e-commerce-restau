@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.controller.client;
 
+import com.foodsquad.FoodSquad.model.dto.OrderDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import com.foodsquad.FoodSquad.service.client.dec.ClientOrderService;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +74,20 @@ public class ClientOrderController {
         log.info("Fetching orders for customer ID: {}", customerId);
         PaginatedResponseDTO<ClientOrderDTO> response = clientOrderService.getOrdersByCustomer(customerId, pageable);
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/session/{sessionId}")
+    @Operation(summary = "Get orders by session ID",
+            description = "Retrieves all orders for a specific cashier session with pagination.")
+    public ResponseEntity<PaginatedResponseDTO<ClientOrderDTO>> getOrdersBySessionId(
+            @PathVariable UUID sessionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        log.info("Received request to get orders for session ID: {}, page: {}, size: {}", sessionId, page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(clientOrderService.getOrdersBySessionId(sessionId, pageable));
     }
 
 }

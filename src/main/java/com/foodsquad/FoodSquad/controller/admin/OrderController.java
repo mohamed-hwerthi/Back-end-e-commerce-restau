@@ -1,24 +1,21 @@
 package com.foodsquad.FoodSquad.controller.admin;
 
 import com.foodsquad.FoodSquad.model.dto.OrderDTO;
+import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.service.admin.dec.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * REST controller responsible for managing orders in the admin panel.

@@ -44,4 +44,13 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
      * @return Page of orders for the customer
      */
     Page<Order> findByCustomerIdOrderByCreatedAtDesc(UUID customerId, Pageable pageable);
+    
+    /**
+     * Finds all orders for a specific cashier session, sorted by creation date descending.
+     *
+     * @param sessionId ID of the cashier session
+     * @param pageable Pagination information
+     * @return Page of orders for the cashier session
+     */
+    Page<Order> findByCashierSessionIdOrderByCreatedAtDesc(UUID sessionId, Pageable pageable);
 }

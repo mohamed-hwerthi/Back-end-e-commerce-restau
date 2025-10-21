@@ -1,5 +1,6 @@
 package com.foodsquad.FoodSquad.service.client.dec;
 
+import com.foodsquad.FoodSquad.model.dto.OrderDTO;
 import com.foodsquad.FoodSquad.model.dto.PaginatedResponseDTO;
 import com.foodsquad.FoodSquad.model.dto.client.ClientOrderDTO;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +29,14 @@ public interface ClientOrderService {
      * @return Paginated response containing order DTOs and pagination metadata
      */
     PaginatedResponseDTO<ClientOrderDTO> getOrdersByCustomer(UUID customerId, Pageable pageable);
+
+
+    /**
+     * Retrieves all orders for a specific cashier session with pagination.
+     *
+     * @param sessionId The ID of the cashier session
+     * @param pageable Pagination information (page number, page size, sort)
+     * @return a {@link PaginatedResponseDTO} of {@link OrderDTO} for the session
+     */
+    PaginatedResponseDTO<ClientOrderDTO> getOrdersBySessionId(UUID sessionId, Pageable pageable);
 }

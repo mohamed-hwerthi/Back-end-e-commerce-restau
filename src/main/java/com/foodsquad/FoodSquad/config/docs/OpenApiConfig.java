@@ -1,11 +1,9 @@
 package com.foodsquad.FoodSquad.config.docs;
 
-import com.foodsquad.FoodSquad.config.web.TenantFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
-import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
@@ -35,6 +33,11 @@ public class OpenApiConfig {
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT"))
+                        .addParameters("Origin", new HeaderParameter()
+                                .name("Origin")
+                                .description("The origin domain of the request (used to resolve tenant automatically). Example: https://mystore.localhost:4200")
+                                .required(false)
+                                .example("https://mystore.localhost:4200"))
                         .addParameters(TENANT_HEADER, new HeaderParameter()
                                 .name(TENANT_HEADER)
                                 .description("Tenant identifier")
@@ -133,11 +136,11 @@ public class OpenApiConfig {
                 .addOpenApiCustomizer(openApi -> {
                     openApi.getPaths().forEach((path, pathItem) ->
                             pathItem.readOperations().forEach(operation -> {
-                                operation.addParametersItem(new QueryParameter()
-                                        .name("storeSlug")
-                                        .description("Store identifier (slug)")
-                                        .required(false)
-                                        .example("my-store-123"));
+                                operation.addParametersItem(new HeaderParameter()
+                                        .name("Origin")
+                                        .description("The origin domain (used to resolve store slug automatically). Example: https://mystore.localhost:4200")
+                                        .required(true)
+                                        .example("https://mystore.localhost:4200"));
                             })
                     );
                 })
