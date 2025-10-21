@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface CashMovementRepository extends JpaRepository<CashMovement, UUID> {
-    List<CashMovement> findByCashierSessionIdOrderByTimestampDesc(UUID cashierSessionId);
+    List<CashMovement> findByCashierSessionId(UUID cashierSessionId);
 
-    List<CashMovement> findByCashierIdOrderByTimestampDesc(UUID cashierId);
+    List<CashMovement> findByCashierId(UUID cashierId);
 }

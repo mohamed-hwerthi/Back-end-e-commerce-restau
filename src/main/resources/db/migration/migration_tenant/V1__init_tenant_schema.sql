@@ -104,18 +104,21 @@ CREATE TABLE cashier_sessions (
 
     CONSTRAINT fk_cashier_session_cashier FOREIGN KEY (cashier_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE cash_movements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     cashier_session_id UUID NOT NULL,
-    movement_type VARCHAR(20) NOT NULL CHECK (movement_type IN ('ENTRY', 'EXIT')),
+    cashier_id UUID NOT NULL,
+    movement_type VARCHAR(20) NOT NULL CHECK (movement_type IN ('IN', 'OUT')),
     amount NUMERIC(19,2) NOT NULL CHECK (amount > 0),
     reason TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
 
     CONSTRAINT fk_cash_movement_session FOREIGN KEY (cashier_session_id)
-            REFERENCES cashier_sessions(id) ON DELETE CASCADE
+            REFERENCES cashier_sessions(id) ON DELETE CASCADE,
+    CONSTRAINT fk_cash_movement_cashier FOREIGN KEY (cashier_id)
+            REFERENCES users(id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

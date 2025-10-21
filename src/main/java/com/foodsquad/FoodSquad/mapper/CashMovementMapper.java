@@ -17,7 +17,6 @@ public interface CashMovementMapper {
     CashMovementMapper INSTANCE = Mappers.getMapper(CashMovementMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "cashierSession", source = "cashierSessionId", qualifiedByName = "toCashierSession")
     @Mapping(target = "cashier", source = "cashierId", qualifiedByName = "toUser")
     CashMovement toEntity(CashMovementRequestDTO dto);

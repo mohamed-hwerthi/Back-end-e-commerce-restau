@@ -146,7 +146,6 @@ public class TenantFilter implements Filter {
         if (!StringUtils.hasText(origin)) {
             return null;
         }
-
         try {
             URL url = new URL(origin);
             String host = url.getHost();

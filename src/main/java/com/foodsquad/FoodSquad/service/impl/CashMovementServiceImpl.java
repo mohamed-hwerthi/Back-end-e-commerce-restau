@@ -39,7 +39,7 @@ public class CashMovementServiceImpl implements CashMovementService {
         log.info("Creating new cash movement: {}", requestDTO);
 
         CashierSession session = cashierSessionService.getSession(requestDTO.getCashierSessionId());
-        User cashier = userService.getUserById(requestDTO.getCashierId());
+        User cashier = userService.findById(requestDTO.getCashierId());
 
         CashMovement movement = cashMovementMapper.toEntity(requestDTO);
         movement.setCashier(cashier);
@@ -64,7 +64,7 @@ public class CashMovementServiceImpl implements CashMovementService {
     @Transactional(readOnly = true)
     public List<CashMovementResponseDTO> getCashMovementsBySession(UUID sessionId) {
         log.info("Fetching all cash movements for session: {}", sessionId);
-        return cashMovementRepository.findByCashierSessionIdOrderByTimestampDesc(sessionId).stream()
+        return cashMovementRepository.findByCashierSessionId(sessionId).stream()
                 .map(cashMovementMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -73,7 +73,7 @@ public class CashMovementServiceImpl implements CashMovementService {
     @Transactional(readOnly = true)
     public List<CashMovementResponseDTO> getCashMovementsByCashier(UUID cashierId) {
         log.info("Fetching all cash movements for cashier: {}", cashierId);
-        return cashMovementRepository.findByCashierIdOrderByTimestampDesc(cashierId).stream()
+        return cashMovementRepository.findByCashierId(cashierId).stream()
                 .map(cashMovementMapper::toDto)
                 .collect(Collectors.toList());
     }
