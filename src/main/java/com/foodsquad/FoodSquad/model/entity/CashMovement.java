@@ -24,7 +24,7 @@ public class CashMovement {
     private MovementType type;
 
     private BigDecimal amount;
-    private String description;
+    private String reason;
     private LocalDateTime timestamp;
 
     @ManyToOne

@@ -109,7 +109,7 @@ CREATE TABLE cash_movements (
     cashier_session_id UUID NOT NULL,
     movement_type VARCHAR(20) NOT NULL CHECK (movement_type IN ('ENTRY', 'EXIT')),
     amount NUMERIC(19,2) NOT NULL CHECK (amount > 0),
-    description TEXT,
+    reason TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
 
     CONSTRAINT fk_cash_movement_session FOREIGN KEY (cashier_session_id)

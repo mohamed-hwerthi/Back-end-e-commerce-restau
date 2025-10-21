@@ -8,8 +8,8 @@ import com.foodsquad.FoodSquad.model.entity.CashMovement;
 import com.foodsquad.FoodSquad.model.entity.CashierSession;
 import com.foodsquad.FoodSquad.model.entity.User;
 import com.foodsquad.FoodSquad.repository.CashMovementRepository;
-import com.foodsquad.FoodSquad.repository.CashierSessionRepository;
-import com.foodsquad.FoodSquad.repository.UserRepository;
+import com.foodsquad.FoodSquad.service.CashierSessionService;
+import com.foodsquad.FoodSquad.service.admin.dec.UserService;
 import com.foodsquad.FoodSquad.service.dec.CashMovementService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 public class CashMovementServiceImpl implements CashMovementService {
 
     private final CashMovementRepository cashMovementRepository;
-    private final CashierSessionRepository cashierSessionRepository;
-    private final UserRepository userRepository;
+    private final CashierSessionService cashierSessionService;
+    private final UserService userService;
     private final CashMovementMapper cashMovementMapper;
 
     @Override
@@ -38,17 +38,13 @@ public class CashMovementServiceImpl implements CashMovementService {
     public CashMovementResponseDTO createCashMovement(CashMovementRequestDTO requestDTO) {
         log.info("Creating new cash movement: {}", requestDTO);
 
-        // Verify cashier session exists
-        CashierSession session = cashierSessionRepository.findById(requestDTO.getCashierSessionId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "CashierSession not found with id: " + requestDTO.getCashierSessionId()));
-
-        // Verify cashier exists
-        User cashier = userRepository.findById(requestDTO.getCashierId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "User not found with id: " + requestDTO.getCashierId()));
+        CashierSession session = cashierSessionService.getSession(requestDTO.getCashierSessionId());
+        User cashier = userService.getUserById(requestDTO.getCashierId());
 
         CashMovement movement = cashMovementMapper.toEntity(requestDTO);
+        movement.setCashier(cashier);
+        movement.setCashierSession(session);
+
         movement = cashMovementRepository.save(movement);
 
         log.info("Created cash movement with id: {}", movement.getId());

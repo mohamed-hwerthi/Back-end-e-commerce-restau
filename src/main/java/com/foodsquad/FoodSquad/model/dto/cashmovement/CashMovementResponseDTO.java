@@ -18,7 +18,7 @@ public class CashMovementResponseDTO {
     private UUID id;
     private MovementType type;
     private BigDecimal amount;
-    private String description;
+    private String reason;
     private LocalDateTime timestamp;
     private UUID cashierSessionId;
     private UUID cashierId;

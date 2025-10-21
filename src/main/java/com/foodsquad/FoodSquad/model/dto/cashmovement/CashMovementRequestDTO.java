@@ -24,8 +24,8 @@ public class CashMovementRequestDTO {
     @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
     private BigDecimal amount;
     
-    @NotBlank(message = "Description is required")
-    private String description;
+    @NotBlank(message = "Reason is required")
+    private String reason;
     
     @NotNull(message = "Cashier session ID is required")
     private UUID cashierSessionId;
